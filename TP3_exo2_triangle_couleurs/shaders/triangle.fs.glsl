@@ -2,9 +2,8 @@
 
 in vec3 vColor;
 
-out vec4 fFragColor;
+out vec3 fFragColor;
 
-void main()
-{
-    fFragColor = vec4(vColor, 1.);
+void main() {
+    fFragColor = vColor;
 }
