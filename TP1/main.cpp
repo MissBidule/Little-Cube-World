@@ -3,8 +3,8 @@
 #include "glm/ext/scalar_constants.hpp"
 #include "p6/p6.h"
 
-int window_width  = 1280;
-int window_height = 720;
+int const window_width  = 1920;
+int const window_height = 1080;
 
 struct Vertex2DColor {
     glm::vec2 m_position;
@@ -24,7 +24,7 @@ float Deg2Rad(float deg)
 // DISC WITH IBO
 int main()
 {
-    auto ctx = p6::Context{{window_width, window_height, "TP3 EX2"}};
+    auto ctx = p6::Context{{window_width, window_height, "TP1"}};
     ctx.maximize_window();
 
     // BEGINNING OF MY INIT CODE//
@@ -49,7 +49,7 @@ int main()
     std::vector<Vertex2DColor> vertices;
     vertices.emplace_back(glm::vec2(0, 0), glm::vec3(0, 0, 0));
 
-    for (float i = 0; i < DIVISION; i++)
+    for (int i = 0; i < DIVISION; i++)
     {
         vertices.emplace_back(glm::vec2(RAYON * glm::cos(Deg2Rad((360 / static_cast<float>(DIVISION)) * (i))), RAYON * glm::sin(Deg2Rad((360 / static_cast<float>(DIVISION)) * (i)))), glm::vec3(1, 0, 0));
     }
@@ -120,8 +120,6 @@ int main()
     };
 
     ctx.start();
-
-    glfwTerminate();
 
     // Clear vbo & vao (&ibo)
     glDeleteBuffers(1, &ibo);
