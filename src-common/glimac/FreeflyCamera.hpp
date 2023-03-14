@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "glm/ext/scalar_constants.hpp"
+#include "glm/fwd.hpp"
 
 class FreeflyCamera {
 private:
@@ -14,6 +15,7 @@ private:
 
 public:
     FreeflyCamera(glm::vec3 Position = glm::vec3(0, 0, 0), float Phi = glm::pi<float>(), float Theta = 0); // call compute
+    FreeflyCamera(const FreeflyCamera& camera);
 
 public:
     void computeDirectionVectors(); // calculate F L U
@@ -21,6 +23,9 @@ public:
     void moveFront(float t);        // F
     void rotateLeft(float degrees); // Phi
     void rotateUp(float degrees);   // Theta
+    void setPos(glm::vec3 position);
+    void setPhi(float degrees);
+    void setTheta(float degrees);
 
 public:
     glm::mat4 getViewMatrix() const; // glm::lookAt(eye, point, up)

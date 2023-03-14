@@ -9,9 +9,11 @@ out vec3 vPosition_vs;
 out vec3 vNormal_vs;
 out vec2 vTexCoords;
 out vec4 vLightSpacePos;
+out vec3 vWorldPos;
 
 //Matrices de transformations
 uniform mat4 uMVPLight;
+uniform mat4 uMMatrix;
 uniform mat4 uMVPMatrix;
 uniform mat4 uMVMatrix;
 uniform mat4 uNormalMatrix;
@@ -26,7 +28,7 @@ void main() {
     vNormal_vs = vec3(uNormalMatrix * vertexNormal);
     vTexCoords = aVertexTexCoords;
     vLightSpacePos = uMVPLight * vertexPosition;
-
+    vWorldPos = (uMMatrix * vertexPosition).xyz;
     
     gl_Position = uMVPMatrix * vertexPosition;
 }

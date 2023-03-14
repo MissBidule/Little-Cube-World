@@ -193,12 +193,12 @@ int main()
         glUniformMatrix4fv(earth.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
         glUniformMatrix4fv(earth.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
-        glUniform3fv(earth.uKa, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
+        glUniform3fv(earth.uKa, 1, glm::value_ptr(glm::vec3(0.0215, 0.1745, 0.0215)));
         glUniform3fv(earth.uKd, 1, glm::value_ptr(glm::vec3(0.07568, 0.61424, 0.07568)));
         glUniform3fv(earth.uKs, 1, glm::value_ptr(glm::vec3(0.633, 0.727811, 0.633)));
         glUniform1f(earth.uShininess, 0.6);
 
-        glUniform3fv(earth.uLightPos_vs, 1, glm::value_ptr(glm::vec3(glm::vec4(1, 1, 0, 1) * glm::rotate(glm::mat4(1.0f), ctx.time(), glm::vec3(0, 1, 0)) * ViewMatrix.getViewMatrix())));
+        glUniform3fv(moon.uLightPos_vs, 1, glm::value_ptr(glm::vec3(glm::rotate(ViewMatrix.getViewMatrix(), ctx.time(), glm::vec3(0, 1, 0)) * glm::vec4(1, 1, 0, 1))));
         glUniform3fv(earth.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
         glDrawArrays(GL_TRIANGLES, 0, sphere1.size());
@@ -222,7 +222,7 @@ int main()
             glUniform3fv(moon.uKs, 1, glm::value_ptr(Ks[i]));
             glUniform1f(moon.uShininess, Shininess[i]);
 
-            glUniform3fv(moon.uLightPos_vs, 1, glm::value_ptr(glm::vec3(glm::vec4(1, 1, 0, 1) * glm::rotate(glm::mat4(1.0f), ctx.time(), glm::vec3(0, 1, 0)) * ViewMatrix.getViewMatrix())));
+            glUniform3fv(moon.uLightPos_vs, 1, glm::value_ptr(glm::vec3(glm::rotate(ViewMatrix.getViewMatrix(), ctx.time(), glm::vec3(0, 1, 0)) * glm::vec4(1, 1, 0, 1))));
             glUniform3fv(moon.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
             glDrawArrays(GL_TRIANGLES, 0, sphere1.size());

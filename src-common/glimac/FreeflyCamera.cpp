@@ -7,9 +7,16 @@
 
 #include "FreeflyCamera.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
 
 FreeflyCamera::FreeflyCamera(glm::vec3 Position, float Phi, float Theta)
     : m_Position(Position), m_fPhi(Phi), m_fTheta(Theta)
+{
+    computeDirectionVectors();
+}
+
+FreeflyCamera::FreeflyCamera(const FreeflyCamera& camera)
+    : m_Position(camera.m_Position), m_fPhi(camera.m_fPhi), m_fTheta(camera.m_fTheta)
 {
     computeDirectionVectors();
 }
@@ -42,6 +49,23 @@ void FreeflyCamera::rotateLeft(float degrees)
 void FreeflyCamera::rotateUp(float degrees)
 {
     m_fTheta += glm::radians(degrees);
+    computeDirectionVectors();
+}
+
+void FreeflyCamera::setPos(glm::vec3 position)
+{
+    m_Position = position;
+}
+
+void FreeflyCamera::setPhi(float degrees)
+{
+    m_fPhi = glm::radians(degrees);
+    computeDirectionVectors();
+}
+
+void FreeflyCamera::setTheta(float degrees)
+{
+    m_fTheta = glm::radians(degrees);
     computeDirectionVectors();
 }
 
