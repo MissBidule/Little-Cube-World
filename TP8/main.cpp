@@ -60,8 +60,10 @@ bool ShadowMapFBO::Init(unsigned int WindowWidth, unsigned int WindowHeight)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = {1.f, 1.f, 1.f, 1.f};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMap, 0);
@@ -458,9 +460,9 @@ int main()
     // Only for point light
     // ViewMatrixLight.moveFront(-glm::distance(Light, glm::vec3(0.f)));
     ViewMatrixLight.rotateUp(glm::degrees(glm::orientedAngle(glm::normalize(Light), glm::vec3(0, 0, 1), glm::vec3(1, 0, 0))));
-    ViewMatrixLight.rotateLeft(-25);
+    ViewMatrixLight.rotateLeft(-5);
     glm::mat4 ProjMatrix         = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
-    glm::mat4 ProjMatrixLight    = glm::perspective(glm::radians(70.f), shadow_width / static_cast<float>(shadow_height), 0.1f, 100.f);
+    glm::mat4 ProjMatrixLight    = glm::perspective(glm::radians(70.f), shadow_width / static_cast<float>(shadow_height), 0.1f, 25.f);
     float     valueOrtho         = 25.f;
     glm::mat4 shadowOrthoProjMat = glm::ortho(-valueOrtho, valueOrtho, -valueOrtho, valueOrtho, -valueOrtho, valueOrtho);
     glm::mat4 cameraOrthoProjMat = glm::ortho(-window_width / 250.f, window_width / 250.f, -window_height / 250.f, window_height / 250.f, 0.1f, 100.f);
@@ -475,6 +477,11 @@ int main()
     ShadowMapFBO  shadowMap;
     ShadowProgram shadowProg;
     shadowMap.Init(shadow_width, shadow_height);
+
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    float factor = 1.f;
+    float units  = 1.f;
+    glPolygonOffset(factor, units);
 
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 

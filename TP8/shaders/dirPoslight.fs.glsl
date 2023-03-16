@@ -42,16 +42,60 @@ vec3 blinnPhong() {
 
 float calcShadowFactor() {
     vec3 projCoords = vLightSpacePos.xyz / vLightSpacePos.w;
+
+    if(projCoords.z > 1.0) {
+        return 1.0;
+    }
+
     vec2 UVCoords = vec2(0.5 * projCoords.x + 0.5, 0.5 * projCoords.y + 0.5);
     float z = 0.5 * projCoords.z + 0.5;
+
     float depth = texture(uTexture, UVCoords).x;
 
-    float bias = 0.015;
+    float DiffuseFactor = dot(vNormal_vs, -uLightDir_vs);
+    float bias = mix(0.01, 0.0, DiffuseFactor);
 
     if (depth + bias < z)
         return 0.5;
     else
         return 1.0;
+}
+
+float calcShadowFactorPCF() {
+    vec3 projCoords = vLightSpacePos.xyz / vLightSpacePos.w;
+
+    if(projCoords.z > 1.0) {
+        return 1.0;
+    }
+
+    vec3 UVCoords = 0.5 * projCoords + vec3(0.5);
+
+    float DiffuseFactor = dot(vNormal_vs, -uLightDir_vs);
+    float bias = mix(0.001, 0.0, DiffuseFactor);
+
+    //send the shadow size as uniform
+    float TexelSize = 1/4096.f;
+    //send as uniform the filter
+    float ShadowMapFilterSize = 13.f;
+    int HalfFilterSize = int(ShadowMapFilterSize / 2);
+    
+    float ShadowSum = 0.f;
+
+    for (int y = -HalfFilterSize ; y < -HalfFilterSize + ShadowMapFilterSize; y++) {
+        for (int x = -HalfFilterSize; x < -HalfFilterSize + ShadowMapFilterSize; x++) {
+            vec2 Offset = vec2(x, y) * TexelSize;
+            float depth = texture(uTexture, UVCoords.xy + Offset).x;
+
+            if (depth + bias < UVCoords.z)
+                ShadowSum += 0.f;
+            else
+                ShadowSum += 1.f;
+        }
+    }
+ 
+    float finalShadowFactor = ShadowSum / float(pow(ShadowMapFilterSize, 2));
+
+    return finalShadowFactor;
 }
 
 vec3 projCoords = vLightSpacePos.xyz / vLightSpacePos.w;
@@ -61,5 +105,5 @@ float depth = texture(uTexture, UVCoords).x;
 
 
 void main() {
-    fFragColor = vec4(uKa + calcShadowFactor()*blinnPhong(), 1);
+    fFragColor = vec4(uKa + calcShadowFactorPCF()*blinnPhong(), 1);
 }

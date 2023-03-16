@@ -19,6 +19,8 @@ uniform vec3 uLightPos_vs;
 uniform vec3 uLightPos;
 uniform vec3 uLightIntensity; //Li
 
+uniform float ufar_plane;
+
 //uniform sampler2D uTexture1;
 uniform samplerCube uTexture;
 
@@ -43,47 +45,25 @@ vec3 blinnPhong() {
         return Li*(uKd*max(dot(wi, N), 0.) + uKs*max(pow(dot(halfVector, N), 0.), uShininess));
 }
 
-// float calcShadowFactor() {
-//     vec3 projCoords = vLightSpacePos.xyz / vLightSpacePos.w;
-//     vec2 UVCoords = vec2(0.5 * projCoords.x + 0.5, 0.5 * projCoords.y + 0.5);
-//     float z = 0.5 * projCoords.z + 0.5;
-//     float depth = texture(uTexture1, UVCoords).x;
-
-//     float bias = 0.015;
-
-//     if (depth + bias < z)
-//         return 0.5;
-//     else
-//         return 1.0;
-// }
-
 float calcShadowFactorPointLight() {
     vec3 LightToVertex = vWorldPos - uLightPos;
     
-    float Distance = length(LightToVertex);
+    float Distance = length(LightToVertex)/ufar_plane;
 
     //LightToVertex.y = -LightToVertex.y;
 
-    float SampledDistance = max(texture(uTexture, LightToVertex).r, 0);
+    float SampledDistance = texture(uTexture, LightToVertex).r;
 
-    float bias = 0.015;
+    float bias = 0.025;
 
     if ((SampledDistance + bias) < Distance) {
-         return 0.15;
+        return 0.15;
     }
     else {
         return 1.0;
     }
 }
 
-vec3 LightToVertex = vWorldPos - uLightPos;
-    
-    float Distance = length(LightToVertex);
-    vec3 LightToVertex2 = vec3(LightToVertex.x, -LightToVertex.y, LightToVertex.z);
-
-    float SampledDistance = (texture(uTexture, LightToVertex2).r);
-
-
 void main() {
-    fFragColor = vec4(vec3(SampledDistance > 1000), 1);//vec4(vec3(1-Distance/3.f), 1);
+    fFragColor = vec4(vec3(uKa + calcShadowFactorPointLight() * PointblinnPhong()), 1);//vec4(vec3(1-Distance/3.f), 1);
 }

@@ -3,13 +3,14 @@
 in vec3 vWorldPos;
 
 uniform vec3 uLightPos;
-
-out float fLightToPixelDistance;
+uniform float ufar_plane;
 
 void main() {
 
     // get distance between fragment and light source
-    //fLightToPixelDistance = length(vWorldPos - uLightPos);
+    float lightDistance = distance(vWorldPos, uLightPos);
 
-    fLightToPixelDistance = 1.f;
+    lightDistance = lightDistance / ufar_plane;
+
+    gl_FragDepth = lightDistance;
 }

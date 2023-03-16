@@ -33,10 +33,10 @@ public:
     void BindForReading(GLenum TextureUnit);
 
 private:
-    uint   m_width     = 0;
-    uint   m_height    = 0;
-    GLuint m_fbo       = 0;
-    GLuint m_shadowMap = 0;
+    unsigned int m_width     = 0;
+    unsigned int m_height    = 0;
+    GLuint       m_fbo       = 0;
+    GLuint       m_shadowMap = 0;
 };
 
 ShadowMapFBO::ShadowMapFBO() = default;
@@ -104,27 +104,27 @@ struct CameraDirection {
 };
 
 std::vector<CameraDirection> CameraDirections = {
-    {GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0.f, 90.f},
-    {GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0.f, -90.f},
-    {GL_TEXTURE_CUBE_MAP_POSITIVE_Y, -90.f, 0.f},
-    {GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 90.f, 180.f},
-    {GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0.f, 180.f},
-    {GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0.f, 0.f}};
+    {GL_TEXTURE_CUBE_MAP_POSITIVE_X, 180.f, -90.f},
+    {GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 180.f, 90.f},
+    {GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 90.f, 180.f},
+    {GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, -90.f, 0.f},
+    {GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 180.f, 180.f},
+    {GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 180.f, 0.f}};
 
 // cube point light
 class ShadowCubeMapFBO {
 public:
     ShadowCubeMapFBO();
     ~ShadowCubeMapFBO();
-    bool Init(uint size);
+    bool Init(unsigned int size);
     void BindForWriting(GLenum CubeFace);
     void BindForReading(GLenum TextureUnit);
 
 private:
-    uint   m_size          = 0;
-    GLuint m_fbo           = 0;
-    GLuint m_shadowCubeMap = 0;
-    GLuint m_depth         = 0;
+    unsigned int m_size          = 0;
+    GLuint       m_fbo           = 0;
+    GLuint       m_shadowCubeMap = 0;
+    // GLuint       m_depth         = 0;
 };
 
 ShadowCubeMapFBO::ShadowCubeMapFBO() = default;
@@ -133,22 +133,22 @@ ShadowCubeMapFBO::~ShadowCubeMapFBO()
 {
     glDeleteFramebuffers(1, &m_fbo);
     glDeleteTextures(1, &m_shadowCubeMap);
-    glDeleteTextures(1, &m_depth);
+    // glDeleteTextures(1, &m_depth);
 }
 
 bool ShadowCubeMapFBO::Init(unsigned int size)
 {
     m_size = size;
 
-    // create the depth buffer
-    glGenTextures(1, &m_depth);
-    glBindTexture(GL_TEXTURE_2D, m_depth);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_size, m_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    // // create the depth buffer
+    // glGenTextures(1, &m_depth);
+    // glBindTexture(GL_TEXTURE_2D, m_depth);
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_size, m_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glBindTexture(GL_TEXTURE_2D, 0);
 
     // create the cube map
     glGenTextures(1, &m_shadowCubeMap);
@@ -161,13 +161,13 @@ bool ShadowCubeMapFBO::Init(unsigned int size)
 
     for (size_t i = 0; i < 6; i++)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_R32F, m_size, m_size, 0, GL_RED, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, m_size, m_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     }
 
     // Create the FBO
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_shadowCubeMap, 0);
 
     // Disable writes to the color buffer
     glDrawBuffer(GL_NONE);
@@ -192,8 +192,8 @@ void ShadowCubeMapFBO::BindForWriting(GLenum CubeFace)
 {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
     glViewport(0, 0, m_size, m_size);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, CubeFace, m_shadowCubeMap, 0);
-    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeFace, m_shadowCubeMap, 0);
+    // glDrawBuffer(GL_DEPTH_ATTACHMENT);
 }
 
 void ShadowCubeMapFBO::BindForReading(GLenum TextureUnit)
@@ -209,13 +209,15 @@ struct ShadowProgram {
     GLint      uMVPLight;
     GLint      uMMatrix;
     GLint      uLightPos;
+    GLint      ufar_plane;
 
     ShadowProgram()
         : m_Program(p6::load_shader("shaders/shadow.vs.glsl", "shaders/shadow.fs.glsl"))
     {
-        uMVPLight = glGetUniformLocation(m_Program.id(), "uMVPLight");
-        uMMatrix  = glGetUniformLocation(m_Program.id(), "uMMatrix");
-        uLightPos = glGetUniformLocation(m_Program.id(), "uLightPos");
+        uMVPLight  = glGetUniformLocation(m_Program.id(), "uMVPLight");
+        uMMatrix   = glGetUniformLocation(m_Program.id(), "uMMatrix");
+        uLightPos  = glGetUniformLocation(m_Program.id(), "uLightPos");
+        ufar_plane = glGetUniformLocation(m_Program.id(), "ufar_plane");
     }
 };
 
@@ -239,6 +241,7 @@ struct EarthProgram {
     GLint uLightPos;
     GLint uLightIntensity;
     GLint uTexture;
+    GLint ufar_plane;
 
     EarthProgram()
         : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/dirPoslight.fs.glsl"))
@@ -256,6 +259,7 @@ struct EarthProgram {
         uLightPos       = glGetUniformLocation(m_Program.id(), "uLightPos");
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
         uTexture        = glGetUniformLocation(m_Program.id(), "uTexture");
+        ufar_plane      = glGetUniformLocation(m_Program.id(), "ufar_plane");
     }
 
     void uniformSender(glm::mat4 camera, glm::mat4 ProjMatrix, glm::vec3 LightDir, glm::vec3 LightPos, float Rotation)
@@ -307,6 +311,7 @@ struct FloorProgram {
     GLint uLightPos;
     GLint uLightIntensity;
     GLint uTexture;
+    GLint ufar_plane;
 
     FloorProgram()
         : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/dirPoslight.fs.glsl"))
@@ -324,6 +329,7 @@ struct FloorProgram {
         uLightPos       = glGetUniformLocation(m_Program.id(), "uLightPos");
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
         uTexture        = glGetUniformLocation(m_Program.id(), "uTexture");
+        ufar_plane      = glGetUniformLocation(m_Program.id(), "ufar_plane");
     }
 
     void uniformSender(glm::mat4 camera, glm::mat4 ProjMatrix, glm::vec3 LightDir, glm::vec3 LightPos)
@@ -378,6 +384,7 @@ struct MoonProgram {
     GLint uLightPos;
     GLint uLightIntensity;
     GLint uTexture;
+    GLint ufar_plane;
 
     std::vector<glm::vec3> RotAxes;
     std::vector<glm::vec3> RotDir;
@@ -402,6 +409,7 @@ struct MoonProgram {
         uLightPos       = glGetUniformLocation(m_Program.id(), "uLightPos");
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
         uTexture        = glGetUniformLocation(m_Program.id(), "uTexture");
+        ufar_plane      = glGetUniformLocation(m_Program.id(), "ufar_plane");
 
         for (int i = 0; i < MOON_NB; i++)
         {
@@ -446,7 +454,7 @@ struct MoonProgram {
 
 int main()
 {
-    auto ctx = p6::Context{{window_width, window_height, "TP8"}};
+    auto ctx = p6::Context{{window_width, window_height, "TP10"}};
     ctx.maximize_window();
 
     // BEGINNING OF MY INIT CODE//
@@ -570,13 +578,14 @@ int main()
     //--------------------------------MVP---------------------
 
     // MVP
-    glm::vec3     Light(0, -2, 2);
+    glm::vec3     Light(0, -2.f, 2.f);
     FreeflyCamera ViewMatrixCamera = FreeflyCamera();
     FreeflyCamera ViewMatrixLight  = FreeflyCamera();
     ViewMatrixCamera.moveFront(-5);
     ViewMatrixLight.setPos(Light);
     glm::mat4 ProjMatrix         = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
-    glm::mat4 ProjMatrixLight    = glm::perspective(glm::radians(90.f), shadow_size / static_cast<float>(shadow_size), 0.1f, 40.f);
+    float     far_plane          = 20.f;
+    glm::mat4 ProjMatrixLight    = glm::perspective(glm::radians(90.f), shadow_size / static_cast<float>(shadow_size), 0.1f, far_plane);
     float     valueOrtho         = 25.f;
     glm::mat4 shadowOrthoProjMat = glm::ortho(-valueOrtho, valueOrtho, -valueOrtho, valueOrtho, -valueOrtho, valueOrtho);
     glm::mat4 cameraOrthoProjMat = glm::ortho(-window_width / 250.f, window_width / 250.f, -window_height / 250.f, window_height / 250.f, 0.1f, 100.f);
@@ -591,6 +600,11 @@ int main()
     ShadowCubeMapFBO shadowCubeMap;
     ShadowProgram    shadowProg;
     shadowCubeMap.Init(shadow_size);
+
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    float factor = 1.f;
+    float units  = 1.f;
+    glPolygonOffset(factor, units);
 
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
@@ -630,14 +644,22 @@ int main()
 
         glm::vec3 uMVLightPos = glm::vec3(ViewMatrixCamera.getViewMatrix() * glm::vec4(uLightPos, 1));
 
-        glClearColor(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
+        std::vector<glm::mat4> shadowTransforms;
+
+        // for (size_t i = 0; i < 6; i++)
+        // {
+        //     ViewMatrixLight.setPos(uLightPos);
+        //     ViewMatrixLight.setTheta(CameraDirections[i].theta);
+        //     ViewMatrixLight.setPhi(CameraDirections[i].phi);
+        //     shadowTransforms.push_back(ProjMatrixLight * ViewMatrixLight.getViewMatrix());
+        // }
 
         // loop on the cube faces (logically 6)
         for (size_t i = 0; i < 6; i++)
         {
             shadowCubeMap.BindForWriting(CameraDirections[i].CubemapFace);
 
-            glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+            glClear(GL_DEPTH_BUFFER_BIT);
 
             ViewMatrixLight.setPos(uLightPos);
             ViewMatrixLight.setTheta(CameraDirections[i].theta);
@@ -649,6 +671,7 @@ int main()
             {
                 glm::mat4 MMatrix = glm::rotate(glm::mat4(1.f), -ctx.time(), glm::vec3(0, 1, 0));
 
+                glUniform1f(shadowProg.ufar_plane, far_plane);
                 glUniform3fv(shadowProg.uLightPos, 1, glm::value_ptr(uLightPos));
                 glUniformMatrix4fv(shadowProg.uMMatrix, 1, GL_FALSE, glm::value_ptr(MMatrix));
                 glUniformMatrix4fv(shadowProg.uMVPLight, 1, GL_FALSE, glm::value_ptr(ProjMatrixLight * ViewMatrixLight.getViewMatrix() * MMatrix));
@@ -662,6 +685,7 @@ int main()
                 MMatrix_moon           = glm::translate(MMatrix_moon, moon.RotAxes[i]);
                 MMatrix_moon           = glm::scale(MMatrix_moon, glm::vec3(0.2, 0.2, 0.2));
 
+                glUniform1f(shadowProg.ufar_plane, far_plane);
                 glUniform3fv(shadowProg.uLightPos, 1, glm::value_ptr(uLightPos));
                 glUniformMatrix4fv(shadowProg.uMMatrix, 1, GL_FALSE, glm::value_ptr(MMatrix_moon));
                 glUniformMatrix4fv(shadowProg.uMVPLight, 1, GL_FALSE, glm::value_ptr(ProjMatrixLight * ViewMatrixLight.getViewMatrix() * MMatrix_moon));
@@ -678,6 +702,7 @@ int main()
                 MMatrix           = glm::rotate(MMatrix, glm::radians(90.f), glm::vec3(1, 0, 0));
                 MMatrix           = glm::scale(MMatrix, glm::vec3(50.f, 50.f, 50.f));
 
+                glUniform1f(shadowProg.ufar_plane, far_plane);
                 glUniform3fv(shadowProg.uLightPos, 1, glm::value_ptr(uLightPos));
                 glUniformMatrix4fv(shadowProg.uMMatrix, 1, GL_FALSE, glm::value_ptr(MMatrix));
                 glUniformMatrix4fv(shadowProg.uMVPLight, 1, GL_FALSE, glm::value_ptr(ProjMatrixLight * ViewMatrixLight.getViewMatrix() * MMatrix));
@@ -688,6 +713,8 @@ int main()
             glBindVertexArray(0);
         }
 
+        ctx.render_to_main_canvas();
+
         //--------------------------------LIGHTING PASS---------------------
 
         // TEMP
@@ -696,8 +723,6 @@ int main()
         // ViewMatrixLight.setTheta(CameraDirections[0].theta);
         // ViewMatrixLight.setPhi(CameraDirections[0].phi);
         // TEMP
-
-        ctx.render_to_main_canvas();
 
         glViewport(0, 0, ctx.current_canvas_width(), ctx.current_canvas_height());
 
@@ -714,6 +739,7 @@ int main()
         shadowCubeMap.BindForReading(GL_TEXTURE1);
 
         earth.uniformSender(ViewMatrixCamera.getViewMatrix(), ProjMatrix, uLightDir, uMVLightPos, -ctx.time());
+        glUniform1f(earth.ufar_plane, far_plane);
         glUniform3fv(earth.uLightPos, 1, glm::value_ptr(uLightPos));
 
         earth.render();
@@ -729,6 +755,7 @@ int main()
                 shadowCubeMap.BindForReading(GL_TEXTURE1);
 
                 moon.uniformSender(i, ViewMatrixCamera.getViewMatrix(), ProjMatrix, uLightDir, uMVLightPos, ctx.time());
+                glUniform1f(moon.ufar_plane, far_plane);
                 glUniform3fv(moon.uLightPos, 1, glm::value_ptr(uLightPos));
 
                 moon.render();
@@ -747,6 +774,7 @@ int main()
         shadowCubeMap.BindForReading(GL_TEXTURE1);
 
         floor.uniformSender(ViewMatrixCamera.getViewMatrix(), ProjMatrix, uLightDir, uMVLightPos);
+        glUniform1f(floor.ufar_plane, far_plane);
         glUniform3fv(floor.uLightPos, 1, glm::value_ptr(uLightPos));
 
         floor.render();
