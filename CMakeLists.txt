@@ -13,6 +13,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(p6)
 
+# ---Add ASSIMP library---
+add_subdirectory(assimp-master)
+
 # ---Create a target for each exercise---
 function(add_exercise EXERCISE_NAME)
     set(TARGET_NAME ${EXERCISE_NAME}_exe)
@@ -34,8 +37,8 @@ function(add_exercise EXERCISE_NAME)
     target_sources(${TARGET_NAME} PRIVATE ${EXERCISE_FILES} ${COMMON_FILES})
     target_include_directories(${TARGET_NAME} PRIVATE ${EXERCISE_FILES} src-common)
 
-    # ---Link p6 library---
-    target_link_libraries(${TARGET_NAME} PRIVATE p6::p6)
+    # ---Link p6 and assimp library---
+    target_link_libraries(${TARGET_NAME} PRIVATE p6::p6 assimp)
 
     # ---Set the output folder---
     set_target_properties(${TARGET_NAME} PROPERTIES
@@ -56,3 +59,4 @@ add_exercise(TP7)
 add_exercise(TP8)
 add_exercise(TP9)
 add_exercise(TP10)
+add_exercise(TP11)
