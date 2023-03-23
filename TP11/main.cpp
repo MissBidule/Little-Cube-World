@@ -1,18 +1,15 @@
 #include <iostream>
 #include <vector>
-#include "glimac/BasicMesh.hpp"
 #include "glimac/FreeflyCamera.hpp"
+#include "glimac/SkinnedMesh.hpp"
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/common.hpp"
 #include "glimac/sphere_vertices.hpp"
-#include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/scalar_constants.hpp"
 #include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/vector_angle.hpp"
-#include "img/src/Image.h"
 #include "p6/p6.h"
 
 int const window_width  = 1920;
@@ -510,8 +507,9 @@ int main()
 
     //--------------------------------Trying to load a mesh---------------------
 
-    BasicMesh Thingy;
-    Thingy.LoadMesh("assets/models/test.obj");
+    SkinnedMesh Thingy;
+    Thingy.LoadMesh("assets/models/test.fbx");
+    int DisplayBoneIndex = 0;
 
     // END OF MY INIT CODE//
 
@@ -581,6 +579,8 @@ int main()
         {
             glm::mat4 MVMatrix = ViewMatrixLight.getViewMatrix();
             MVMatrix           = glm::translate(MVMatrix, glm::vec3(3.f, -3.f, 0.f));
+            // BCS IT'S AN FBX OBJECT
+            MVMatrix = glm::rotate(MVMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
             glUniformMatrix4fv(shadowProg.uMVPLight, 1, GL_FALSE, glm::value_ptr(shadowOrthoProjMat * MVMatrix));
         }
 
@@ -661,7 +661,9 @@ int main()
 
         shadowMap.BindForReading(GL_TEXTURE0);
 
-        Thingy.Render(ViewMatrixCamera.getViewMatrix(), ProjMatrix, uLightDir, uLightPos, ViewMatrixLight.getViewMatrix(), shadowOrthoProjMat);
+        Thingy.UpdateDebug(DisplayBoneIndex);
+
+        Thingy.Render(ViewMatrixCamera.getViewMatrix(), ProjMatrix, uLightDir, uLightPos, ViewMatrixLight.getViewMatrix(), shadowOrthoProjMat, ctx.time());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -699,7 +701,7 @@ int main()
 
     //--------------------------------INPUTS---------------------
 
-    ctx.key_pressed = [&Z, &Q, &S, &D](const p6::Key& key) {
+    ctx.key_pressed = [&Z, &Q, &S, &D, &DisplayBoneIndex, &Thingy](const p6::Key& key) {
         if (key.physical == GLFW_KEY_W)
         {
             Z = true;
@@ -715,6 +717,12 @@ int main()
         if (key.physical == GLFW_KEY_D)
         {
             D = true;
+        }
+
+        // FOR SKINNING DEBUG
+        if (key.physical == GLFW_KEY_SPACE)
+        {
+            DisplayBoneIndex = ++DisplayBoneIndex % Thingy.NumBones();
         }
     };
 

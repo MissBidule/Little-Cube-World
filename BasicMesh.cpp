@@ -1,4 +1,4 @@
-#include "BasicMesh.hpp"
+#include "SkinnedMesh.hpp"
 #include "assimp/material.h"
 #include "assimp/vector3.h"
 #include "glm/ext/matrix_transform.hpp"

@@ -76,7 +76,7 @@ float calcShadowFactorPCF() {
     //send the shadow size as uniform
     float TexelSize = 1/4096.f;
     //send as uniform the filter
-    float ShadowMapFilterSize = 13.f;
+    float ShadowMapFilterSize = 7.f;
     int HalfFilterSize = int(ShadowMapFilterSize / 2);
     
     float ShadowSum = 0.f;

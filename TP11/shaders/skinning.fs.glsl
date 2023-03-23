@@ -5,6 +5,8 @@ in vec4 vLightSpacePos;
 in vec3 vPosition_vs; //w0 normalize(-vPos)
 in vec3 vNormal_vs;
 in vec2 vTexCoords;
+flat in ivec4 vBoneIDs;
+in vec4 vWeights;
 
 out vec4 fFragColor;
 
@@ -12,13 +14,13 @@ uniform vec3 uKa;
 uniform vec3 uKd;
 uniform vec3 uKs;
 uniform float uShininess;
+uniform int uDisplayBoneIndex;
 
 uniform vec3 uLightDir_vs; //wi (need normalization)
 uniform vec3 uLightPos_vs;
 uniform vec3 uLightIntensity; //Li
 
 uniform sampler2D uTexture;
-uniform sampler2D uTexture2;
 
 vec3 PointblinnPhong() {
         float d = distance(vPosition_vs, uLightPos_vs);
@@ -77,7 +79,7 @@ float calcShadowFactorPCF() {
     //send the shadow size as uniform
     float TexelSize = 1/4096.f;
     //send as uniform the filter
-    float ShadowMapFilterSize = 7.f;
+    float ShadowMapFilterSize = 13.f;
     int HalfFilterSize = int(ShadowMapFilterSize / 2);
     
     float ShadowSum = 0.f;
@@ -106,5 +108,26 @@ float depth = texture(uTexture, UVCoords).x;
 
 
 void main() {
-    fFragColor = vec4(texture(uTexture2, vTexCoords).xyz*0.5f + calcShadowFactorPCF()*blinnPhong(), 1);
+
+    bool found = false;
+
+    for (int i = 0; i < 4; i++) {
+        if (vBoneIDs[i] == uDisplayBoneIndex) {
+            if (vWeights[i] >= 0.7) {
+                fFragColor = vec4(vec3(1.f, 0.f, 0.f) * vWeights[i], 1.f);
+            }
+            else if (vWeights[i] >= 0.4 && vWeights[i] <= 0.6) {
+                fFragColor = vec4(vec3(0.f, 1.f, 0.f) * vWeights[i], 1.f);
+            }
+            else if (vWeights[i] >= 0.1) {
+                fFragColor = vec4(vec3(1.f, 1.f, 0.f) * vWeights[i], 1.f);
+            }
+
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        fFragColor = vec4(vec3(0.f, 0.f, 1.f) + calcShadowFactorPCF()*blinnPhong()*0.0001, 1);
 }
