@@ -31,7 +31,7 @@ function(add_exercise EXERCISE_NAME)
     if(MSVC)
         target_compile_options(${TARGET_NAME} PRIVATE /W4)
     else()
-        target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors -Wno-dev)
+        target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors)
     endif()
 
     # ---Declare source files---
