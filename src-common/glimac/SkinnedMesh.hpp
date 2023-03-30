@@ -11,11 +11,9 @@
 #include "img/src/Image.h"
 #include "p6/p6.h"
 
-#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices)
-
+#define ASSIMP_LOAD_FLAGS         (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices)
 #define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
-
-#define GLCheckError() (glGetError() == GL_NO_ERROR)
+#define GLCheckError()            (glGetError() == GL_NO_ERROR)
 
 class SkinnedMesh {
 public:
@@ -139,38 +137,38 @@ private:
             m_filename      = Filename;
         }
 
-        bool Load()
-        {
-            img::Image image_data = p6::load_image_buffer(m_filename);
+        // bool Load()
+        // {
+        //     img::Image image_data = p6::load_image_buffer(m_filename);
 
-            glGenTextures(1, &m_textureObj);
-            glBindTexture(m_textureTarget, m_textureObj);
-            if (m_textureTarget == GL_TEXTURE_2D)
-            {
-                // specify the texture
-                glTexImage2D(m_textureTarget, 0, GL_RGBA, image_data.width(), image_data.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data.data());
-            }
-            else
-            {
-                std::cerr << "Support for texture target " << m_textureTarget << " is not implemented" << std::endl;
-            }
+        //     glGenTextures(1, &m_textureObj);
+        //     glBindTexture(m_textureTarget, m_textureObj);
+        //     if (m_textureTarget == GL_TEXTURE_2D)
+        //     {
+        //         // specify the texture
+        //         glTexImage2D(m_textureTarget, 0, GL_RGBA, image_data.width(), image_data.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data.data());
+        //     }
+        //     else
+        //     {
+        //         std::cerr << "Support for texture target " << m_textureTarget << " is not implemented" << std::endl;
+        //     }
 
-            // needed for pixel overlapping (I guess)
-            glTexParameteri(m_textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(m_textureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //     // needed for pixel overlapping (I guess)
+        //     glTexParameteri(m_textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //     glTexParameteri(m_textureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //     glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //     glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            glBindTexture(m_textureTarget, 0);
+        //     glBindTexture(m_textureTarget, 0);
 
-            return true;
-        }
+        //     return true;
+        // }
 
-        void Bind(GLenum TextureUnit)
-        {
-            glActiveTexture(TextureUnit);
-            glBindTexture(m_textureTarget, m_textureObj);
-        }
+        // void Bind(GLenum TextureUnit)
+        // {
+        //     glActiveTexture(TextureUnit);
+        //     glBindTexture(m_textureTarget, m_textureObj);
+        // }
     };
 
     Assimp::Importer            Importer;

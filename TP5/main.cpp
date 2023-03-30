@@ -173,7 +173,7 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, uvtex3);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
         // Lune
         glBindTexture(GL_TEXTURE_2D, uvtex2);

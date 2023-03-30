@@ -14,6 +14,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(p6)
 
 # ---Add ASSIMP library---
+set (BUILD_SHARED_LIBS OFF)
+set (ASSIMP_BUILD_TESTS OFF)
 add_subdirectory(assimp-master)
 
 # ---Create a target for each exercise---
@@ -35,7 +37,7 @@ function(add_exercise EXERCISE_NAME)
     file(GLOB_RECURSE EXERCISE_FILES CONFIGURE_DEPENDS ${EXERCISE_NAME}/*)
     file(GLOB_RECURSE COMMON_FILES CONFIGURE_DEPENDS src-common/*)
     target_sources(${TARGET_NAME} PRIVATE ${EXERCISE_FILES} ${COMMON_FILES})
-    target_include_directories(${TARGET_NAME} PRIVATE ${EXERCISE_FILES} src-common)
+    target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${EXERCISE_FILES} src-common)
 
     # ---Link p6 and assimp library---
     target_link_libraries(${TARGET_NAME} PRIVATE p6::p6 assimp)

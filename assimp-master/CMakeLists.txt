@@ -92,14 +92,6 @@ OPTION ( ASSIMP_BUILD_SAMPLES
   "If the official samples are built as well (needs Glut)."
   OFF
 )
-OPTION ( ASSIMP_BUILD_TESTS
-  "If the test suite for Assimp is built in addition to the library."
-  ON
-)
-OPTION ( ASSIMP_COVERALLS
-  "Enable this to measure test coverage."
-  OFF
-)
 OPTION( ASSIMP_INSTALL
   "Disable this if you want to use assimp as a submodule."
   ON
@@ -329,13 +321,6 @@ IF ( IOS AND NOT ASSIMP_HUNTER_ENABLED)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode -O3")
     # Experimental for pdb generation
   ENDIF()
-ENDIF()
-
-IF (ASSIMP_COVERALLS)
-  MESSAGE(STATUS "Coveralls enabled")
-  INCLUDE(Coveralls)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
 ENDIF()
 
 IF (ASSIMP_ASAN)
@@ -723,10 +708,6 @@ IF ( ASSIMP_BUILD_SAMPLES )
     ADD_SUBDIRECTORY( samples/SimpleTexturedDirectx11 )
   ENDIF ()
   ADD_SUBDIRECTORY( samples/SimpleOpenGL/ )
-ENDIF ()
-
-IF ( ASSIMP_BUILD_TESTS )
-  ADD_SUBDIRECTORY( test/ )
 ENDIF ()
 
 # Generate a pkg-config .pc, revision.h, and config.h for the Assimp library.
