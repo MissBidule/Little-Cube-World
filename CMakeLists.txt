@@ -16,6 +16,7 @@ FetchContent_MakeAvailable(p6)
 # ---Add ASSIMP library---
 set (BUILD_SHARED_LIBS OFF)
 set (ASSIMP_BUILD_TESTS OFF)
+set (ASSIMP_WARNINGS_AS_ERRORS OFF)
 add_subdirectory(assimp-master)
 
 # ---Create a target for each exercise---
