@@ -8,7 +8,7 @@ on:
     branches: [ main ]
 
 env:
-  TARGET: OpenGL-TPs-Template # Should be the name of the target you created in your CMakeLists.txt and want to build and run
+  TARGET: TP11_exe # Should be the name of the target you created in your CMakeLists.txt and want to build and run
 
 jobs:
 #-----------------------------------------------------------------------------------------------
