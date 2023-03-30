@@ -30,10 +30,10 @@ public:
     void BindForReading(GLenum TextureUnit);
 
 private:
-    uint   m_width     = 0;
-    uint   m_height    = 0;
-    GLuint m_fbo       = 0;
-    GLuint m_shadowMap = 0;
+    unsigned int m_width     = 0;
+    unsigned int m_height    = 0;
+    GLuint       m_fbo       = 0;
+    GLuint       m_shadowMap = 0;
 };
 
 ShadowMapFBO::ShadowMapFBO() = default;
