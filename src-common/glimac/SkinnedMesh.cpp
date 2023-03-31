@@ -512,7 +512,7 @@ void SkinnedMesh::ReadNodeHierarchy(float AnimationTimeTicks, const aiNode* pNod
         CalcInterpolatedRotation(RotationQ, AnimationTimeTicks, pNodeAnim);
         glm::mat4 RotationM = convertMatrix(aiMatrix4x4(RotationQ.GetMatrix()));
 
-        // Interpolate translation and generate translation transformation matrix
+        /// Interpolate translation and generate translation transformation matrix
         aiVector3D Translation;
         CalcInterpolatedPosition(Translation, AnimationTimeTicks, pNodeAnim);
         glm::mat4 TranslationM = glm::translate(glm::mat4(1.f), glm::vec3(Translation.x, Translation.y, Translation.z));
