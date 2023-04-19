@@ -198,7 +198,7 @@ int main()
         glUniform3fv(earth.uKs, 1, glm::value_ptr(glm::vec3(0.633, 0.727811, 0.633)));
         glUniform1f(earth.uShininess, 0.6);
 
-        glUniform3fv(moon.uLightPos_vs, 1, glm::value_ptr(glm::vec3(glm::rotate(ViewMatrix.getViewMatrix(), ctx.time(), glm::vec3(0, 1, 0)) * glm::vec4(1, 1, 0, 1))));
+        glUniform3fv(earth.uLightPos_vs, 1, glm::value_ptr(glm::vec3(glm::rotate(ViewMatrix.getViewMatrix(), ctx.time(), glm::vec3(0, 1, 0)) * glm::vec4(1, 1, 0, 1))));
         glUniform3fv(earth.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
         glDrawArrays(GL_TRIANGLES, 0, sphere1.size());

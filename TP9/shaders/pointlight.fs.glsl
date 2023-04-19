@@ -27,5 +27,5 @@ vec3 blinnPhong() {
 }
 
 void main() {
-    fFragColor = vec4(blinnPhong(), 1);
+    fFragColor = vec4(uLightPos_vs, 1);
 }

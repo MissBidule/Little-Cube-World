@@ -65,5 +65,5 @@ float calcShadowFactorPointLight() {
 }
 
 void main() {
-    fFragColor = vec4(vec3(uKa + calcShadowFactorPointLight() * PointblinnPhong()), 1);//vec4(vec3(1-Distance/3.f), 1);
+    fFragColor = vec4(vec3(texture(uTexture, vWorldPos - uLightPos).r), 1);//vec4(vec3(1-Distance/3.f), 1);
 }

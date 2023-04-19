@@ -19,9 +19,9 @@ set (ASSIMP_BUILD_TESTS OFF)
 set (ASSIMP_WARNINGS_AS_ERRORS OFF)
 add_subdirectory(assimp-master)
 
-# ---Create a target for each exercise---
-function(add_exercise EXERCISE_NAME)
-    set(TARGET_NAME ${EXERCISE_NAME}_exe)
+# ---Create a target for each project---
+function(add_project PROJECT_NAME)
+    set(TARGET_NAME ${PROJECT_NAME}_exe)
     add_executable(${TARGET_NAME})
 
     # ---Choose C++ version---
@@ -35,31 +35,21 @@ function(add_exercise EXERCISE_NAME)
     endif()
 
     # ---Declare source files---
-    file(GLOB_RECURSE EXERCISE_FILES CONFIGURE_DEPENDS ${EXERCISE_NAME}/*)
+    file(GLOB_RECURSE PROJECT_FILES CONFIGURE_DEPENDS ${PROJECT_NAME}/*)
     file(GLOB_RECURSE COMMON_FILES CONFIGURE_DEPENDS src-common/*)
-    target_sources(${TARGET_NAME} PRIVATE ${EXERCISE_FILES} ${COMMON_FILES})
-    target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${EXERCISE_FILES} src-common)
+    target_sources(${TARGET_NAME} PRIVATE ${PROJECT_FILES} ${COMMON_FILES})
+    target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${PROJECT_FILES} src-common)
 
     # ---Link p6 and assimp library---
     target_link_libraries(${TARGET_NAME} PRIVATE p6::p6 assimp)
 
     # ---Set the output folder---
     set_target_properties(${TARGET_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${EXERCISE_NAME})
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${PROJECT_NAME})
 
     # ---Copy the assets and the shaders to the output folder (where the executable is created)---
     Cool__target_copy_folder(${TARGET_NAME} assets)
-    Cool__target_copy_folder(${TARGET_NAME} ${EXERCISE_NAME}/shaders shaders)
-endfunction(add_exercise)
+    Cool__target_copy_folder(${TARGET_NAME} ${PROJECT_NAME}/shaders shaders)
+endfunction(add_project)
 
-add_exercise(TP1)
-add_exercise(TP2)
-add_exercise(TP3)
-add_exercise(TP4)
-add_exercise(TP5)
-add_exercise(TP6)
-add_exercise(TP7)
-add_exercise(TP8)
-add_exercise(TP9)
-add_exercise(TP10)
-add_exercise(TP11)
+add_project(project)

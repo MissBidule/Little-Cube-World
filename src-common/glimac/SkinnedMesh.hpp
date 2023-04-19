@@ -17,28 +17,28 @@
 
 class SkinnedMesh {
 public:
-    SkinnedMesh();
+    inline SkinnedMesh() = default;
 
     ~SkinnedMesh();
 
     bool LoadMesh(const std::string& Filename);
 
-    void Render();
+    void render();
 
-    void Render(glm::mat4 camera, glm::mat4 ProjMatrix, glm::vec3 LightDir, glm::vec3 LightPos, glm::mat4 LightCamera, glm::mat4 LightProjMatrix, float seconds);
+    void render(float seconds, GLint uBoneTransforms, GLint uKa, GLint uKd, GLint uKs, GLint uShininess, GLint uOpacity);
 
-    inline void MeshProgramUse()
-    {
-        m_Program.use();
-    }
+    // inline void MeshProgramUse()
+    // {
+    //     m_Program.use();
+    // }
 
     inline int NumBones() { return m_BoneNameToIndexMap.size(); }
 
-    void UpdateDebug(int DisplayBoneIndex);
+    // void UpdateDebug(int DisplayBoneIndex);
 
     void GetBoneTransforms(float AnimationTimeSec, std::vector<glm::mat4>& Transforms);
 
-    // void Render(unsigned int NumInstances, const glm::mat4* MVPMats, const glm::mat4* ModeleMats);
+    // void render(unsigned int NumInstances, const glm::mat4* MVPMats, const glm::mat4* ModeleMats);
 
     // inline glm::mat4& GetModelTransform() { return m_modelTransform; }
 
@@ -201,27 +201,6 @@ private:
     };
 
     std::vector<BoneInfo> m_BoneInfo;
-
-    p6::Shader m_Program;
-
-    GLint uMVPMatrix;
-    GLint uMVMatrix;
-    GLint uNormalMatrix;
-
-    GLint uKa;
-    GLint uKd;
-    GLint uKs;
-    GLint uShininess;
-
-    GLint uLightDir_vs;
-    GLint uLightPos_vs;
-    GLint uLightIntensity;
-    GLint uMVPLight;
-
-    GLint uBoneTransforms;
-
-    // FOR SKIN DEBUG
-    GLint uDisplayBoneIndex;
 };
 
 #endif

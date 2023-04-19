@@ -28,29 +28,10 @@ glm::mat4 convertMatrix(const aiMatrix4x4& aiMat)
         aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4};
 }
 
-SkinnedMesh::SkinnedMesh()
-    : m_Program(p6::load_shader("shaders/skinning.vs.glsl", "shaders/dirPosLight.fs.glsl"))
-{
-    uMVPLight       = glGetUniformLocation(m_Program.id(), "uMVPLight");
-    uMVPMatrix      = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
-    uMVMatrix       = glGetUniformLocation(m_Program.id(), "uMVMatrix");
-    uNormalMatrix   = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
-    uKa             = glGetUniformLocation(m_Program.id(), "uKa");
-    uKd             = glGetUniformLocation(m_Program.id(), "uKd");
-    uKs             = glGetUniformLocation(m_Program.id(), "uKs");
-    uShininess      = glGetUniformLocation(m_Program.id(), "uShininess");
-    uLightDir_vs    = glGetUniformLocation(m_Program.id(), "uLightDir_vs");
-    uLightPos_vs    = glGetUniformLocation(m_Program.id(), "uLightPos_vs");
-    uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
-    uBoneTransforms = glGetUniformLocation(m_Program.id(), "uBoneTransforms[0]");
-    // FOR SKIN DEBUG
-    uDisplayBoneIndex = glGetUniformLocation(m_Program.id(), "uDisplayBoneIndex");
-};
-
-void SkinnedMesh::UpdateDebug(int DisplayBoneIndex)
-{
-    glUniform1i(uDisplayBoneIndex, DisplayBoneIndex);
-}
+// void SkinnedMesh::UpdateDebug(int DisplayBoneIndex)
+// {
+// glUniform1i(uDisplayBoneIndex, DisplayBoneIndex);
+// }
 
 SkinnedMesh::~SkinnedMesh()
 {
@@ -208,7 +189,7 @@ void SkinnedMesh::LoadMeshBones(unsigned int MeshIndex, const aiMesh* pMesh)
 
 void SkinnedMesh::LoadSingleBone(unsigned int MeshIndex, const aiBone* pBone)
 {
-    int BoneId = GetBoneId(pBone);
+    unsigned int BoneId = GetBoneId(pBone);
 
     if (BoneId == m_BoneInfo.size())
     {
@@ -563,19 +544,19 @@ void SkinnedMesh::PopulateBuffers()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices[0]) * m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
 }
 
-void SkinnedMesh::Render()
+void SkinnedMesh::render()
 {
     glBindVertexArray(m_VAO);
 
-    for (unsigned int i = 0; i < m_Meshes.size(); i++)
+    for (auto& m_Meshe : m_Meshes)
     {
-        glDrawElementsBaseVertex(GL_TRIANGLES, m_Meshes[i].NumIndices, GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * m_Meshes[i].BaseIndex), m_Meshes[i].BaseVertex);
+        glDrawElementsBaseVertex(GL_TRIANGLES, m_Meshe.NumIndices, GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * m_Meshe.BaseIndex), m_Meshe.BaseVertex);
     }
 
     glBindVertexArray(0);
 }
 
-void SkinnedMesh::Render(glm::mat4 camera, glm::mat4 ProjMatrix, glm::vec3 LightDir, glm::vec3 LightPos, glm::mat4 LightCamera, glm::mat4 LightProjMatrix, float seconds)
+void SkinnedMesh::render(float seconds, GLint uBoneTransforms, GLint uKa, GLint uKd, GLint uKs, GLint uShininess, GLint uOpacity)
 {
     std::vector<glm::mat4> Transforms;
     GetBoneTransforms(seconds, Transforms);
@@ -584,29 +565,6 @@ void SkinnedMesh::Render(glm::mat4 camera, glm::mat4 ProjMatrix, glm::vec3 Light
     {
         glUniformMatrix4fv(uBoneTransforms + i * 4, 1, GL_FALSE, glm::value_ptr(Transforms[i]));
     }
-
-    // LIGHT CALC
-    glm::mat4 MVMatrix = LightCamera;
-    MVMatrix           = glm::translate(MVMatrix, glm::vec3(3.f, -3.f, 0));
-    // BCS IT'S AN FBX OBJECT
-    MVMatrix = glm::rotate(MVMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
-
-    glUniformMatrix4fv(uMVPLight, 1, GL_FALSE, glm::value_ptr(LightProjMatrix * MVMatrix));
-
-    // OBJET CALC
-    MVMatrix = camera;
-    MVMatrix = glm::translate(MVMatrix, glm::vec3(3.f, -3.f, 0.f));
-    // BCS IT'S AN FBX OBJECT
-    MVMatrix               = glm::rotate(MVMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
-    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
-    glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-    glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-    glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-
-    glUniform3fv(uLightDir_vs, 1, glm::value_ptr(LightDir));
-    glUniform3fv(uLightPos_vs, 1, glm::value_ptr(LightPos));
-    glUniform3fv(uLightIntensity, 1, glm::value_ptr(glm::vec3(.8f)));
 
     glBindVertexArray(m_VAO);
 
@@ -620,6 +578,7 @@ void SkinnedMesh::Render(glm::mat4 camera, glm::mat4 ProjMatrix, glm::vec3 Light
         glUniform3fv(uKd, 1, glm::value_ptr(m_Kd[MaterialIndex]));
         glUniform3fv(uKs, 1, glm::value_ptr(m_Ks[MaterialIndex]));
         glUniform1f(uShininess, m_Ni[MaterialIndex]);
+        glUniform1f(uOpacity, m_D[MaterialIndex]);
 
         glDrawElementsBaseVertex(GL_TRIANGLES, m_Meshes[i].NumIndices, GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * m_Meshes[i].BaseIndex), m_Meshes[i].BaseVertex);
     }
