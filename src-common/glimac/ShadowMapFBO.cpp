@@ -2,16 +2,11 @@
 
 ShadowMapFBO::ShadowMapFBO() = default;
 
-ShadowMapFBO::~ShadowMapFBO()
-{
-    glDeleteFramebuffers(1, &m_fbo);
-    glDeleteTextures(1, &m_shadowMap);
-}
+ShadowMapFBO::~ShadowMapFBO() = default;
 
-bool ShadowMapFBO::Init(unsigned int WindowWidth, unsigned int WindowHeight)
+bool ShadowMapFBO::Init(unsigned int WindowSize)
 {
-    m_width  = WindowWidth;
-    m_height = WindowHeight;
+    m_size = WindowSize;
 
     // Create the FBO
     glGenFramebuffers(1, &m_fbo);
@@ -19,7 +14,7 @@ bool ShadowMapFBO::Init(unsigned int WindowWidth, unsigned int WindowHeight)
     // create the depth buffer
     glGenTextures(1, &m_shadowMap);
     glBindTexture(GL_TEXTURE_2D, m_shadowMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_size, m_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -50,7 +45,7 @@ bool ShadowMapFBO::Init(unsigned int WindowWidth, unsigned int WindowHeight)
 void ShadowMapFBO::BindForWriting()
 {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
-    glpp::viewport(0, 0, m_width, m_height); // Width/height of shadow map
+    glpp::viewport(0, 0, m_size, m_size); // Width/height of shadow map
 }
 
 void ShadowMapFBO::BindForReading(GLenum TextureUnit) const

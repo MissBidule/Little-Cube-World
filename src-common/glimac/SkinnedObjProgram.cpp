@@ -14,24 +14,29 @@ void SkinnedObjProgram::addSkinnedMesh(const std::string& objectPath)
     m_meshes[m_LODsNB++]->LoadMesh(objectPath);
 }
 
-void SkinnedObjProgram::uniformRender(const std::vector<glimac::Light>& AllLights, const int LOD)
+void SkinnedObjProgram::uniformRender(const std::vector<Light>& AllLights, const int LOD)
 {
     ObjProgram::uniformRender(AllLights, LOD);
 }
 
-void SkinnedObjProgram::render(const std::vector<glimac::Light>& AllLights, const int LOD)
+void SkinnedObjProgram::render(const std::vector<Light>& AllLights, const int LOD)
 {
     for (size_t i = 0; i < AllLights.size() && i < MAXTAB; i++)
     {
-        AllLights[i].shadowMap.BindForReading(GL_TEXTURE0 + i);
+        if (AllLights[i].getType() == glimac::LightType::Point)
+            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2 + 1);
+        else
+            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2);
     }
 
     m_meshes[LOD]->render(m_ctx->time(), m_uBoneTransforms, m_uKa, m_uKd, m_uKs, m_uShininess, m_uOpacity);
 
-    for (size_t i = 0; i < AllLights.size() && i < MAXTAB; i++)
+    for (size_t i = 0; i < MAXTAB; i++)
     {
-        glActiveTexture(GL_TEXTURE0 + i);
+        glActiveTexture(GL_TEXTURE0 + i * 2);
         glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0 + i * 2 + 1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     }
 }
 

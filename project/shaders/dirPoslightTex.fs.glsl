@@ -1,10 +1,11 @@
 #version 330
 
 //variables d'entrées
-in vec4 vLightSpacePos[10];
+in vec4 vLightSpacePos[7];
 in vec3 vPosition_vs; //w0 normalize(-vPos)
 in vec3 vNormal_vs;
 in vec2 vTexCoords;
+in vec3 vWorldPos;
 
 out vec4 fFragColor;
 
@@ -23,10 +24,13 @@ struct Light {
     vec3      position;
     int       type;
     vec3      color;
-    sampler2D shadowMap;
+    float ufar_plane;
 };
 
-uniform Light uLight[10];
+uniform Light uLight[7];
+
+uniform sampler2D uShadowMap[7];
+uniform samplerCube uShadowCubeMap[7];
 
 uniform int uLightNB;
 
@@ -49,6 +53,23 @@ vec3 blinnPhong(int light) {
     vec3 halfVector = (w0 + wi)/2.f;
     
     return Li*(texture(uTexture.kd, vTexCoords).xyz*max(dot(wi, N), 0.) + texture(uTexture.ks, vTexCoords).xyz*max(pow(dot(halfVector, N), 0.), uTexture.shininess));
+}
+
+float calcShadowFactorPointLight(int light) {
+    vec3 LightToVertex = vWorldPos - uLight[light].position;
+    
+    float Distance = length(LightToVertex)/uLight[light].ufar_plane;
+
+    float SampledDistance = texture(uLight[light].shadowMapCube, LightToVertex).r;
+
+    float bias = 0.025;
+
+    if ((SampledDistance + bias) < Distance) {
+        return 0.15;
+    }
+    else {
+        return 1.0;
+    }
 }
 
 float calcShadowFactorPCF(int light) {
@@ -89,13 +110,24 @@ float calcShadowFactorPCF(int light) {
 }
 
 void main() {
-    vec3 lightAndShadow = vec3(0);
+    vec3 light = vec3(0);
+    float shadow = 0;
     for (int i = 0; i < uLightNB; i++) {
         if (uLight[i].type == 0) {
-            lightAndShadow += calcShadowFactorPCF(i)*blinnPhong(i);
+            light += blinnPhong(i);
         }
-        else lightAndShadow += calcShadowFactorPCF(i)*PointblinnPhong(i);
+        else light += PointblinnPhong(i);
+
+        if (uLight[i].type == 2) {
+            shadow = calcShadowFactorPointLight(i);
+        }
+        else {
+            shadow = calcShadowFactorPCF(i);
+        } 
     }
-    lightAndShadow/=uLightNB;
-    fFragColor = vec4(texture(uTexture.ka, vTexCoords).xyz*0.5f + lightAndShadow, uTexture.opacity);
+    shadow/=uLightNB;
+
+    vec4 AmbientTexture = texture(uTexture.ka, vTexCoords)*0.5f;
+
+    fFragColor = vec4(AmbientTexture.xyz + shadow*light, min(uTexture.opacity, AmbientTexture.w));
 }

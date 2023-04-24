@@ -96,12 +96,8 @@ float calcShadowFactorPCF() {
     float finalShadowFactor = ShadowSum / float(pow(ShadowMapFilterSize, 2));
 
     return finalShadowFactor;
-}
 
-vec3 projCoords = vLightSpacePos.xyz / vLightSpacePos.w;
-vec2 UVCoords = vec2(0.5 * projCoords.x + 0.5, 0.5 * projCoords.y + 0.5);
-float z = 0.5 * projCoords.z + 0.5;
-float depth = texture(uTexture, UVCoords).x;
+}
 
 
 void main() {

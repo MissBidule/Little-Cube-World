@@ -27,20 +27,9 @@ public:
 
     void render(float seconds, GLint uBoneTransforms, GLint uKa, GLint uKd, GLint uKs, GLint uShininess, GLint uOpacity);
 
-    // inline void MeshProgramUse()
-    // {
-    //     m_Program.use();
-    // }
-
     inline int NumBones() { return m_BoneNameToIndexMap.size(); }
 
-    // void UpdateDebug(int DisplayBoneIndex);
-
     void GetBoneTransforms(float AnimationTimeSec, std::vector<glm::mat4>& Transforms);
-
-    // void render(unsigned int NumInstances, const glm::mat4* MVPMats, const glm::mat4* ModeleMats);
-
-    // inline glm::mat4& GetModelTransform() { return m_modelTransform; }
 
 private:
 #define MAX_NUM_BONES_PER_VERTEX 4
@@ -107,7 +96,6 @@ private:
         NUM_BUFFERS  = 5
     };
 
-    // glm::mat4 m_modelTransform;
     GLuint m_VAO                  = 0;
     GLuint m_buffers[NUM_BUFFERS] = {0};
 
@@ -136,39 +124,6 @@ private:
             m_textureTarget = TextureTarget;
             m_filename      = Filename;
         }
-
-        // bool Load()
-        // {
-        //     img::Image image_data = p6::load_image_buffer(m_filename);
-
-        //     glGenTextures(1, &m_textureObj);
-        //     glBindTexture(m_textureTarget, m_textureObj);
-        //     if (m_textureTarget == GL_TEXTURE_2D)
-        //     {
-        //         // specify the texture
-        //         glTexImage2D(m_textureTarget, 0, GL_RGBA, image_data.width(), image_data.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data.data());
-        //     }
-        //     else
-        //     {
-        //         std::cerr << "Support for texture target " << m_textureTarget << " is not implemented" << std::endl;
-        //     }
-
-        //     // needed for pixel overlapping (I guess)
-        //     glTexParameteri(m_textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //     glTexParameteri(m_textureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //     glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //     glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        //     glBindTexture(m_textureTarget, 0);
-
-        //     return true;
-        // }
-
-        // void Bind(GLenum TextureUnit)
-        // {
-        //     glActiveTexture(TextureUnit);
-        //     glBindTexture(m_textureTarget, m_textureObj);
-        // }
     };
 
     Assimp::Importer            Importer;

@@ -13,7 +13,7 @@ void SimpleObjProgram::addManualMesh(const std::vector<glimac::ShapeVertex>& sha
     m_LODsNB++;
 }
 
-void SimpleObjProgram::uniformRender(const std::vector<glimac::Light>& AllLights, const int LOD)
+void SimpleObjProgram::uniformRender(const std::vector<Light>& AllLights, const int LOD)
 {
     ObjProgram::uniformRender(AllLights, LOD);
 
@@ -24,19 +24,28 @@ void SimpleObjProgram::uniformRender(const std::vector<glimac::Light>& AllLights
     glUniform1f(m_uOpacity, m_colors[LOD].opacity);
 }
 
-void SimpleObjProgram::render(const std::vector<glimac::Light>& AllLights, const int LOD)
+void SimpleObjProgram::render(const std::vector<Light>& AllLights, const int LOD)
 {
     for (size_t i = 0; i < AllLights.size() && i < MAXTAB; i++)
     {
-        AllLights[i].shadowMap.BindForReading(GL_TEXTURE0 + i);
+        if (AllLights[i].getType() == glimac::LightType::Point)
+        {
+            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2 + 1);
+        }
+        else
+        {
+            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2);
+        }
     }
 
     SimpleObjProgram::shadowRender(LOD);
 
-    for (size_t i = 0; i < AllLights.size() && i < MAXTAB; i++)
+    for (size_t i = 0; i < MAXTAB; i++)
     {
-        glActiveTexture(GL_TEXTURE0 + i);
+        glActiveTexture(GL_TEXTURE0 + i * 2);
         glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0 + i * 2 + 1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     }
 }
 

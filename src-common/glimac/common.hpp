@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "ShadowMapFBO.hpp"
+#include "ShadowMap.hpp"
 #include "img/src/Image.h"
 #include "p6/p6.h"
 
@@ -32,19 +32,16 @@ struct Texture {
 };
 
 enum class LightType {
-    Directional,
+    Directional = 0,
     Spot,
     Point
 };
 
-struct Light {
-    glm::vec3    position;
-    glm::mat4    MMatrix;
-    glm::mat4    ViewMatrix;
-    glm::mat4    ProjMatrix;
-    int          type;
-    glm::vec3    color;
-    ShadowMapFBO shadowMap;
+// STRUCT FOR CUBEMAP
+struct CameraDirection {
+    GLenum CubemapFace;
+    float  theta;
+    float  phi;
 };
 
 inline GLuint textureToUVtex(img::Image& texture)

@@ -7,6 +7,7 @@ ObjProgram::ObjProgram(const std::string& vsPath, const std::string& fsPath)
 {
     m_uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
     m_uMVMatrix     = glGetUniformLocation(m_Program.id(), "uMVMatrix");
+    m_uMMatrix      = glGetUniformLocation(m_Program.id(), "uMMatrix");
     m_uNormalMatrix = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
     m_uNormalMatrix = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
     m_uLightNB      = glGetUniformLocation(m_Program.id(), "uLightNB");
@@ -22,35 +23,41 @@ ObjProgram::ObjProgram(const std::string& vsPath, const std::string& fsPath)
         m_uLightPos_vs.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
         appendVarName = "uLight[" + std::to_string(i) + "].color";
         m_uLightIntensity.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
-        appendVarName = "uLight[" + std::to_string(i) + "].shadowMap";
+        appendVarName = "uShadowMap[" + std::to_string(i) + "]";
         m_uShadowMap.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
+        appendVarName = "uShadowCubeMap[" + std::to_string(i) + "]";
+        m_uShadowMapCube.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
+        appendVarName = "uLight[" + std::to_string(i) + "].ufar_plane";
+        m_ufar_plane.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
     }
 }
 
-void ObjProgram::uniformRender(const std::vector<glimac::Light>& AllLights, [[maybe_unused]] int LOD)
+void ObjProgram::uniformRender(const std::vector<Light>& AllLights, [[maybe_unused]] int LOD)
 {
     glm::mat4 MVMatrix     = m_ViewMatrix * m_MMatrix;
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
     glUniformMatrix4fv(m_uMVPMatrix, 1, GL_FALSE, glm::value_ptr(m_ProjMatrix * MVMatrix));
     glUniformMatrix4fv(m_uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+    glUniformMatrix4fv(m_uMMatrix, 1, GL_FALSE, glm::value_ptr(m_MMatrix));
     glUniformMatrix4fv(m_uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
     glUniform1i(m_uLightNB, AllLights.size());
 
     for (size_t i = 0; i < AllLights.size() && i < MAXTAB; i++)
     {
-        glm::mat4 MVPLight = AllLights[i].ProjMatrix * AllLights[i].ViewMatrix * m_MMatrix;
+        glm::mat4 MVPLight = AllLights[i].getProjMatrix() * AllLights[i].getVMatrix() * m_MMatrix;
         glUniformMatrix4fv(m_uMVPLight[i], 1, GL_FALSE, glm::value_ptr(MVPLight));
-        glUniform1i(m_uLightType[i], AllLights[i].type);
+        glUniform1i(m_uLightType[i], static_cast<int>(AllLights[i].getType()));
 
         // calcul of lightPos depending of its movement
-        glm::vec3 lightPosition_vs = glm::vec3((m_ViewMatrix * AllLights[i].MMatrix) * glm::vec4(AllLights[i].position, (AllLights[i].type > static_cast<int>(glimac::LightType::Directional))));
+        glm::vec3 lightPosition_vs = glm::vec3((m_ViewMatrix * AllLights[i].getMMatrix()) * glm::vec4(AllLights[i].getPosition(), (static_cast<int>(AllLights[i].getType()) > static_cast<int>(glimac::LightType::Directional))));
 
         glUniform3fv(m_uLightPos_vs[i], 1, glm::value_ptr(lightPosition_vs));
-        glUniform3fv(m_uLightIntensity[i], 1, glm::value_ptr(AllLights[i].color));
+        glUniform3fv(m_uLightIntensity[i], 1, glm::value_ptr(AllLights[i].m_color));
 
-        glUniform1i(m_uShadowMap[i], i);
+        glUniform1i(m_uShadowMap[i], static_cast<int>(i * 2));
+        glUniform1i(m_uShadowMapCube[i], static_cast<int>(i * 2 + 1));
     }
 }
 

@@ -1,25 +1,20 @@
 #ifndef SHADOW_MAP_FBO_HPP
 #define SHADOW_MAP_FBO_HPP
 
+#include <glimac/ShadowMap.hpp>
 #include "p6/p6.h"
 
-class ShadowMapFBO {
+class ShadowMapFBO : public ShadowMap {
 public:
     ShadowMapFBO();
 
     ~ShadowMapFBO();
 
-    bool Init(unsigned int WindowWidth, unsigned int WindowHeight);
+    bool Init(unsigned int WindowSize) override;
 
     void BindForWriting();
 
-    void BindForReading(GLenum TextureUnit) const;
-
-private:
-    unsigned int m_width     = 0;
-    unsigned int m_height    = 0;
-    GLuint       m_fbo       = 0;
-    GLuint       m_shadowMap = 0;
+    void BindForReading(GLenum TextureUnit) const override;
 };
 
 #endif

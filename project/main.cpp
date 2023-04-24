@@ -1,6 +1,9 @@
+#include <glimac/ShadowCubeMap.hpp>
+#include <glimac/common.hpp>
 #include <iostream>
 #include <vector>
 #include "glimac/FreeflyCamera.hpp"
+#include "glimac/Light.hpp"
 #include "glimac/ObjProgram.hpp"
 #include "glimac/ShadowMapFBO.hpp"
 #include "glimac/ShadowProgram.hpp"
@@ -17,13 +20,12 @@
 #include "glm/gtx/vector_angle.hpp"
 #include "p6/p6.h"
 
-int const window_width  = 1920;
-int const window_height = 1080;
-int const shadow_width  = 4096;
-int const shadow_height = 4096;
-
 int main()
 {
+    int const window_width  = 1920;
+    int const window_height = 1080;
+    int const shadow_size   = 4096;
+
     auto ctx = p6::Context{{window_width, window_height, "TP11"}};
     ctx.maximize_window();
 
@@ -55,7 +57,7 @@ int main()
     }
 
     // Floor
-    TexObjProgram floor("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
+    TexObjProgram floor("shaders/3D.vs.glsl", "shaders/limit.fs.glsl");
     ObjList.emplace_back(&floor);
 
     // THEN WE ADD THE MAIN CONFIGURATION (COLOR/TEXTURE/MODEL) AND MOVEMENT IF THE OBJECT IS STATIC//
@@ -93,7 +95,7 @@ int main()
 
     //--------------------------------FLOOR---------------------
 
-    img::Image floorImg = p6::load_image_buffer("assets/textures/test.jpg");
+    img::Image floorImg = p6::load_image_buffer("assets/textures/test.png");
 
     glimac::Texture floorTex{
         glimac::textureToUVtex(floorImg),
@@ -117,34 +119,19 @@ int main()
         i->initVaoVbo();
     }
 
-    //--------------------------------MVP---------------------
-    std::vector<glimac::Light> LightList;
+    //--------------------------------LIGHT---------------------
+    std::vector<Light> LightList;
 
-    // MVP OF LIGHT //+1 FOR EACH
-    LightList.emplace_back();
-    LightList[0].type     = static_cast<int>(glimac::LightType::Directional);
-    LightList[0].position = glm::vec3(0, 2, 2);
-    LightList[0].color    = glm::vec3(.8f, .8f, .8f);
+    // CREATE LIGHTS
+    LightList.emplace_back(glimac::LightType::Directional);
+    LightList[0].setPosition(glm::vec3(-1.5, -1.5, -1.5));
+    LightList[0].m_color = glm::vec3(.8f, .8f, .8f);
+
+    //--------------------------------MVP---------------------
 
     // MAIN CAMERA
     FreeflyCamera ViewMatrixCamera = FreeflyCamera();
-
-    // LIGHT CAMERA //+1 FOR EACH
-    // TRACKBALL FOR DIRECTIONAL
-    // FREEFLY FOR SPOT AND POINT LIGHT
-    TrackballCamera ViewMatrixLight0 = TrackballCamera();
     ViewMatrixCamera.moveFront(-5);
-    // Do this only for point light
-    // ViewMatrixLight0.moveFront(-glm::distance(Light, glm::vec3(0.f)));
-    ViewMatrixLight0.rotateUp(glm::degrees(glm::orientedAngle(glm::normalize(LightList[0].position), glm::vec3(0, 0, 1), glm::vec3(1, 0, 0))));
-    ViewMatrixLight0.rotateLeft(-45);
-    // This for each light individually
-    LightList[0].ViewMatrix = ViewMatrixLight0.getViewMatrix();
-    float valueOrtho        = 35.f;
-    // PROJ LIGHT //+1 FOR EACH
-    // ORTHO FOR DIRECTIONAL
-    // PERSPECTIVE FOR SPOT AND POINT LIGHT
-    LightList[0].ProjMatrix = glm::ortho(-valueOrtho, valueOrtho, -valueOrtho, valueOrtho, -valueOrtho, valueOrtho);
 
     // PROJECTION
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
@@ -167,7 +154,7 @@ int main()
     for (auto& i : LightList)
     {
         shadowProgList.emplace_back().SetLight(i);
-        i.shadowMap.Init(shadow_width, shadow_height);
+        i.initShadowMap(shadow_size);
     }
 
     glEnable(GL_POLYGON_OFFSET_FILL);
@@ -207,11 +194,7 @@ int main()
         }
 
         // POSITION OF LIGHT IF IT IS UPDATED//
-        LightList[0].MMatrix = glm::rotate(glm::mat4(1), ctx.time(), glm::vec3(0, 1, 0));
-
-        ViewMatrixLight0.rotateLeft(-glm::degrees(ctx.delta_time()));
-
-        LightList[0].ViewMatrix = ViewMatrixLight0.getViewMatrix();
+        LightList[0].rotateLeft(glm::degrees(ctx.delta_time()));
 
         // UPDATES OF ALL MMATRIX IF IT IS UPDATED//
         //  MM OF EARTH
@@ -230,7 +213,8 @@ int main()
         // MM OF THINGY
         glm::mat4 thingy_MMatrix = glm::translate(glm::mat4(1), glm::vec3(3.f, -3.f, 0.f));
         // BCS IT'S AN FBX OBJECT
-        thingy_MMatrix   = glm::rotate(thingy_MMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        thingy_MMatrix = glm::rotate(thingy_MMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        //
         Thingy.m_MMatrix = thingy_MMatrix;
 
         // BEGIN OF MY DRAW CODE//
@@ -240,19 +224,34 @@ int main()
         // AUTOMATIC//
         for (size_t i = 0; i < shadowProgList.size(); i++)
         {
-            LightList[i].shadowMap.BindForWriting();
-
-            glClear(GL_DEPTH_BUFFER_BIT);
-
-            shadowProgList[i].m_Program.use();
-
-            for (auto& obj : ObjList)
+            LightList[i].refreshPosition();
+            size_t loop = 1;
+            if (LightList[i].getType() != (glimac::LightType::Point))
             {
-                shadowProgList[i].SendOBJtransform(obj->m_MMatrix);
-                obj->shadowRender(0);
+                LightList[i].bindWShadowMap();
             }
+            else
+                loop = 6;
 
-            glBindVertexArray(0);
+            for (size_t j = 0; j < loop; j++)
+            {
+                if (LightList[i].getType() == (glimac::LightType::Point))
+                {
+                    LightList[i].bindWShadowMap(j);
+                }
+
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                shadowProgList[i].m_Program.use();
+
+                for (auto& obj : ObjList)
+                {
+                    shadowProgList[i].SendOBJtransform(obj->m_MMatrix);
+                    obj->shadowRender(0);
+                }
+
+                glBindVertexArray(0);
+            }
         }
 
         //--------------------------------LIGHTING PASS---------------------

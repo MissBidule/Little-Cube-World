@@ -28,11 +28,6 @@ glm::mat4 convertMatrix(const aiMatrix4x4& aiMat)
         aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4};
 }
 
-// void SkinnedMesh::UpdateDebug(int DisplayBoneIndex)
-// {
-// glUniform1i(uDisplayBoneIndex, DisplayBoneIndex);
-// }
-
 SkinnedMesh::~SkinnedMesh()
 {
     Clear();
@@ -40,11 +35,6 @@ SkinnedMesh::~SkinnedMesh()
 
 void SkinnedMesh::Clear()
 {
-    // for (auto& i : m_Textures)
-    // {
-    //     glDeleteTextures(1, &i->m_textureObj);
-    // }
-
     if (m_buffers[0] != 0)
     {
         glDeleteBuffers(ARRAY_SIZE_IN_ELEMENTS(m_buffers), m_buffers);
@@ -226,65 +216,7 @@ int SkinnedMesh::GetBoneId(const aiBone* pBone)
 
 bool SkinnedMesh::InitMaterials(const aiScene* pScene)
 {
-    // NOT USING FILENAME
-
-    // Extract the directory part from the file name
-    // std::string::size_type SlashIndex = Filename.find_last_of("/");
-    // std::string            Dir;
-
-    // if (SlashIndex == std::string::npos)
-    // {
-    //     Dir = ".";
-    // }
-    // else if (SlashIndex == 0)
-    // {
-    //     Dir = "/";
-    // }
-    // else
-    // {
-    //     Dir = Filename.substr(0, SlashIndex);
-    // }
-
     bool Ret = true;
-
-    // Initialize the materials
-    // for (unsigned int i = 0; i < pScene->mNumMaterials; i++)
-    // {
-    //     const aiMaterial* pMaterial = pScene->mMaterials[i];
-
-    //     m_Textures[i] = NULL;
-
-    //     if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-    //     {
-    //         aiString Path;
-
-    //         if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path) == AI_SUCCESS)
-    //         {
-    //             std::string p(Path.data);
-
-    //             if (p.substr(0, 2) == ".\\")
-    //             {
-    //                 p = p.substr(2, p.size() - 2);
-
-    //                 std::string FullPath = Dir + "/" + p;
-
-    //                 m_Textures[i] = new Texture(GL_TEXTURE_2D, FullPath.c_str());
-
-    //                 if (!m_Textures[i]->Load())
-    //                 {
-    //                     std::cerr << "Error loading texture " << FullPath.c_str() << std::endl;
-    //                     delete m_Textures[i];
-    //                     m_Textures[i] = NULL;
-    //                     Ret           = false;
-    //                 }
-    //                 else
-    //                 {
-    //                     std::cout << "Loaded texture " << FullPath.c_str() << std::endl;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     for (unsigned int i = 0; i < pScene->mNumMaterials; i++)
     {
