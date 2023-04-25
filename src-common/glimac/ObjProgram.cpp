@@ -65,6 +65,11 @@ void ObjProgram::uniformRender(const std::vector<Light>& AllLights, [[maybe_unus
     }
 }
 
+glm::vec3 ObjProgram::getPosition() const
+{
+    return {((m_ProjMatrix * m_ViewMatrix * m_MMatrix) * glm::vec4(glm::vec3(0), 1))};
+}
+
 void ObjProgram::clear()
 {
     for (unsigned int& i : m_VAO)

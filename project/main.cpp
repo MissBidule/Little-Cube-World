@@ -26,6 +26,7 @@ int main()
     int const window_width  = 1920;
     int const window_height = 1080;
     int const shadow_size   = 4096;
+    int const LODdistance   = 500;
 
     auto ctx = p6::Context{{window_width, window_height, "TP11"}};
     ctx.maximize_window();
@@ -95,7 +96,11 @@ int main()
         moons[i]->addManualMesh(glimac::sphere_vertices(1.f, 32, 16), moonColor);
 
         RotAxes.push_back(glm::ballRand(2.f));
-        RotDir.emplace_back(glm::linearRand(0, 1), glm::linearRand(0, 1), glm::linearRand(0, 1));
+        glm::vec3 rotation              = glm::vec3(0);
+        rotation[glm::linearRand(0, 2)] = 1;
+        rotation[glm::linearRand(0, 2)] = 1;
+        rotation[glm::linearRand(0, 2)] = 1;
+        RotDir.emplace_back(rotation);
     }
 
     //--------------------------------FLOOR---------------------
@@ -285,11 +290,21 @@ int main()
         // AUTOMATIC//
         for (auto& obj : ObjList)
         {
+            glm::vec3 position = obj->getPosition();
+            double    distance = glm::distance2(position, glm::vec3(0));
+            int       LOD      = 0;
+
+            // when distance is > LODdistance use 2nd LOD
+            if (distance > LODdistance && obj->getLODmax() > 1)
+            {
+                LOD = 1;
+            }
+
             obj->m_Program.use();
 
-            obj->uniformRender(LightList, 0);
+            obj->uniformRender(LightList, LOD);
 
-            obj->render(LightList, 0);
+            obj->render(LightList, LOD);
         }
 
         // END OF MY DRAW CODE//

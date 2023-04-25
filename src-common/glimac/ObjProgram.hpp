@@ -49,6 +49,9 @@ public:
 
     p6::Shader m_Program;
 
+    glm::vec3           getPosition() const;
+    inline unsigned int getLODmax() const { return m_LODsNB; }
+
     void                           clear();
     virtual void                   initVaoVbo();
     virtual std::vector<glm::mat4> getBoneTransforms(int LOD) = 0;
