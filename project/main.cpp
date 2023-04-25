@@ -61,6 +61,10 @@ int main()
     TexObjProgram floor("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
     ObjList.emplace_back(&floor);
 
+    // Limit
+    TexObjProgram limit("shaders/3D.vs.glsl", "shaders/limit.fs.glsl");
+    ObjList.emplace_back(&limit);
+
     // THEN WE ADD THE MAIN CONFIGURATION (COLOR/TEXTURE/MODEL) AND MOVEMENT IF THE OBJECT IS STATIC//
 
     //--------------------------------THINGY---------------------
@@ -110,6 +114,16 @@ int main()
     glm::mat4 floorMMatrix = glm::translate(glm::mat4(1), glm::vec3(0, -15.f, 0));
     floorMMatrix           = glm::scale(floorMMatrix, glm::vec3(16.f, 8.f, 16.f));
     floor.m_MMatrix        = floorMMatrix;
+
+    //--------------------------------LIMIT---------------------
+
+    // to be changed with the quad afterwards
+    limit.addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
+
+    glm::mat4 limitMMatrix = glm::scale(glm::mat4(1), glm::vec3(15.f, 15.f, 15.f));
+    limit.m_MMatrix        = limitMMatrix;
+    // We ignore the shadow because we navigate IN the limits
+    limit.ignoreRenderShadow = true;
 
     // WE INIT ALL VAO AND VBO - NOTHING TO ADD HERE//
 
@@ -248,6 +262,8 @@ int main()
 
                 for (auto& obj : ObjList)
                 {
+                    if (obj->ignoreRenderShadow)
+                        continue;
                     shadowProgList[i].SendOBJtransform(obj->m_MMatrix, obj->getBoneTransforms(0));
                     obj->shadowRender(0);
                 }

@@ -48,10 +48,10 @@ uniform samplerCube uShadowCubeMap_6;
 uniform int uLightNB;
 
 void main() {
-    float distanceToShow = 7;
+    float distanceToShow = 13;
     float opacity = distanceToShow - distance(vWPosition, vec3(0));
 
-    vec4 limitTexture = texture(uTexture.ka, vTexCoords)*0.5f;
+    vec4 limitTexture = texture(uTexture.kd, vTexCoords)*0.5f;
 
     fFragColor = vec4(limitTexture.xyz,min(opacity, limitTexture.w));
 }
