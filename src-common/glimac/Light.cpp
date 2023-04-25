@@ -41,9 +41,9 @@ void Light::refreshPosition()
 {
     if (m_type == glimac::LightType::Directional)
         return;
-    glm::mat4 MMatrix = glm::rotate(glm::mat4(1), -glm::radians(m_leftR + 45), glm::vec3(0, 1, 0));
-    MMatrix           = glm::rotate(MMatrix, -glm::radians(m_upR), glm::vec3(1, 0, 0));
-    ViewMatrixSpotPointLight.setPos(glm::vec3(MMatrix * glm::vec4(m_position, 1)));
+    // glm::mat4 MMatrix = glm::rotate(glm::mat4(1), -glm::radians(m_leftR + 45), glm::vec3(0, 1, 0));
+    // MMatrix           = glm::rotate(MMatrix, -glm::radians(m_upR), glm::vec3(1, 0, 0));
+    // ViewMatrixSpotPointLight.setPos(glm::vec3(MMatrix * glm::vec4(m_position, 1)));
 }
 
 void Light::moveFront(float t)
@@ -149,6 +149,8 @@ void Light::bindWShadowMap(unsigned int CubeMap)
     if (m_type == glimac::LightType::Point)
     {
         shadowMapPointLight.BindForWriting(CubeMap);
+        ViewMatrixSpotPointLight.setTheta(shadowMapPointLight.getTheta(CubeMap));
+        ViewMatrixSpotPointLight.setPhi(shadowMapPointLight.getPhi(CubeMap));
     }
     else
     {

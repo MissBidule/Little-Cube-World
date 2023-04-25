@@ -123,7 +123,7 @@ int main()
     std::vector<Light> LightList;
 
     // CREATE LIGHTS
-    LightList.emplace_back(glimac::LightType::Directional);
+    LightList.emplace_back(glimac::LightType::Point);
     LightList[0].setPosition(glm::vec3(-1.5, -1.5, -1.5));
     LightList[0].m_color = glm::vec3(.8f, .8f, .8f);
 
@@ -194,7 +194,7 @@ int main()
         }
 
         // POSITION OF LIGHT IF IT IS UPDATED//
-        LightList[0].rotateLeft(glm::degrees(ctx.delta_time()));
+        // LightList[0].rotateLeft(glm::degrees(ctx.delta_time()));
 
         // UPDATES OF ALL MMATRIX IF IT IS UPDATED//
         //  MM OF EARTH

@@ -46,14 +46,6 @@ bool ShadowCubeMapFBO::Init(unsigned int size)
     return true;
 }
 
-std::vector<glimac::CameraDirection> CameraDirections = {
-    {GL_TEXTURE_CUBE_MAP_POSITIVE_X, 180.f, -90.f},
-    {GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 180.f, 90.f},
-    {GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 90.f, 180.f},
-    {GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, -90.f, 0.f},
-    {GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 180.f, 180.f},
-    {GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 180.f, 0.f}};
-
 void ShadowCubeMapFBO::BindForWriting(unsigned int CubeFace)
 {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);

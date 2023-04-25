@@ -117,7 +117,7 @@ void main() {
     vec3 light = vec3(0);
     float shadow = 0;
     for (int i = 0; i < uLightNB; i++) {
-        if (uLight[i].type == 0) {
+        if (uLight[i].type == 2) {
             light += blinnPhong(i);
         }
         else {
@@ -132,5 +132,12 @@ void main() {
         } 
     }
     shadow/=uLightNB;
-    fFragColor = vec4(uColor.ka + shadow*light, uColor.opacity);
+
+    vec3 LightToVertex = vWorldPos - uLight[0].position;
+    
+    float Distance = length(LightToVertex)/uLight[0].ufar_plane;
+
+    float SampledDistance = texture(uShadowCubeMap[0], LightToVertex).r;
+
+    fFragColor = vec4(vec3(texture(uShadowCubeMap[0], LightToVertex).r), 1);//vec4(uColor.ka + shadow*light, uColor.opacity);
 }
