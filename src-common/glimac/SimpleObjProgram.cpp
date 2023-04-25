@@ -1,4 +1,5 @@
 #include "SimpleObjProgram.hpp"
+#include <glimac/ObjProgram.hpp>
 #include <glimac/ShadowMapFBO.hpp>
 #include <vector>
 #include "glm/gtc/type_ptr.hpp"
@@ -32,27 +33,11 @@ void SimpleObjProgram::uniformRender(const std::vector<Light>& AllLights, const 
 
 void SimpleObjProgram::render(const std::vector<Light>& AllLights, const int LOD)
 {
-    for (size_t i = 0; i < AllLights.size() && i < MAXTAB; i++)
-    {
-        if (AllLights[i].getType() == glimac::LightType::Point)
-        {
-            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2 + 1);
-        }
-        else
-        {
-            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2);
-        }
-    }
+    prerender(AllLights);
 
     SimpleObjProgram::shadowRender(LOD);
 
-    for (size_t i = 0; i < MAXTAB; i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i * 2);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTexture(GL_TEXTURE0 + i * 2 + 1);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    }
+    postrender();
 }
 
 void SimpleObjProgram::shadowRender(const int LOD)

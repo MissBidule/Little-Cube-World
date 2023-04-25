@@ -5,7 +5,6 @@
 
 class TexObjProgram : public ObjProgram {
 private:
-    GLint m_uTexKa;
     GLint m_uTexKd;
     GLint m_uTexKs;
     GLint m_uShininess;

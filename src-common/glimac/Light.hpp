@@ -14,6 +14,7 @@ public:
 
     explicit Light(glimac::LightType type);
     void setPosition(glm::vec3 position);
+    void setDirection(glm::vec3 direction);
     void refreshPosition();
     void moveFront(float t);
     void moveLeft(float t);
@@ -40,10 +41,10 @@ private:
     float             m_leftR;
     glm::vec3         m_position;
     glm::mat4         m_ProjMatrix;
-    FreeflyCamera     ViewMatrixSpotPointLight;
-    TrackballCamera   ViewMatrixDirLight;
-    ShadowMapFBO      shadowMapSpotDir;
-    ShadowCubeMapFBO  shadowMapPointLight;
+    FreeflyCamera     m_ViewMatrixSpotPointLight;
+    TrackballCamera   m_ViewMatrixDirLight;
+    ShadowMapFBO      m_shadowMapSpotDir;
+    ShadowCubeMapFBO  m_shadowMapPoint;
 };
 
 #endif

@@ -61,22 +61,6 @@ int main()
     TexObjProgram floor("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
     ObjList.emplace_back(&floor);
 
-    // 2nd FLOOR
-    TexObjProgram floor2("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
-    ObjList.emplace_back(&floor2);
-    // 3rd FLOOR
-    TexObjProgram floor3("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
-    ObjList.emplace_back(&floor3);
-    // 4th FLOOR
-    TexObjProgram floor4("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
-    ObjList.emplace_back(&floor4);
-    // 5th FLOOR
-    TexObjProgram floor5("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
-    ObjList.emplace_back(&floor5);
-    // 6th FLOOR
-    TexObjProgram floor6("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
-    ObjList.emplace_back(&floor6);
-
     // THEN WE ADD THE MAIN CONFIGURATION (COLOR/TEXTURE/MODEL) AND MOVEMENT IF THE OBJECT IS STATIC//
 
     //--------------------------------THINGY---------------------
@@ -117,46 +101,15 @@ int main()
     glimac::Texture floorTex{
         glimac::textureToUVtex(floorImg),
         glimac::textureToUVtex(floorImg),
-        glimac::textureToUVtex(floorImg),
         0.6,
         1};
 
     // to be changed with the quad afterwards
     floor.addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
 
-    floor2.addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
-    floor3.addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
-    floor4.addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
-    floor5.addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
-    floor6.addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
-
     glm::mat4 floorMMatrix = glm::translate(glm::mat4(1), glm::vec3(0, -15.f, 0));
     floorMMatrix           = glm::scale(floorMMatrix, glm::vec3(16.f, 8.f, 16.f));
     floor.m_MMatrix        = floorMMatrix;
-
-    glm::mat4 floor2MMatrix = glm::translate(glm::mat4(1), glm::vec3(-15, 0.f, 0.f));
-    floor2MMatrix           = glm::rotate(floor2MMatrix, glm::radians(90.f), glm::vec3(0, 1, 0));
-    floor2MMatrix           = glm::rotate(floor2MMatrix, glm::radians(90.f), glm::vec3(1, 0, 0));
-    floor2MMatrix           = glm::scale(floor2MMatrix, glm::vec3(16.f, 8.f, 16.f));
-    floor2.m_MMatrix        = floor2MMatrix;
-    glm::mat4 floor3MMatrix = glm::translate(glm::mat4(1), glm::vec3(15, 0.f, 0.f));
-    floor3MMatrix           = glm::rotate(floor3MMatrix, glm::radians(90.f), glm::vec3(0, 1, 0));
-    floor3MMatrix           = glm::rotate(floor3MMatrix, glm::radians(90.f), glm::vec3(1, 0, 0));
-    floor3MMatrix           = glm::scale(floor3MMatrix, glm::vec3(16.f, 8.f, 16.f));
-    floor3.m_MMatrix        = floor3MMatrix;
-    glm::mat4 floor4MMatrix = glm::translate(glm::mat4(1), glm::vec3(0, 0.f, 15.f));
-    floor4MMatrix           = glm::rotate(floor4MMatrix, glm::radians(0.f), glm::vec3(0, 1, 0));
-    floor4MMatrix           = glm::rotate(floor4MMatrix, glm::radians(90.f), glm::vec3(1, 0, 0));
-    floor4MMatrix           = glm::scale(floor4MMatrix, glm::vec3(16.f, 8.f, 16.f));
-    floor4.m_MMatrix        = floor4MMatrix;
-    glm::mat4 floor5MMatrix = glm::translate(glm::mat4(1), glm::vec3(0, 0.f, -15.f));
-    floor5MMatrix           = glm::rotate(floor5MMatrix, glm::radians(0.f), glm::vec3(0, 1, 0));
-    floor5MMatrix           = glm::rotate(floor5MMatrix, glm::radians(90.f), glm::vec3(1, 0, 0));
-    floor5MMatrix           = glm::scale(floor5MMatrix, glm::vec3(16.f, 8.f, 16.f));
-    floor5.m_MMatrix        = floor5MMatrix;
-    glm::mat4 floor6MMatrix = glm::translate(glm::mat4(1), glm::vec3(0, 15.f, 0));
-    floor6MMatrix           = glm::scale(floor6MMatrix, glm::vec3(16.f, 8.f, 16.f));
-    floor6.m_MMatrix        = floor6MMatrix;
 
     // WE INIT ALL VAO AND VBO - NOTHING TO ADD HERE//
 
@@ -168,10 +121,13 @@ int main()
     //--------------------------------LIGHT---------------------
     std::vector<Light> LightList;
 
-    // CREATE LIGHTS
-    LightList.emplace_back(glimac::LightType::Point);
-    LightList[0].setPosition(glm::vec3(2, 0, 0));
+    // CREATE LIGHTS up to 7
+    LightList.emplace_back(glimac::LightType::Directional);
+    LightList[0].setPosition(glm::vec3(2, 2, 0));
     LightList[0].m_color = glm::vec3(.8f, .8f, .8f);
+    LightList.emplace_back(glimac::LightType::Point);
+    LightList[1].setPosition(glm::vec3(1.5f, -1.5f, 0));
+    LightList[1].m_color = glm::vec3(.8f, .8f, .8f);
 
     //--------------------------------MVP---------------------
 
@@ -240,7 +196,7 @@ int main()
         }
 
         // POSITION OF LIGHT IF IT IS UPDATED//
-        LightList[0].rotateLeft(glm::degrees(ctx.delta_time()));
+        // LightList[0].rotateLeft(glm::degrees(ctx.delta_time()));
 
         // UPDATES OF ALL MMATRIX IF IT IS UPDATED//
         //  MM OF EARTH
@@ -288,7 +244,7 @@ int main()
 
                 glClear(GL_DEPTH_BUFFER_BIT);
 
-                shadowProgList[i].m_Program.use();
+                shadowProgList[i].use();
 
                 for (auto& obj : ObjList)
                 {

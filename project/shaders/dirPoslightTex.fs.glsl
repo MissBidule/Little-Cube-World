@@ -10,7 +10,6 @@ in vec3 vWorldPos;
 out vec4 fFragColor;
 
 struct Texture {
-    sampler2D ka;
     sampler2D kd;
     sampler2D ks;
 
@@ -30,8 +29,21 @@ struct Light {
 
 uniform Light uLight[7];
 
-uniform sampler2D uShadowMap[7];
-uniform samplerCube uShadowCubeMap[7];
+uniform sampler2D uShadowMap_0;
+uniform sampler2D uShadowMap_1;
+uniform sampler2D uShadowMap_2;
+uniform sampler2D uShadowMap_3;
+uniform sampler2D uShadowMap_4;
+uniform sampler2D uShadowMap_5;
+uniform sampler2D uShadowMap_6;
+
+uniform samplerCube uShadowCubeMap_0;
+uniform samplerCube uShadowCubeMap_1;
+uniform samplerCube uShadowCubeMap_2;
+uniform samplerCube uShadowCubeMap_3;
+uniform samplerCube uShadowCubeMap_4;
+uniform samplerCube uShadowCubeMap_5;
+uniform samplerCube uShadowCubeMap_6;
 
 uniform int uLightNB;
 
@@ -57,11 +69,36 @@ vec3 blinnPhong(int light) {
 }
 
 float calcShadowFactorPointLight(int light) {
+
     vec3 LightToVertex = vWorldPos - uLight[light].position;
     
     float Distance = length(LightToVertex)/uLight[light].ufar_plane;
 
-    float SampledDistance = texture(uShadowCubeMap[0], LightToVertex).r;
+    float SampledDistance = 0;//texture(uShadowCubeMap_0, LightToVertex).r;
+
+    switch (light) {
+    case 0:
+        SampledDistance = texture(uShadowCubeMap_0, LightToVertex).r;
+        break;
+    case 1:
+        SampledDistance = texture(uShadowCubeMap_1, LightToVertex).r;
+        break;
+    case 2:
+        SampledDistance = texture(uShadowCubeMap_2, LightToVertex).r;
+        break;
+    case 3:
+        SampledDistance = texture(uShadowCubeMap_3, LightToVertex).r;
+        break;
+    case 4:
+        SampledDistance = texture(uShadowCubeMap_4, LightToVertex).r;
+        break;
+    case 5:
+        SampledDistance = texture(uShadowCubeMap_5, LightToVertex).r;
+        break;
+    case 6:
+        SampledDistance = texture(uShadowCubeMap_6, LightToVertex).r;
+        break;
+    }
 
     float bias = 0.025;
 
@@ -74,6 +111,7 @@ float calcShadowFactorPointLight(int light) {
 }
 
 float calcShadowFactorPCF(int light) {
+
     vec3 projCoords = vLightSpacePos[light].xyz / vLightSpacePos[light].w;
 
     if(projCoords.z > 1.0) {
@@ -96,7 +134,31 @@ float calcShadowFactorPCF(int light) {
     for (int y = -HalfFilterSize ; y < -HalfFilterSize + ShadowMapFilterSize; y++) {
         for (int x = -HalfFilterSize; x < -HalfFilterSize + ShadowMapFilterSize; x++) {
             vec2 Offset = vec2(x, y) * TexelSize;
-            float depth = texture(uShadowMap[0], UVCoords.xy + Offset).x;
+            float depth = 0;//texture(uShadowMap[0], UVCoords.xy + Offset).x;
+
+            switch (light) {
+            case 0:
+                depth = texture(uShadowMap_0, UVCoords.xy + Offset).x;
+                break;
+            case 1:
+                depth = texture(uShadowMap_1, UVCoords.xy + Offset).x;
+                break;
+            case 2:
+                depth = texture(uShadowMap_2, UVCoords.xy + Offset).x;
+                break;
+            case 3:
+                depth = texture(uShadowMap_3, UVCoords.xy + Offset).x;
+                break;
+            case 4:
+                depth = texture(uShadowMap_4, UVCoords.xy + Offset).x;
+                break;
+            case 5:
+                depth = texture(uShadowMap_5, UVCoords.xy + Offset).x;
+                break;
+            case 6:
+                depth = texture(uShadowMap_6, UVCoords.xy + Offset).x;
+                break;
+            }
 
             if (depth + bias < UVCoords.z)
                 ShadowSum += 0.f;
@@ -112,23 +174,23 @@ float calcShadowFactorPCF(int light) {
 
 void main() {
     vec3 light = vec3(0);
-    float shadow = 0;
+    vec3 maxLight = vec3(0);
     for (int i = 0; i < uLightNB; i++) {
-        if (uLight[i].type == 0) {
-            light += blinnPhong(i);
-        }
-        else light += PointblinnPhong(i);
 
-        if (uLight[i].type == 2) {
-            shadow = calcShadowFactorPointLight(i);
+        if (uLight[i].type == 0) {
+            light = calcShadowFactorPCF(i) * blinnPhong(i);
+        }
+        else if (uLight[i].type == 1) {
+            light = calcShadowFactorPCF(i) * PointblinnPhong(i);
         }
         else {
-            shadow = calcShadowFactorPCF(i);
-        } 
+            light = calcShadowFactorPointLight(i) * PointblinnPhong(i);
+        }
+
+        maxLight = vec3(max(maxLight.x, light.x), max(maxLight.y, light.y), max(maxLight.z, light.z));
     }
-    shadow/=uLightNB;
 
-    vec4 AmbientTexture = texture(uTexture.ka, vTexCoords)*0.5f;
+    vec4 AmbientTexture = texture(uTexture.kd, vTexCoords)*0.5f;
 
-    fFragColor = vec4(AmbientTexture.xyz + shadow*light, min(uTexture.opacity, AmbientTexture.w));
+    fFragColor = vec4(AmbientTexture.xyz + maxLight, min(uTexture.opacity, AmbientTexture.w));
 }

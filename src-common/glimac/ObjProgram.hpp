@@ -35,6 +35,9 @@ protected:
 
     std::vector<std::vector<glimac::ShapeVertex>> m_shapes;
 
+    void prerender(const std::vector<Light>& AllLights) const;
+    void postrender() const;
+
     ObjProgram(const std::string& vsPath, const std::string& fsPath);
 
 public:

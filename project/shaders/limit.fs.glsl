@@ -11,7 +11,6 @@ in vec3 vWorldPos;
 out vec4 fFragColor;
 
 struct Texture {
-    sampler2D ka;
     sampler2D kd;
     sampler2D ks;
 
@@ -30,8 +29,21 @@ struct Light {
 
 uniform Light uLight[7];
 
-uniform sampler2D uShadowMap[7];
-uniform samplerCube uShadowCubeMap[7];
+uniform sampler2D uShadowMap_0;
+uniform sampler2D uShadowMap_1;
+uniform sampler2D uShadowMap_2;
+uniform sampler2D uShadowMap_3;
+uniform sampler2D uShadowMap_4;
+uniform sampler2D uShadowMap_5;
+uniform sampler2D uShadowMap_6;
+
+uniform samplerCube uShadowCubeMap_0;
+uniform samplerCube uShadowCubeMap_1;
+uniform samplerCube uShadowCubeMap_2;
+uniform samplerCube uShadowCubeMap_3;
+uniform samplerCube uShadowCubeMap_4;
+uniform samplerCube uShadowCubeMap_5;
+uniform samplerCube uShadowCubeMap_6;
 
 uniform int uLightNB;
 

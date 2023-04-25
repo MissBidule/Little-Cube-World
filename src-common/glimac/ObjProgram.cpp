@@ -1,5 +1,7 @@
 #include "ObjProgram.hpp"
+#include <glimac/Light.hpp>
 #include <glimac/SkinnedMesh.hpp>
+#include <vector>
 #include "glm/gtc/type_ptr.hpp"
 
 ObjProgram::ObjProgram(const std::string& vsPath, const std::string& fsPath)
@@ -25,9 +27,9 @@ ObjProgram::ObjProgram(const std::string& vsPath, const std::string& fsPath)
         m_uLightPos_vs.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
         appendVarName = "uLight[" + std::to_string(i) + "].color";
         m_uLightIntensity.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
-        appendVarName = "uShadowMap[" + std::to_string(i) + "]";
+        appendVarName = "uShadowMap_" + std::to_string(i);
         m_uShadowMap.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
-        appendVarName = "uShadowCubeMap[" + std::to_string(i) + "]";
+        appendVarName = "uShadowCubeMap_" + std::to_string(i);
         m_uShadowMapCube.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
         appendVarName = "uLight[" + std::to_string(i) + "].ufar_plane";
         m_ufar_plane.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
@@ -58,9 +60,6 @@ void ObjProgram::uniformRender(const std::vector<Light>& AllLights, [[maybe_unus
         glUniform3fv(m_uLightPos[i], 1, glm::value_ptr(glm::vec3((AllLights[i].getMMatrix()) * lightInitPosition)));
         glUniform3fv(m_uLightPos_vs[i], 1, glm::value_ptr(glm::vec3((m_ViewMatrix * AllLights[i].getMMatrix()) * lightInitPosition)));
         glUniform3fv(m_uLightIntensity[i], 1, glm::value_ptr(AllLights[i].m_color));
-
-        glUniform1i(m_uShadowMap[i], static_cast<int>(i * 2));
-        glUniform1i(m_uShadowMapCube[i], static_cast<int>(i * 2 + 1));
 
         glUniform1f(m_ufar_plane[i], AllLights[i].getFarPlane());
     }
@@ -126,5 +125,41 @@ void ObjProgram::initVaoVbo()
 
         m_VBO.emplace_back(vbo);
         m_VAO.emplace_back(vao);
+    }
+}
+
+void ObjProgram::prerender(const std::vector<Light>& AllLights) const
+{
+    for (size_t i = 0; i < MAXTAB; i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + i * 2);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glUniform1i(m_uShadowMap[i], static_cast<int>(i * 2));
+        glActiveTexture(GL_TEXTURE0 + i * 2 + 1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+        glUniform1i(m_uShadowMapCube[i], static_cast<int>(i * 2 + 1));
+    }
+
+    for (size_t i = 0; i < AllLights.size() && i < MAXTAB; i++)
+    {
+        if (AllLights[i].getType() == glimac::LightType::Point)
+        {
+            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2 + 1);
+        }
+        else
+        {
+            AllLights[i].bindRShadowMap(GL_TEXTURE0 + i * 2);
+        }
+    }
+}
+
+void ObjProgram::postrender() const
+{
+    for (size_t i = 0; i < MAXTAB; i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + i * 2);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0 + i * 2 + 1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     }
 }
