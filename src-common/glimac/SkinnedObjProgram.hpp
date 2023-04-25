@@ -20,8 +20,9 @@ private:
 public:
     SkinnedObjProgram(const std::string& vsPath, const std::string& fsPath, p6::Context& ctx);
 
-    void addSkinnedMesh(const std::string& objectPath);
-    void initVaoVbo() override{};
+    void                   addSkinnedMesh(const std::string& objectPath);
+    void                   initVaoVbo() override{};
+    std::vector<glm::mat4> getBoneTransforms(int LOD) override;
 
     void uniformRender(const std::vector<Light>& AllLights, int LOD) override;
     void render(const std::vector<Light>& AllLights, int LOD) override;

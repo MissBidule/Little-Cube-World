@@ -32,7 +32,7 @@ public:
     void bindRShadowMap(GLenum TextureUnit) const;
 
 private:
-    float             m_far_plane = 20.f;
+    float             m_far_plane = 15.f;
     glimac::LightType m_type;
     float             m_frontT;
     float             m_leftT;

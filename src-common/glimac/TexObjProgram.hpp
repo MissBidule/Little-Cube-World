@@ -16,8 +16,9 @@ private:
 public:
     TexObjProgram(const std::string& vsPath, const std::string& fsPath);
 
-    void addManualTexMesh(const std::vector<glimac::ShapeVertex>& shape, const glimac::Texture& texture);
-    void initVaoVbo() override { ObjProgram::initVaoVbo(); };
+    void                   addManualTexMesh(const std::vector<glimac::ShapeVertex>& shape, const glimac::Texture& texture);
+    void                   initVaoVbo() override { ObjProgram::initVaoVbo(); };
+    std::vector<glm::mat4> getBoneTransforms(int LOD) override;
 
     void uniformRender(const std::vector<Light>& AllLights, int LOD) override;
     void render(const std::vector<Light>& AllLights, int LOD) override;

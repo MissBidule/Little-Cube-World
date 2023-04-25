@@ -5,6 +5,11 @@ TexObjProgram::TexObjProgram(const std::string& vsPath, const std::string& fsPat
     : ObjProgram(vsPath, fsPath), m_uTexKa(glGetUniformLocation(m_Program.id(), "uTexture.ka")), m_uTexKd(glGetUniformLocation(m_Program.id(), "uTexture.kd")), m_uTexKs(glGetUniformLocation(m_Program.id(), "uTexture.ks")), m_uShininess(glGetUniformLocation(m_Program.id(), "uTexture.shininess")), m_uOpacity(glGetUniformLocation(m_Program.id(), "uTexture.opacity"))
 {}
 
+std::vector<glm::mat4> TexObjProgram::getBoneTransforms([[maybe_unused]] int LOD)
+{
+    return {};
+}
+
 void TexObjProgram::addManualTexMesh(const std::vector<glimac::ShapeVertex>& shape, const glimac::Texture& texture)
 {
     m_shapes.emplace_back(shape);

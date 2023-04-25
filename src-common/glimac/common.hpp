@@ -5,6 +5,14 @@
 #include "img/src/Image.h"
 #include "p6/p6.h"
 
+#define POSITION_LOCATION         0
+#define NORMAL_LOCATION           1
+#define TEX_COORD_LOCATION        2
+#define BONE_ID_LOCATION          3
+#define BONE_WEIGHT_LOCATION      4
+#define MAX_NUM_BONES_PER_VERTEX  4
+#define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
+
 namespace glimac {
 
 struct ShapeVertex {
@@ -63,5 +71,27 @@ inline GLuint textureToUVtex(img::Image& texture)
 
     return uvtex;
 }
+
+struct VertexBoneData {
+    unsigned int BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {0};
+    float        Weights[MAX_NUM_BONES_PER_VERTEX] = {0.f};
+
+    VertexBoneData() {}
+
+    void AddBoneData(unsigned int BoneID, float Weight)
+    {
+        for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(BoneIDs); i++)
+        {
+            if (Weights[i] == 0.0)
+            {
+                BoneIDs[i] = BoneID;
+                Weights[i] = Weight;
+                return;
+            }
+        }
+        // Should neer get here - more bones than we have space for
+        assert(0);
+    }
+};
 
 } // namespace glimac

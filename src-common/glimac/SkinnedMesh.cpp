@@ -13,12 +13,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/matrix.hpp"
 
-#define POSITION_LOCATION    0
-#define NORMAL_LOCATION      1
-#define TEX_COORD_LOCATION   2
-#define BONE_ID_LOCATION     3
-#define BONE_WEIGHT_LOCATION 4
-
 glm::mat4 convertMatrix(const aiMatrix4x4& aiMat)
 {
     return {
@@ -75,7 +69,7 @@ bool SkinnedMesh::LoadMesh(const std::string& Filename)
     }
 
     // Make sure the VAO is not changed from the outside
-    glad_glBindVertexArray(0);
+    glBindVertexArray(0);
 
     return Ret;
 }
@@ -468,9 +462,9 @@ void SkinnedMesh::PopulateBuffers()
     glBindBuffer(GL_ARRAY_BUFFER, m_buffers[BONE_VB]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_Bones[0]) * m_Bones.size(), m_Bones.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(BONE_ID_LOCATION);
-    glVertexAttribIPointer(BONE_ID_LOCATION, MAX_NUM_BONES_PER_VERTEX, GL_INT, sizeof(VertexBoneData), (const GLvoid*)0);
+    glVertexAttribIPointer(BONE_ID_LOCATION, MAX_NUM_BONES_PER_VERTEX, GL_INT, sizeof(glimac::VertexBoneData), (const GLvoid*)0);
     glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
-    glVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_NUM_BONES_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)(MAX_NUM_BONES_PER_VERTEX * sizeof(int32_t)));
+    glVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_NUM_BONES_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeof(glimac::VertexBoneData), (const GLvoid*)(MAX_NUM_BONES_PER_VERTEX * sizeof(int32_t)));
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDEX_BUFFER]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_Indices[0]) * m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);

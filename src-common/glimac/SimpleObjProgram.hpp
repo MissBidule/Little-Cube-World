@@ -13,8 +13,9 @@ private:
 public:
     SimpleObjProgram(const std::string& vsPath, const std::string& fsPath);
 
-    void addManualMesh(const std::vector<glimac::ShapeVertex>& shape, glimac::Color color);
-    void initVaoVbo() override { ObjProgram::initVaoVbo(); };
+    void                   addManualMesh(const std::vector<glimac::ShapeVertex>& shape, glimac::Color color);
+    void                   initVaoVbo() override { ObjProgram::initVaoVbo(); };
+    std::vector<glm::mat4> getBoneTransforms(int LOD) override;
 
     void uniformRender(const std::vector<Light>& AllLights, int LOD) override;
     void render(const std::vector<Light>& AllLights, int LOD) override;

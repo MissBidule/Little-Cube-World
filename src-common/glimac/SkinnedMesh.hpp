@@ -7,13 +7,13 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "common.hpp"
 #include "glm/fwd.hpp"
 #include "img/src/Image.h"
 #include "p6/p6.h"
 
-#define ASSIMP_LOAD_FLAGS         (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices)
-#define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
-#define GLCheckError()            (glGetError() == GL_NO_ERROR)
+#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices)
+#define GLCheckError()    (glGetError() == GL_NO_ERROR)
 
 class SkinnedMesh {
 public:
@@ -32,8 +32,6 @@ public:
     void GetBoneTransforms(float AnimationTimeSec, std::vector<glm::mat4>& Transforms);
 
 private:
-#define MAX_NUM_BONES_PER_VERTEX 4
-
     void Clear();
 
     bool InitFromScene(const aiScene* pScene);
@@ -49,28 +47,6 @@ private:
     bool InitMaterials(const aiScene* pScene);
 
     void PopulateBuffers();
-
-    struct VertexBoneData {
-        unsigned int BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {0};
-        float        Weights[MAX_NUM_BONES_PER_VERTEX] = {0.f};
-
-        VertexBoneData() {}
-
-        void AddBoneData(unsigned int BoneID, float Weight)
-        {
-            for (unsigned int i = 0; i < ARRAY_SIZE_IN_ELEMENTS(BoneIDs); i++)
-            {
-                if (Weights[i] == 0.0)
-                {
-                    BoneIDs[i] = BoneID;
-                    Weights[i] = Weight;
-                    return;
-                }
-            }
-            // Should neer get here - more bones than we have space for
-            assert(0);
-        }
-    };
 
     void LoadMeshBones(unsigned int MeshIndex, const aiMesh* paiMesh);
     void LoadSingleBone(unsigned int MeshIndex, const aiBone* pBone);
@@ -136,11 +112,11 @@ private:
     std::vector<float>          m_Ni;
     std::vector<float>          m_D;
 
-    std::vector<glm::vec3>      m_Positions;
-    std::vector<glm::vec3>      m_Normals;
-    std::vector<glm::vec2>      m_TexCoords;
-    std::vector<unsigned int>   m_Indices;
-    std::vector<VertexBoneData> m_Bones;
+    std::vector<glm::vec3>              m_Positions;
+    std::vector<glm::vec3>              m_Normals;
+    std::vector<glm::vec2>              m_TexCoords;
+    std::vector<unsigned int>           m_Indices;
+    std::vector<glimac::VertexBoneData> m_Bones;
 
     std::map<std::string, unsigned int> m_BoneNameToIndexMap;
 

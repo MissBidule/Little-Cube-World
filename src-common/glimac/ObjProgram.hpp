@@ -21,6 +21,7 @@ protected:
     GLint m_uLightNB;
 
     std::vector<GLint> m_uLightType;
+    std::vector<GLint> m_uLightPos;
     std::vector<GLint> m_uLightPos_vs;
     std::vector<GLint> m_uLightIntensity;
     std::vector<GLint> m_uMVPLight;
@@ -43,11 +44,12 @@ public:
 
     p6::Shader m_Program;
 
-    void         clear();
-    virtual void initVaoVbo();
-    virtual void uniformRender(const std::vector<Light>& AllLights, int LOD);
-    virtual void render(const std::vector<Light>& AllLights, int LOD) = 0;
-    virtual void shadowRender(int LOD)                                = 0;
+    void                           clear();
+    virtual void                   initVaoVbo();
+    virtual std::vector<glm::mat4> getBoneTransforms(int LOD) = 0;
+    virtual void                   uniformRender(const std::vector<Light>& AllLights, int LOD);
+    virtual void                   render(const std::vector<Light>& AllLights, int LOD) = 0;
+    virtual void                   shadowRender(int LOD)                                = 0;
 };
 
 #endif

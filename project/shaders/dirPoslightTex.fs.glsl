@@ -22,6 +22,7 @@ uniform Texture uTexture;
 
 struct Light {
     vec3      position;
+    vec3      position_vs;
     int       type;
     vec3      color;
     float ufar_plane;
@@ -35,11 +36,11 @@ uniform samplerCube uShadowCubeMap[7];
 uniform int uLightNB;
 
 vec3 PointblinnPhong(int light) {
-    float d = distance(vPosition_vs, uLight[light].position);
+    float d = distance(vPosition_vs, uLight[light].position_vs);
     vec3 Li = (uLight[light].color / (d * d));
     vec3 N = vNormal_vs;
     vec3 w0 = normalize(-vPosition_vs);
-    vec3 wi = normalize(uLight[light].position - vPosition_vs);
+    vec3 wi = normalize(uLight[light].position_vs - vPosition_vs);
     vec3 halfVector = (w0 + wi)/2.f;
     
     return Li*(texture(uTexture.kd, vTexCoords).xyz*max(dot(wi, N), 0.) + texture(uTexture.ks, vTexCoords).xyz*pow(max(dot(halfVector, N), 0.), uTexture.shininess));
@@ -49,7 +50,7 @@ vec3 blinnPhong(int light) {
     vec3 Li = uLight[light].color;
     vec3 N = normalize(vNormal_vs);
     vec3 w0 = normalize(-vPosition_vs);
-    vec3 wi = normalize(uLight[light].position);
+    vec3 wi = normalize(uLight[light].position_vs);
     vec3 halfVector = (w0 + wi)/2.f;
     
     return Li*(texture(uTexture.kd, vTexCoords).xyz*max(dot(wi, N), 0.) + texture(uTexture.ks, vTexCoords).xyz*max(pow(dot(halfVector, N), 0.), uTexture.shininess));
@@ -60,12 +61,12 @@ float calcShadowFactorPointLight(int light) {
     
     float Distance = length(LightToVertex)/uLight[light].ufar_plane;
 
-    float SampledDistance = texture(uLight[light].shadowMapCube, LightToVertex).r;
+    float SampledDistance = texture(uShadowCubeMap[0], LightToVertex).r;
 
     float bias = 0.025;
 
     if ((SampledDistance + bias) < Distance) {
-        return 0.15;
+        return 0.f;
     }
     else {
         return 1.0;
@@ -81,7 +82,7 @@ float calcShadowFactorPCF(int light) {
 
     vec3 UVCoords = 0.5 * projCoords + vec3(0.5);
 
-    float DiffuseFactor = dot(normalize(vNormal_vs), -normalize(uLight[light].position));
+    float DiffuseFactor = dot(normalize(vNormal_vs), -normalize(uLight[light].position_vs));
     float bias = mix(0.005, 0.0, DiffuseFactor);
 
     //improvement : send the shadow size as uniform
@@ -95,7 +96,7 @@ float calcShadowFactorPCF(int light) {
     for (int y = -HalfFilterSize ; y < -HalfFilterSize + ShadowMapFilterSize; y++) {
         for (int x = -HalfFilterSize; x < -HalfFilterSize + ShadowMapFilterSize; x++) {
             vec2 Offset = vec2(x, y) * TexelSize;
-            float depth = texture(uLight[light].shadowMap, UVCoords.xy + Offset).x;
+            float depth = texture(uShadowMap[0], UVCoords.xy + Offset).x;
 
             if (depth + bias < UVCoords.z)
                 ShadowSum += 0.f;

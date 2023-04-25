@@ -22,6 +22,7 @@ uniform Color uColor;
 
 struct Light {
     vec3      position;
+    vec3      position_vs;
     int       type;
     vec3      color;
     float ufar_plane;
@@ -35,11 +36,11 @@ uniform samplerCube uShadowCubeMap[7];
 uniform int uLightNB;
 
 vec3 PointblinnPhong(int light) {
-        float d = distance(vPosition_vs, uLight[light].position);
+        float d = distance(vPosition_vs, uLight[light].position_vs);
         vec3 Li = (uLight[light].color / (d * d));
         vec3 N = vNormal_vs;
         vec3 w0 = normalize(-vPosition_vs);
-        vec3 wi = normalize(uLight[light].position - vPosition_vs);
+        vec3 wi = normalize(uLight[light].position_vs - vPosition_vs);
         vec3 halfVector = (w0 + wi)/2.f;
         
         return Li*(uColor.kd*max(dot(wi, N), 0.) + uColor.ks*pow(max(dot(halfVector, N), 0.), uColor.shininess));
@@ -49,7 +50,7 @@ vec3 blinnPhong(int light) {
         vec3 Li = uLight[light].color;
         vec3 N = normalize(vNormal_vs);
         vec3 w0 = normalize(-vPosition_vs);
-        vec3 wi = normalize(uLight[light].position);
+        vec3 wi = normalize(uLight[light].position_vs);
         vec3 halfVector = (w0 + wi)/2.f;
         
         return Li*(uColor.kd*max(dot(wi, N), 0.) + uColor.ks*max(pow(dot(halfVector, N), 0.), uColor.shininess));
@@ -66,7 +67,7 @@ float calcShadowFactorPointLight(int light) {
     float bias = 0.025;
 
     if ((SampledDistance + bias) < Distance) {
-        return 0.15;
+        return 0.f;
     }
     else {
         return 1.0;
@@ -82,7 +83,7 @@ float calcShadowFactorPCF(int light) {
 
     vec3 UVCoords = 0.5 * projCoords + vec3(0.5);
 
-    float DiffuseFactor = dot(normalize(vNormal_vs), -normalize(uLight[light].position));
+    float DiffuseFactor = dot(normalize(vNormal_vs), -normalize(uLight[light].position_vs));
     float bias = mix(0.005, 0.0, DiffuseFactor);
 
     //improvement : send the shadow size as uniform
@@ -110,14 +111,11 @@ float calcShadowFactorPCF(int light) {
     return finalShadowFactor;
 }
 
- vec3 LightToVertex = vWorldPos - uLight[0].position;
- float u = texture(uShadowCubeMap[0], LightToVertex).r;
-
 void main() {
     vec3 light = vec3(0);
     float shadow = 0;
     for (int i = 0; i < uLightNB; i++) {
-        if (uLight[i].type == 2) {
+        if (uLight[i].type == 0) {
             light += blinnPhong(i);
         }
         else {
@@ -131,13 +129,6 @@ void main() {
             shadow = calcShadowFactorPCF(i);
         } 
     }
-    shadow/=uLightNB;
 
-    vec3 LightToVertex = vWorldPos - uLight[0].position;
-    
-    float Distance = length(LightToVertex)/uLight[0].ufar_plane;
-
-    float SampledDistance = texture(uShadowCubeMap[0], LightToVertex).r;
-
-    fFragColor = vec4(vec3(texture(uShadowCubeMap[0], LightToVertex).r), 1);//vec4(uColor.ka + shadow*light, uColor.opacity);
+    fFragColor = vec4(uColor.ka + shadow*light, uColor.opacity);
 }

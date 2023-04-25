@@ -20,6 +20,8 @@ ObjProgram::ObjProgram(const std::string& vsPath, const std::string& fsPath)
         appendVarName = "uLight[" + std::to_string(i) + "].type";
         m_uLightType.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
         appendVarName = "uLight[" + std::to_string(i) + "].position";
+        m_uLightPos.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
+        appendVarName = "uLight[" + std::to_string(i) + "].position_vs";
         m_uLightPos_vs.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
         appendVarName = "uLight[" + std::to_string(i) + "].color";
         m_uLightIntensity.emplace_back(glGetUniformLocation(m_Program.id(), appendVarName.c_str()));
@@ -51,13 +53,16 @@ void ObjProgram::uniformRender(const std::vector<Light>& AllLights, [[maybe_unus
         glUniform1i(m_uLightType[i], static_cast<int>(AllLights[i].getType()));
 
         // calcul of lightPos depending of its movement
-        glm::vec3 lightPosition_vs = glm::vec3((m_ViewMatrix * AllLights[i].getMMatrix()) * glm::vec4(AllLights[i].getPosition(), (static_cast<int>(AllLights[i].getType()) > static_cast<int>(glimac::LightType::Directional))));
+        glm::vec4 lightInitPosition = glm::vec4(AllLights[i].getPosition(), (static_cast<int>(AllLights[i].getType()) > static_cast<int>(glimac::LightType::Directional)));
 
-        glUniform3fv(m_uLightPos_vs[i], 1, glm::value_ptr(lightPosition_vs));
+        glUniform3fv(m_uLightPos[i], 1, glm::value_ptr(glm::vec3((AllLights[i].getMMatrix()) * lightInitPosition)));
+        glUniform3fv(m_uLightPos_vs[i], 1, glm::value_ptr(glm::vec3((m_ViewMatrix * AllLights[i].getMMatrix()) * lightInitPosition)));
         glUniform3fv(m_uLightIntensity[i], 1, glm::value_ptr(AllLights[i].m_color));
 
         glUniform1i(m_uShadowMap[i], static_cast<int>(i * 2));
         glUniform1i(m_uShadowMapCube[i], static_cast<int>(i * 2 + 1));
+
+        glUniform1f(m_ufar_plane[i], AllLights[i].getFarPlane());
     }
 }
 

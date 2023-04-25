@@ -7,6 +7,12 @@
 class ShadowProgram {
 private:
     GLint  m_uMVPLight;
+    GLint  m_uMMatrix;
+    GLint  m_uLightPos;
+    GLint  m_ufar_plane;
+    GLint  m_uLightType;
+    GLint  m_uBoneTransforms;
+    GLint  m_uIsMoving;
     Light* m_Light;
 
 public:
@@ -14,7 +20,7 @@ public:
 
     ShadowProgram();
     void SetLight(Light& light);
-    void SendOBJtransform(const glm::mat4& OBJtransform);
+    void SendOBJtransform(const glm::mat4& OBJtransform, std::vector<glm::mat4> Transforms);
 };
 
 #endif

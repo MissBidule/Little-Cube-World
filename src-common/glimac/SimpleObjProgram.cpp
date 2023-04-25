@@ -1,10 +1,16 @@
 #include "SimpleObjProgram.hpp"
 #include <glimac/ShadowMapFBO.hpp>
+#include <vector>
 #include "glm/gtc/type_ptr.hpp"
 
 SimpleObjProgram::SimpleObjProgram(const std::string& vsPath, const std::string& fsPath)
     : ObjProgram(vsPath, fsPath), m_uKa(glGetUniformLocation(m_Program.id(), "uColor.ka")), m_uKd(glGetUniformLocation(m_Program.id(), "uColor.kd")), m_uKs(glGetUniformLocation(m_Program.id(), "uColor.ks")), m_uShininess(glGetUniformLocation(m_Program.id(), "uColor.shininess")), m_uOpacity(glGetUniformLocation(m_Program.id(), "uColor.opacity"))
 {}
+
+std::vector<glm::mat4> SimpleObjProgram::getBoneTransforms([[maybe_unused]] int LOD)
+{
+    return {};
+}
 
 void SimpleObjProgram::addManualMesh(const std::vector<glimac::ShapeVertex>& shape, const glimac::Color color)
 {
