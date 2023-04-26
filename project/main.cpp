@@ -1,13 +1,13 @@
-#include <glimac/ShadowCubeMap.hpp>
 #include <glimac/common.hpp>
+#include <glimac/particles.hpp>
 #include <iostream>
 #include <vector>
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/Light.hpp"
 #include "glimac/ObjProgram.hpp"
+#include "glimac/ShadowCubeMap.hpp"
 #include "glimac/ShadowMapFBO.hpp"
 #include "glimac/ShadowProgram.hpp"
-#include "glimac/SimpleObjProgram.hpp"
 #include "glimac/SkinnedMesh.hpp"
 #include "glimac/SkinnedObjProgram.hpp"
 #include "glimac/TexObjProgram.hpp"
@@ -36,6 +36,10 @@ int main()
     std::vector<ObjProgram*> ObjList;
 
     // HERE WE CREATE THE TYPE OF EACH OBJECT - SIMPLE / TEXTURE / ANIMATED AND WE ADD THEM TO THE GLOBAL LIST//
+
+    // Particles
+    // LA. création de l'objet particule
+    Particles particule;
 
     // Thingy
     SkinnedObjProgram Thingy("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", ctx);
@@ -132,6 +136,12 @@ int main()
 
     // WE INIT ALL VAO AND VBO - NOTHING TO ADD HERE//
 
+    // Do not forget particles//
+    for (auto& i : particule.m_meshes)
+    {
+        i->initVaoVbo();
+    }
+
     for (auto& i : ObjList)
     {
         i->initVaoVbo();
@@ -156,6 +166,12 @@ int main()
 
     // PROJECTION
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
+
+    // ADDING THE PROJ TO PARTICLES//
+    for (auto& i : particule.m_meshes)
+    {
+        i->m_ProjMatrix = ProjMatrix;
+    }
 
     // ADDING THE PROJ TO ALL OBJECT - NOTHING TO BE DONE HERE//
     for (auto& i : ObjList)
@@ -209,13 +225,22 @@ int main()
             ViewMatrixCamera.moveLeft(-0.1);
         }
 
+        for (auto& i : particule.m_meshes)
+        {
+            i->m_ViewMatrix = ViewMatrixCamera.getViewMatrix();
+        }
         for (auto& i : ObjList)
         {
             i->m_ViewMatrix = ViewMatrixCamera.getViewMatrix();
         }
 
+        // ALL OBJECTS UPDATES//
+
+        // LA. Création et actualisation des particules de particule
+        particule.beginParticles(glm::vec3(3.f, -1.5f, 0.f), ViewMatrixCamera.getPosition(), ctx.delta_time());
+
         // POSITION OF LIGHT IF IT IS UPDATED//
-        // LightList[0].rotateLeft(glm::degrees(ctx.delta_time()));
+        LightList[0].rotateLeft(glm::degrees(ctx.delta_time()));
 
         // UPDATES OF ALL MMATRIX IF IT IS UPDATED//
         //  MM OF EARTH
@@ -305,6 +330,16 @@ int main()
             obj->uniformRender(LightList, LOD);
 
             obj->render(LightList, LOD);
+        }
+
+        // PARTICLES //
+        for (auto& part : particule.m_meshes)
+        {
+            part->m_Program.use();
+
+            part->uniformRender(std::vector<Light>(), 0);
+
+            part->render({}, 0);
         }
 
         // END OF MY DRAW CODE//

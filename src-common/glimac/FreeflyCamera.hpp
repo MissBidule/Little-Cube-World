@@ -29,4 +29,5 @@ public:
 
 public:
     glm::mat4 getViewMatrix() const; // glm::lookAt(eye, point, up)
+    glm::vec3 getPosition() const;
 };

@@ -46,3 +46,8 @@ void SimpleObjProgram::shadowRender(const int LOD)
     glDrawArrays(GL_TRIANGLES, 0, m_shapes[LOD].size());
     glBindVertexArray(0);
 }
+
+void SimpleObjProgram::updateColor(const glimac::Color& newColor, int LOD)
+{
+    m_colors[LOD] = newColor;
+}

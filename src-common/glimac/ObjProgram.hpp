@@ -41,6 +41,8 @@ protected:
     ObjProgram(const std::string& vsPath, const std::string& fsPath);
 
 public:
+    virtual ~ObjProgram() = default;
+
     bool ignoreRenderShadow = false;
 
     glm::mat4 m_MMatrix;
