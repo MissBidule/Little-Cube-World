@@ -1,24 +1,24 @@
 // LA. -> Lilou ALIDOR
 // Dernière version : 22/03/2021
 
-#include "particles.hpp"
+#include "ParticleManager.hpp"
 #include <glimac/common.hpp>
 #include <glimac/sphere_vertices.hpp>
 #include <memory>
 #include <vector>
 #include "glm/gtx/transform.hpp"
 
-Particles::Particles()
+ParticleManager::ParticleManager()
 {
     for (int i = 0; i < MaxParticles; i++)
     {
         m_ParticlesContainer.emplace_back();
-        m_particulePositionData.emplace_back(0);
-        m_particuleColorData.emplace_back(0);
-        m_particuleScale.emplace_back(0);
-        m_meshes.emplace_back(std::make_unique<SimpleObjProgram>("shaders/particle.vs.glsl", "shaders/particle.fs.glsl"));
+        m_ParticlePositionData.emplace_back(0);
+        m_ParticleColorData.emplace_back(0);
+        m_ParticleScale.emplace_back(0);
+        m_meshes.emplace_back(std::make_unique<SimpleObjectManager>("shaders/particle.vs.glsl", "shaders/particle.fs.glsl"));
 
-        // LA. Couleur des particules (avec opacité)
+        // LA. Couleur des particles (avec opacité)
         m_ParticlesContainer[i].color = glm::vec4(0.5f, 0.5f, 0.5f, 0.8f);
 
         glimac::Color color = {
@@ -33,13 +33,13 @@ Particles::Particles()
         m_meshes[i]->addManualMesh(glimac::sphere_vertices(1.f, 32, 16), color);
 
         m_ParticlesContainer[i].life           = -1.0f;
-        m_ParticlesContainer[i].cameradistance = -1.0f;
+        m_ParticlesContainer[i].cameraPosition = -1.0f;
     }
 }
 
 // Finds a Particle in ParticlesContainer which isn't used yet.
 // (i.e. life < 0);
-int Particles::FindUnusedParticle()
+int ParticleManager::findUnusedParticle()
 {
     for (int i = m_LastUsedParticle; i < MaxParticles; i++)
     {
@@ -62,32 +62,32 @@ int Particles::FindUnusedParticle()
     return 0; // All particles are taken, override the first one
 }
 
-// LA. Tri des particules, important pour le renouvellement de ces dernières
-void Particles::SortParticles()
+// LA. Tri des particles, important pour le renouvellement de ces dernières
+void ParticleManager::sortParticles()
 {
     std::sort(&m_ParticlesContainer[0], &m_ParticlesContainer[MaxParticles]);
 }
 
-// LA. Création et actualisation des particules
-void Particles::beginParticles(glm::vec3 position, glm::vec3 cameraPosition, double delta)
+// LA. Création et actualisation des particles
+void ParticleManager::refreshParticles(glm::vec3 position, glm::vec3 cameraPosition, double delta)
 {
-    // LA. Renouvellement régulier mais limité de particules
+    // LA. Renouvellement régulier mais limité de particles
     int newparticles = (int)(delta * ((float)MaxParticles / MaxLife));
     if (newparticles > (int)(0.016f * 10000.0))
         newparticles = (int)(0.016f * 10000.0);
 
     for (int i = 0; i < newparticles; i++)
     {
-        int particleIndex                        = FindUnusedParticle();
+        int particleIndex                        = findUnusedParticle();
         m_ParticlesContainer[particleIndex].life = MaxLife; // This particle will live MaxLife seconds.
-        // LA. Position de départ de la particule
+        // LA. Position de départ de la particle
         m_ParticlesContainer[particleIndex].position = position;
 
-        // LA. Force de propagation des particules
+        // LA. Force de propagation des particles
         float spread = 4.f;
-        // LA. Direction suivie par les particules avant de retomber
+        // LA. Direction suivie par les particles avant de retomber
         glm::vec3 maindir = glm::vec3(0.0f, 10.f, 0.3f);
-        // LA. Position aléatoire des particules par rapport à la trajectoire des particules
+        // LA. Position aléatoire des particles par rapport à la trajectoire des particles
         glm::vec3 randomdir = glm::vec3(
             -1.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (2.0f))),
             -1.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (2.0f))),
@@ -96,10 +96,10 @@ void Particles::beginParticles(glm::vec3 position, glm::vec3 cameraPosition, dou
 
         m_ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
 
-        // LA. Angle aléatoire des particules en z
+        // LA. Angle aléatoire des particles en z
         // m_ParticlesContainer[particleIndex].angle = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (180.0f)));
 
-        // LA. Taille des particules
+        // LA. Taille des particles
         m_ParticlesContainer[particleIndex].size = static_cast<float>(rand()) / static_cast<float>(RAND_MAX * (4.0f));
     }
 
@@ -115,7 +115,7 @@ void Particles::beginParticles(glm::vec3 position, glm::vec3 cameraPosition, dou
             p.life -= delta;
             if (p.life > 0.0f)
             {
-                // LA. Calcul du stade lié à l'âge de la particule
+                // LA. Calcul du stade lié à l'âge de la particle
                 int temp = ((MaxLife - p.life) / MaxLife) * (m_nbStades - 1);
 
                 // LA. À cause de malloc je prends mes précautions et limite le résultat
@@ -126,13 +126,13 @@ void Particles::beginParticles(glm::vec3 position, glm::vec3 cameraPosition, dou
                 p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float)delta * 0.5f;
                 float speedFactor = 0.15f;
                 p.position += p.speed * (float)delta * speedFactor;
-                p.cameradistance = pow(distance(p.position, cameraPosition), 2);
+                p.cameraPosition = pow(distance(p.position, cameraPosition), 2);
             }
             else
             {
-                // Particles that just died will be put at the end of the buffer in SortParticles();
-                p.cameradistance = -1.0f;
-                // LA. Même si elles mettent longtemps avant de mourir les particules "mortent" n'apparaissent pas
+                // Particles that just died will be put at the end of the buffer in sortParticles();
+                p.cameraPosition = -1.0f;
+                // LA. Même si elles mettent longtemps avant de mourir les particles "mortent" n'apparaissent pas
                 p.stade   = m_nbStades;
                 p.color.a = 0;
             }
@@ -141,18 +141,18 @@ void Particles::beginParticles(glm::vec3 position, glm::vec3 cameraPosition, dou
         }
         else
         {
-            // LA. La particule devrait être morte
+            // LA. La particle devrait être morte
             p.stade   = m_nbStades;
             p.color.a = 0;
         }
 
         // Fill the GPU buffer
-        m_particulePositionData[ParticlesCount] = glm::vec3(p.position);
-        m_particuleScale[ParticlesCount]        = p.size;
-        m_particuleColorData[ParticlesCount]    = glm::vec4(p.color);
+        m_ParticlePositionData[ParticlesCount] = glm::vec3(p.position);
+        m_ParticleScale[ParticlesCount]        = p.size;
+        m_ParticleColorData[ParticlesCount]    = glm::vec4(p.color);
 
-        glm::mat4 MMatrix = glm::translate(glm::mat4(1), m_particulePositionData[ParticlesCount]);
-        MMatrix           = glm::scale(MMatrix, glm::vec3(m_particuleScale[ParticlesCount]));
+        glm::mat4 MMatrix = glm::translate(glm::mat4(1), m_ParticlePositionData[ParticlesCount]);
+        MMatrix           = glm::scale(MMatrix, glm::vec3(m_ParticleScale[ParticlesCount]));
 
         m_meshes[i]->m_MMatrix = MMatrix;
         glimac::Color color    = {
@@ -164,5 +164,5 @@ void Particles::beginParticles(glm::vec3 position, glm::vec3 cameraPosition, dou
         m_meshes[i]->updateColor(color, 0);
     }
 
-    SortParticles();
+    sortParticles();
 }

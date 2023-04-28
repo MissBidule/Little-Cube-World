@@ -1,26 +1,20 @@
-#ifndef SHADOW_MAP_HPP
-#define SHADOW_MAP_HPP
+#ifndef SHADOW_MAP_FBO_HPP
+#define SHADOW_MAP_FBO_HPP
 
+#include <glimac/ShadowFBO.hpp>
 #include "p6/p6.h"
 
-class ShadowMap {
+class ShadowMap : public ShadowFBO {
 public:
-    virtual bool Init(unsigned int WindowSize) = 0;
+    ShadowMap();
 
-    virtual void BindForReading(GLenum TextureUnit) const = 0;
+    ~ShadowMap();
 
-protected:
-    ShadowMap() = default;
+    bool Init(unsigned int WindowSize) override;
 
-    ~ShadowMap()
-    {
-        glDeleteFramebuffers(1, &m_fbo);
-        glDeleteTextures(1, &m_shadowMap);
-    };
+    void BindForWriting();
 
-    unsigned int m_size      = 0;
-    GLuint       m_fbo       = 0;
-    GLuint       m_shadowMap = 0;
+    void BindForReading(GLenum TextureUnit) const override;
 };
 
 #endif

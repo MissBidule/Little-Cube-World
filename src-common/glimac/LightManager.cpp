@@ -1,4 +1,4 @@
-#include "Light.hpp"
+#include "LightManager.hpp"
 #include <glimac/ShadowCubeMap.hpp>
 #include <glimac/common.hpp>
 #include "glm/ext/matrix_clip_space.hpp"
@@ -7,7 +7,7 @@
 #include "glm/gtx/vector_angle.hpp"
 #include "glm/trigonometric.hpp"
 
-Light::Light(glimac::LightType type)
+LightManager::LightManager(glimac::LightType type)
     : m_color(glm::vec3(0)), m_type(type), m_frontT(0), m_leftT(0), m_upR(0), m_leftR(0), m_position(glm::vec3(0)), m_ProjMatrix(glm::mat4(0))
 {
     float valueOrtho = 35.f;
@@ -28,7 +28,7 @@ Light::Light(glimac::LightType type)
     }
 }
 
-void Light::setPosition(glm::vec3 position)
+void LightManager::setPosition(glm::vec3 position)
 {
     m_position = position;
 
@@ -54,7 +54,7 @@ void Light::setPosition(glm::vec3 position)
     m_ViewMatrixSpotPointLight.rotateLeft(-(glm::degrees(left)));
 }
 
-void Light::setDirection(glm::vec3 direction)
+void LightManager::setDirection(glm::vec3 direction)
 {
     if (m_type != glimac::LightType::Spot)
         return;
@@ -71,7 +71,7 @@ void Light::setDirection(glm::vec3 direction)
     m_ViewMatrixSpotPointLight.setTheta(up);
 }
 
-void Light::refreshPosition()
+void LightManager::refreshPosition()
 {
     if (m_type == glimac::LightType::Directional)
         return;
@@ -81,7 +81,7 @@ void Light::refreshPosition()
     m_ViewMatrixSpotPointLight.setPos(newPosition);
 }
 
-void Light::moveFront(float t)
+void LightManager::moveFront(float t)
 {
     if (m_type == glimac::LightType::Directional)
     {
@@ -92,7 +92,7 @@ void Light::moveFront(float t)
     m_frontT += t;
 }
 
-void Light::moveLeft(float t)
+void LightManager::moveLeft(float t)
 {
     if (m_type == glimac::LightType::Directional)
     {
@@ -102,7 +102,7 @@ void Light::moveLeft(float t)
     m_leftT += t;
 }
 
-void Light::rotateUp(float degrees)
+void LightManager::rotateUp(float degrees)
 {
     if (m_type == glimac::LightType::Directional)
     {
@@ -115,7 +115,7 @@ void Light::rotateUp(float degrees)
     m_upR += degrees;
 }
 
-void Light::rotateLeft(float degrees)
+void LightManager::rotateLeft(float degrees)
 {
     if (m_type == glimac::LightType::Directional)
     {
@@ -128,7 +128,7 @@ void Light::rotateLeft(float degrees)
     m_leftR += degrees;
 }
 
-glm::mat4 Light::getMMatrix() const
+glm::mat4 LightManager::getMMatrix() const
 {
     glm::mat4 MMatrix = glm::translate(glm::mat4(1), glm::vec3(-m_leftT, 0, m_frontT));
     MMatrix           = glm::rotate(MMatrix, -glm::radians(m_leftR), glm::vec3(0, 1, 0));
@@ -137,7 +137,7 @@ glm::mat4 Light::getMMatrix() const
     return MMatrix;
 }
 
-glm::mat4 Light::getVMatrix() const
+glm::mat4 LightManager::getVMatrix() const
 {
     if (m_type == glimac::LightType::Directional)
     {
@@ -147,60 +147,60 @@ glm::mat4 Light::getVMatrix() const
     return m_ViewMatrixSpotPointLight.getViewMatrix();
 }
 
-glm::mat4 Light::getProjMatrix() const
+glm::mat4 LightManager::getProjMatrix() const
 {
     return m_ProjMatrix;
 }
 
-glm::vec3 Light::getPosition() const
+glm::vec3 LightManager::getPosition() const
 {
     return m_position;
 }
 
-glimac::LightType Light::getType() const
+glimac::LightType LightManager::getType() const
 {
     return (m_type);
 }
 
-float Light::getFarPlane() const
+float LightManager::getFarPlane() const
 {
     return (m_far_plane);
 }
 
-void Light::initShadowMap(unsigned int WindowSize)
+void LightManager::initShadowMap(unsigned int WindowSize)
 {
     if (m_type == glimac::LightType::Point)
     {
-        m_shadowMapPoint.Init(WindowSize);
+        m_shadowMapPointLight.Init(WindowSize);
     }
     else
     {
-        m_shadowMapSpotDir.Init(WindowSize);
+        m_shadowMapSpotDirLight.Init(WindowSize);
     }
 }
 
-void Light::bindWShadowMap(unsigned int CubeMap)
+void LightManager::bindWShadowMap(unsigned int CubeMap)
 {
     if (m_type == glimac::LightType::Point)
     {
-        m_shadowMapPoint.BindForWriting(CubeMap);
-        m_ViewMatrixSpotPointLight.setTheta(m_shadowMapPoint.getTheta(CubeMap));
-        m_ViewMatrixSpotPointLight.setPhi(m_shadowMapPoint.getPhi(CubeMap));
+        m_shadowMapPointLight.BindForWriting(CubeMap);
+        m_ViewMatrixSpotPointLight.setTheta(m_shadowMapPointLight.getTheta(CubeMap));
+        m_ViewMatrixSpotPointLight.setPhi(m_shadowMapPointLight.getPhi(CubeMap));
     }
     else
     {
-        m_shadowMapSpotDir.BindForWriting();
+        m_shadowMapSpotDirLight.BindForWriting();
     }
 }
 
-void Light::bindRShadowMap(GLenum TextureUnit) const
+void LightManager::bindRShadowMap(GLenum TextureUnit) const
 {
     if (m_type == glimac::LightType::Point)
     {
-        m_shadowMapPoint.BindForReading(TextureUnit);
+        m_shadowMapPointLight.BindForReading(TextureUnit);
     }
     else
     {
-        m_shadowMapSpotDir.BindForReading(TextureUnit);
+        m_shadowMapSpotDirLight.BindForReading(TextureUnit);
     }
 }

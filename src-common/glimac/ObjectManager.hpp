@@ -1,13 +1,13 @@
-#ifndef OBJ_PROGRAM_HPP
-#define OBJ_PROGRAM_HPP
+#ifndef OBJ_MANAGER_HPP
+#define OBJ_MANAGER_HPP
 
 #include <string>
 #include <vector>
-#include "Light.hpp"
+#include "LightManager.hpp"
 #include "img/src/Image.h"
 #include "p6/p6.h"
 
-class ObjProgram {
+class ObjectManager {
 protected:
     const unsigned int MAXTAB = 7;
 
@@ -35,31 +35,28 @@ protected:
 
     std::vector<std::vector<glimac::ShapeVertex>> m_shapes;
 
-    void prerender(const std::vector<Light>& AllLights) const;
+    void prerender(const std::vector<LightManager>& AllLights) const;
     void postrender() const;
 
-    ObjProgram(const std::string& vsPath, const std::string& fsPath);
+    ObjectManager(const std::string& vsPath, const std::string& fsPath);
 
 public:
-    virtual ~ObjProgram() = default;
+    virtual ~ObjectManager() = default;
 
-    bool ignoreRenderShadow = false;
-
-    glm::mat4 m_MMatrix;
-    glm::mat4 m_ViewMatrix;
-    glm::mat4 m_ProjMatrix;
+    bool ignoreShadowRender = false;
 
     p6::Shader m_Program;
+    glm::mat4  m_MMatrix;
 
-    glm::vec3           getPosition() const;
+    glm::vec3           getPosition(const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix) const;
     inline unsigned int getLODmax() const { return m_LODsNB; }
 
     void                           clear();
     virtual void                   initVaoVbo();
     virtual std::vector<glm::mat4> getBoneTransforms(int LOD) = 0;
-    virtual void                   uniformRender(const std::vector<Light>& AllLights, int LOD);
-    virtual void                   render(const std::vector<Light>& AllLights, int LOD) = 0;
-    virtual void                   shadowRender(int LOD)                                = 0;
+    virtual void                   uniformRender(const std::vector<LightManager>& AllLights, int LOD, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix);
+    virtual void                   render(const std::vector<LightManager>& AllLights, int LOD) = 0;
+    virtual void                   shadowRender(int LOD)                                       = 0;
 };
 
 #endif

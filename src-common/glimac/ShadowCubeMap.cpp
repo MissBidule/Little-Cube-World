@@ -1,10 +1,10 @@
 #include "ShadowCubeMap.hpp"
 
-ShadowCubeMapFBO::ShadowCubeMapFBO() = default;
+ShadowCubeMap::ShadowCubeMap() = default;
 
-ShadowCubeMapFBO::~ShadowCubeMapFBO() = default;
+ShadowCubeMap::~ShadowCubeMap() = default;
 
-bool ShadowCubeMapFBO::Init(unsigned int size)
+bool ShadowCubeMap::Init(unsigned int size)
 {
     m_size = size;
 
@@ -46,7 +46,7 @@ bool ShadowCubeMapFBO::Init(unsigned int size)
     return true;
 }
 
-void ShadowCubeMapFBO::BindForWriting(unsigned int CubeFace)
+void ShadowCubeMap::BindForWriting(unsigned int CubeFace)
 {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
     glViewport(0, 0, m_size, m_size);
@@ -54,7 +54,7 @@ void ShadowCubeMapFBO::BindForWriting(unsigned int CubeFace)
     // glDrawBuffer(GL_DEPTH_ATTACHMENT);
 }
 
-void ShadowCubeMapFBO::BindForReading(GLenum TextureUnit) const
+void ShadowCubeMap::BindForReading(GLenum TextureUnit) const
 {
     glActiveTexture(TextureUnit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_shadowMap);

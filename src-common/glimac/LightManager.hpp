@@ -3,16 +3,16 @@
 
 #include <glimac/FreeflyCamera.hpp>
 #include <glimac/ShadowCubeMap.hpp>
-#include <glimac/ShadowMapFBO.hpp>
+#include <glimac/ShadowMap.hpp>
 #include <glimac/TrackballCamera.hpp>
 #include <glimac/common.hpp>
 #include "p6/p6.h"
 
-class Light {
+class LightManager {
 public:
     glm::vec3 m_color;
 
-    explicit Light(glimac::LightType type);
+    explicit LightManager(glimac::LightType type);
     void setPosition(glm::vec3 position);
     void setDirection(glm::vec3 direction);
     void refreshPosition();
@@ -43,8 +43,8 @@ private:
     glm::mat4         m_ProjMatrix;
     FreeflyCamera     m_ViewMatrixSpotPointLight;
     TrackballCamera   m_ViewMatrixDirLight;
-    ShadowMapFBO      m_shadowMapSpotDir;
-    ShadowCubeMapFBO  m_shadowMapPoint;
+    ShadowMap         m_shadowMapSpotDirLight;
+    ShadowCubeMap     m_shadowMapPointLight;
 };
 
 #endif

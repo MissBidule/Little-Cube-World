@@ -1,10 +1,10 @@
-#include "ShadowMapFBO.hpp"
+#include "ShadowMap.hpp"
 
-ShadowMapFBO::ShadowMapFBO() = default;
+ShadowMap::ShadowMap() = default;
 
-ShadowMapFBO::~ShadowMapFBO() = default;
+ShadowMap::~ShadowMap() = default;
 
-bool ShadowMapFBO::Init(unsigned int WindowSize)
+bool ShadowMap::Init(unsigned int WindowSize)
 {
     m_size = WindowSize;
 
@@ -42,13 +42,13 @@ bool ShadowMapFBO::Init(unsigned int WindowSize)
     return true;
 }
 
-void ShadowMapFBO::BindForWriting()
+void ShadowMap::BindForWriting()
 {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
     glpp::viewport(0, 0, m_size, m_size); // Width/height of shadow map
 }
 
-void ShadowMapFBO::BindForReading(GLenum TextureUnit) const
+void ShadowMap::BindForReading(GLenum TextureUnit) const
 {
     glActiveTexture(TextureUnit);
     glBindTexture(GL_TEXTURE_2D, m_shadowMap);

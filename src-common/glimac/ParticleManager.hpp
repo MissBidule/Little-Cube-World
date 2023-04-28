@@ -7,10 +7,10 @@
 #include <glimac/common.hpp>
 #include <memory>
 #include <vector>
-#include "SimpleObjProgram.hpp"
+#include "SimpleObjectManager.hpp"
 #include "p6/p6.h"
 
-class Particles {
+class ParticleManager {
 private:
     // LA. Choix du nombre de particules
     static const int MaxParticles = 40;
@@ -21,20 +21,20 @@ private:
     int                           m_LastUsedParticle = 0;
     int                           m_nbStades         = 20;
 
-    std::vector<glm::vec3> m_particulePositionData;
-    std::vector<glm::vec4> m_particuleColorData;
-    std::vector<float>     m_particuleScale;
+    std::vector<glm::vec3> m_ParticlePositionData;
+    std::vector<glm::vec4> m_ParticleColorData;
+    std::vector<float>     m_ParticleScale;
+
+    int  findUnusedParticle();
+    void sortParticles();
 
 public:
-    std::vector<std::unique_ptr<SimpleObjProgram>> m_meshes;
+    std::vector<std::unique_ptr<SimpleObjectManager>> m_meshes;
 
-    Particles();
-
-    int  FindUnusedParticle();
-    void SortParticles();
+    ParticleManager();
 
     // LA. On a besoin de la position des particules, de la caméra et du deltatime
-    void beginParticles(glm::vec3 position, glm::vec3 cameraPosition, double delta);
+    void refreshParticles(glm::vec3 position, glm::vec3 cameraPosition, double delta);
 };
 
 #endif

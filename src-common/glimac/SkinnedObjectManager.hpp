@@ -1,10 +1,10 @@
 #ifndef SKINNED_OBJ_PROGRAM_HPP
 #define SKINNED_OBJ_PROGRAM_HPP
 
-#include <glimac/SkinnedMesh.hpp>
-#include "ObjProgram.hpp"
+#include "ObjectManager.hpp"
+#include "SkinnedMesh.hpp"
 
-class SkinnedObjProgram : public ObjProgram {
+class SkinnedObjectManager : public ObjectManager {
 private:
     GLint m_uKa;
     GLint m_uKd;
@@ -18,14 +18,14 @@ private:
     std::vector<std::unique_ptr<SkinnedMesh>> m_meshes;
 
 public:
-    SkinnedObjProgram(const std::string& vsPath, const std::string& fsPath, p6::Context& ctx);
+    SkinnedObjectManager(const std::string& vsPath, const std::string& fsPath, p6::Context& ctx);
 
     void                   addSkinnedMesh(const std::string& objectPath);
     void                   initVaoVbo() override{};
     std::vector<glm::mat4> getBoneTransforms(int LOD) override;
 
-    void uniformRender(const std::vector<Light>& AllLights, int LOD) override;
-    void render(const std::vector<Light>& AllLights, int LOD) override;
+    void uniformRender(const std::vector<LightManager>& AllLights, int LOD, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix) override;
+    void render(const std::vector<LightManager>& AllLights, int LOD) override;
     void shadowRender(int LOD) override;
 };
 

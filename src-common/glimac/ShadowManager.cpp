@@ -1,12 +1,12 @@
-#include "ShadowProgram.hpp"
+#include "ShadowManager.hpp"
 #include <glimac/common.hpp>
 #include "glm/gtc/type_ptr.hpp"
 
-ShadowProgram::ShadowProgram()
+ShadowManager::ShadowManager()
     : m_Light(nullptr), m_ProgramPoint(p6::load_shader("shaders/shadow.vs.glsl", "shaders/shadowPoint.fs.glsl")), m_ProgramDefault(p6::load_shader("shaders/shadow.vs.glsl", "shaders/shadowDefault.fs.glsl"))
 {}
 
-void ShadowProgram::SetLight(Light& light)
+void ShadowManager::SetLight(LightManager& light)
 {
     m_Light = &light;
 
@@ -30,7 +30,7 @@ void ShadowProgram::SetLight(Light& light)
     }
 }
 
-void ShadowProgram::use()
+void ShadowManager::use()
 {
     if (m_Light == nullptr)
         throw std::runtime_error("No light set in shadow program.");
@@ -44,7 +44,7 @@ void ShadowProgram::use()
     }
 }
 
-void ShadowProgram::SendOBJtransform(const glm::mat4& OBJtransform, std::vector<glm::mat4> Transforms)
+void ShadowManager::SendOBJtransform(const glm::mat4& OBJtransform, std::vector<glm::mat4> Transforms)
 {
     for (int i = 0; i < static_cast<int>(Transforms.size()); i++)
     {

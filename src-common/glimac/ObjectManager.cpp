@@ -1,10 +1,10 @@
-#include "ObjProgram.hpp"
-#include <glimac/Light.hpp>
-#include <glimac/SkinnedMesh.hpp>
+#include "ObjectManager.hpp"
 #include <vector>
+#include "LightManager.hpp"
+#include "SkinnedMesh.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-ObjProgram::ObjProgram(const std::string& vsPath, const std::string& fsPath)
+ObjectManager::ObjectManager(const std::string& vsPath, const std::string& fsPath)
     : m_Program(p6::load_shader(vsPath, fsPath))
 {
     m_uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
@@ -36,12 +36,12 @@ ObjProgram::ObjProgram(const std::string& vsPath, const std::string& fsPath)
     }
 }
 
-void ObjProgram::uniformRender(const std::vector<Light>& AllLights, [[maybe_unused]] int LOD)
+void ObjectManager::uniformRender(const std::vector<LightManager>& AllLights, [[maybe_unused]] int LOD, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix)
 {
-    glm::mat4 MVMatrix     = m_ViewMatrix * m_MMatrix;
+    glm::mat4 MVMatrix     = ViewMatrix * m_MMatrix;
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
-    glUniformMatrix4fv(m_uMVPMatrix, 1, GL_FALSE, glm::value_ptr(m_ProjMatrix * MVMatrix));
+    glUniformMatrix4fv(m_uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
     glUniformMatrix4fv(m_uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
     glUniformMatrix4fv(m_uMMatrix, 1, GL_FALSE, glm::value_ptr(m_MMatrix));
     glUniformMatrix4fv(m_uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
@@ -58,19 +58,19 @@ void ObjProgram::uniformRender(const std::vector<Light>& AllLights, [[maybe_unus
         glm::vec4 lightInitPosition = glm::vec4(AllLights[i].getPosition(), (static_cast<int>(AllLights[i].getType()) > static_cast<int>(glimac::LightType::Directional)));
 
         glUniform3fv(m_uLightPos[i], 1, glm::value_ptr(glm::vec3((AllLights[i].getMMatrix()) * lightInitPosition)));
-        glUniform3fv(m_uLightPos_vs[i], 1, glm::value_ptr(glm::vec3((m_ViewMatrix * AllLights[i].getMMatrix()) * lightInitPosition)));
+        glUniform3fv(m_uLightPos_vs[i], 1, glm::value_ptr(glm::vec3((ViewMatrix * AllLights[i].getMMatrix()) * lightInitPosition)));
         glUniform3fv(m_uLightIntensity[i], 1, glm::value_ptr(AllLights[i].m_color));
 
         glUniform1f(m_ufar_plane[i], AllLights[i].getFarPlane());
     }
 }
 
-glm::vec3 ObjProgram::getPosition() const
+glm::vec3 ObjectManager::getPosition(const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix) const
 {
-    return {((m_ProjMatrix * m_ViewMatrix * m_MMatrix) * glm::vec4(glm::vec3(0), 1))};
+    return {((ProjMatrix * ViewMatrix * m_MMatrix) * glm::vec4(glm::vec3(0), 1))};
 }
 
-void ObjProgram::clear()
+void ObjectManager::clear()
 {
     for (unsigned int& i : m_VAO)
     {
@@ -82,7 +82,7 @@ void ObjProgram::clear()
     }
 }
 
-void ObjProgram::initVaoVbo()
+void ObjectManager::initVaoVbo()
 {
     for (unsigned int i = 0; i < m_LODsNB; i++)
     {
@@ -133,7 +133,7 @@ void ObjProgram::initVaoVbo()
     }
 }
 
-void ObjProgram::prerender(const std::vector<Light>& AllLights) const
+void ObjectManager::prerender(const std::vector<LightManager>& AllLights) const
 {
     for (size_t i = 0; i < MAXTAB; i++)
     {
@@ -158,7 +158,7 @@ void ObjProgram::prerender(const std::vector<Light>& AllLights) const
     }
 }
 
-void ObjProgram::postrender() const
+void ObjectManager::postrender() const
 {
     for (size_t i = 0; i < MAXTAB; i++)
     {

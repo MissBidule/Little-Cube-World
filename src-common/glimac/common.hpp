@@ -71,6 +71,7 @@ inline GLuint textureToUVtex(img::Image& texture)
     return uvtex;
 }
 
+// STRUCT FOR SKINNED MESH
 struct VertexBoneData {
     unsigned int BoneIDs[MAX_NUM_BONES_PER_VERTEX] = {0};
     float        Weights[MAX_NUM_BONES_PER_VERTEX] = {0.f};
@@ -88,7 +89,7 @@ struct VertexBoneData {
                 return;
             }
         }
-        // Should neer get here - more bones than we have space for
+        // Should never get here - more bones than we have space for
         assert(0);
     }
 };
@@ -99,11 +100,11 @@ struct Particle {
     glm::vec4 color;
     float     size;
     float     life;           // Remaining life of the particle. if <0 : dead and unused.
-    float     cameradistance; // *Squared* distance to the camera. if dead : -1.0f
+    float     cameraPosition; // distance to the camera. if dead : -1.0f
     bool      operator<(const Particle& that) const
     {
         // Sort in reverse order : far particles drawn first.
-        return this->cameradistance > that.cameradistance;
+        return this->cameraPosition > that.cameraPosition;
     }
     int stade; //(life<0?0:life); (int)(MaxLife-life/MaxLife)*(nbStade-1);
 };
