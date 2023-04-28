@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <glimac/ParticleManager.hpp>
+#include <glimac/SimpleObjectManager.hpp>
 #include <glimac/common.hpp>
 #include <iostream>
 #include <vector>
@@ -48,6 +49,7 @@ private:
     void loop();
     void shadowPass();
     void lightPass();
+    int  LODtoShow(const ObjectManager* obj);
 
 private:
     int const shadow_size = 4096;

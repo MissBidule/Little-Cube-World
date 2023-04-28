@@ -1,3 +1,4 @@
+#include <glimac/SimpleObjectManager.hpp>
 #include "App.hpp"
 
 void App::update()
@@ -147,8 +148,11 @@ void App::shadowPass()
             {
                 if (obj->ignoreShadowRender)
                     continue;
-                m_ShadowProgList[i].SendOBJtransform(obj->m_MMatrix, obj->getBoneTransforms(0));
-                obj->shadowRender(0);
+
+                int LOD = LODtoShow(obj);
+
+                m_ShadowProgList[i].SendOBJtransform(obj->m_MMatrix, obj->getBoneTransforms(LOD));
+                obj->shadowRender(LOD);
             }
 
             glBindVertexArray(0);
@@ -169,15 +173,7 @@ void App::lightPass()
     // AUTOMATIC//
     for (auto& obj : m_ObjList)
     {
-        glm::vec3 position = obj->getPosition(m_ViewMatrixCamera.getViewMatrix(), m_ProjMatrix);
-        double    distance = glm::distance2(position, glm::vec3(0));
-        int       LOD      = 0;
-
-        // when distance is > LODdistance use 2nd LOD
-        if (distance > LODdistance && obj->getLODmax() > 1)
-        {
-            LOD = 1;
-        }
+        int LOD = LODtoShow(obj);
 
         obj->m_Program.use();
 
@@ -195,4 +191,18 @@ void App::lightPass()
 
         particle->render({}, 0);
     }
+}
+
+int App::LODtoShow(const ObjectManager* obj)
+{
+    glm::vec3 position = obj->getPosition(m_ViewMatrixCamera.getViewMatrix(), m_ProjMatrix);
+    double    distance = glm::distance2(position, glm::vec3(0));
+
+    // when distance is > LODdistance use 2nd LOD
+    if (distance > LODdistance && obj->getLODmax() > 1)
+    {
+        return 1;
+    }
+
+    return 0;
 }
