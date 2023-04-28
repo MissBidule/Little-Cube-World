@@ -13,6 +13,7 @@
 #include "glimac/SkinnedObjectManager.hpp"
 #include "glimac/TexObjectManager.hpp"
 #include "glimac/TrackballCamera.hpp"
+#include "glimac/quad_vertices.hpp"
 #include "glimac/sphere_vertices.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/scalar_constants.hpp"

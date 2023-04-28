@@ -3,7 +3,7 @@
 
 #include "ParticleManager.hpp"
 #include <glimac/common.hpp>
-#include <glimac/sphere_vertices.hpp>
+#include <glimac/quad_vertices.hpp>
 #include <memory>
 #include <vector>
 #include "glm/gtx/transform.hpp"
@@ -29,8 +29,7 @@ ParticleManager::ParticleManager()
             m_ParticlesContainer[i].color[3]};
 
         // Meshes init (no update here)
-        //  to be changed with the quad afterwards
-        m_meshes[i]->addManualMesh(glimac::sphere_vertices(1.f, 32, 16), color);
+        m_meshes[i]->addManualMesh(glimac::quad_vertices(1.f), color);
 
         m_ParticlesContainer[i].life           = -1.0f;
         m_ParticlesContainer[i].cameraPosition = -1.0f;
@@ -72,9 +71,13 @@ void ParticleManager::sortParticles()
 void ParticleManager::refreshParticles(glm::vec3 position, glm::vec3 cameraPosition, double delta)
 {
     // LA. Renouvellement régulier mais limité de particles
-    int newparticles = (int)(delta * ((float)MaxParticles / MaxLife));
+    int newparticles = (int)(delta * (static_cast<float>(MaxParticles) / MaxLife));
+    // if the program is too slow limit the particles
     if (newparticles > (int)(0.016f * 10000.0))
         newparticles = (int)(0.016f * 10000.0);
+    // if the program is too fast maintain the particles cycle
+    if (newparticles == 0)
+        newparticles = 1;
 
     for (int i = 0; i < newparticles; i++)
     {

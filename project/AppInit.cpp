@@ -57,7 +57,7 @@ void App::initAllObject()
         0.6,
         1};
 
-    m_earth->addManualMesh(glimac::sphere_vertices(1.f, 32, 16), earthColor);
+    m_earth->addManualMesh(glimac::quad_vertices(1.f), earthColor);
 
     //--------------------------------MOON---------------------
 
@@ -91,17 +91,15 @@ void App::initAllObject()
         0.6,
         1};
 
-    // to be changed with the quad afterwards
-    m_floor->addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
+    m_floor->addManualTexMesh(glimac::quad_vertices(1.f), floorTex);
 
-    glm::mat4 floorMMatrix = glm::translate(glm::mat4(1), glm::vec3(0, -15.f, 0));
-    floorMMatrix           = glm::scale(floorMMatrix, glm::vec3(16.f, 8.f, 16.f));
+    glm::mat4 floorMMatrix = glm::translate(glm::mat4(1), glm::vec3(0, -4.f, 0));
+    floorMMatrix           = glm::scale(floorMMatrix, glm::vec3(8.f, 1.f, 8.f));
     m_floor->m_MMatrix     = floorMMatrix;
 
     //--------------------------------LIMIT---------------------
 
-    // to be changed with the quad afterwards
-    m_limit->addManualTexMesh(glimac::sphere_vertices(1.f, 32, 16), floorTex);
+    m_limit->addManualTexMesh(glimac::quad_vertices(1.f), floorTex);
 
     glm::mat4 limitMMatrix = glm::scale(glm::mat4(1), glm::vec3(15.f, 15.f, 15.f));
     m_limit->m_MMatrix     = limitMMatrix;

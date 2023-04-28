@@ -98,7 +98,7 @@ void App::loop()
 
     // UPDATES OF ALL OBJECT MMATRIX IF IT IS UPDATED//
     //  MM OF EARTH
-    m_earth->m_MMatrix = glm::rotate(glm::mat4(1), -m_ctx.time(), glm::vec3(0, 1, 0));
+    m_earth->m_MMatrix = glm::mat4(1);
 
     // MM OF MOONS
     for (int i = 0; i < MOON_NB; i++)
