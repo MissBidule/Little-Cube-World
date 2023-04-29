@@ -251,6 +251,11 @@ bool SkinnedMesh::InitMaterials(const aiScene* pScene)
 
 void SkinnedMesh::GetBoneTransforms(float AnimationTimeSec, std::vector<glm::mat4>& Transforms)
 {
+    if (pScene->mNumAnimations == 0)
+    {
+        return;
+    }
+
     // PUT ANIMATION TICKS TO 0 TO STOP MOTION
     glm::mat4 Identity(1.f);
 
@@ -482,7 +487,7 @@ void SkinnedMesh::render()
     glBindVertexArray(0);
 }
 
-void SkinnedMesh::render(float seconds, GLint uBoneTransforms, GLint uKa, GLint uKd, GLint uKs, GLint uShininess, GLint uOpacity)
+void SkinnedMesh::render(float seconds, GLint uBoneTransforms, GLint uMovement, GLint uKa, GLint uKd, GLint uKs, GLint uShininess, GLint uOpacity)
 {
     std::vector<glm::mat4> Transforms;
     GetBoneTransforms(seconds, Transforms);
@@ -490,7 +495,11 @@ void SkinnedMesh::render(float seconds, GLint uBoneTransforms, GLint uKa, GLint 
     for (unsigned int i = 0; i < Transforms.size(); i++)
     {
         glUniformMatrix4fv(uBoneTransforms + i * 4, 1, GL_FALSE, glm::value_ptr(Transforms[i]));
+        glUniform1i(uMovement, 1);
     }
+
+    if (Transforms.size() == 0)
+        glUniform1i(uMovement, 0);
 
     glBindVertexArray(m_VAO);
 

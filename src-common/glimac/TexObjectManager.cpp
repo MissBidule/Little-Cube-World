@@ -2,7 +2,7 @@
 #include <glimac/common.hpp>
 
 TexObjectManager::TexObjectManager(const std::string& vsPath, const std::string& fsPath)
-    : ObjectManager(vsPath, fsPath), m_uTexKd(glGetUniformLocation(m_Program.id(), "uTexture.kd")), m_uTexKs(glGetUniformLocation(m_Program.id(), "uTexture.ks")), m_uShininess(glGetUniformLocation(m_Program.id(), "uTexture.shininess")), m_uOpacity(glGetUniformLocation(m_Program.id(), "uTexture.opacity"))
+    : ObjectManager(vsPath, fsPath), m_uTexKa(glGetUniformLocation(m_Program.id(), "uTexture.ka")), m_uTexKd(glGetUniformLocation(m_Program.id(), "uTexture.kd")), m_uTexKs(glGetUniformLocation(m_Program.id(), "uTexture.ks")), m_uShininess(glGetUniformLocation(m_Program.id(), "uTexture.shininess")), m_uOpacity(glGetUniformLocation(m_Program.id(), "uTexture.opacity"))
 {}
 
 std::vector<glm::mat4> TexObjectManager::getBoneTransforms([[maybe_unused]] int LOD)
@@ -21,8 +21,9 @@ void TexObjectManager::uniformRender(const std::vector<LightManager>& AllLights,
 {
     ObjectManager::uniformRender(AllLights, LOD, ViewMatrix, ProjMatrix);
 
-    glUniform1i(m_uTexKd, static_cast<int>(MAXTAB * 2 + 0));
-    glUniform1i(m_uTexKs, static_cast<int>(MAXTAB * 2 + 1));
+    glUniform1i(m_uTexKa, static_cast<int>(MAXTAB * 2 + 0));
+    glUniform1i(m_uTexKd, static_cast<int>(MAXTAB * 2 + 1));
+    glUniform1i(m_uTexKs, static_cast<int>(MAXTAB * 2 + 2));
     glUniform1f(m_uShininess, m_textures[LOD].shininess);
     glUniform1f(m_uOpacity, m_textures[LOD].opacity);
 }
@@ -32,8 +33,10 @@ void TexObjectManager::render(const std::vector<LightManager>& AllLights, const 
     prerender(AllLights);
 
     glActiveTexture(GL_TEXTURE0 + MAXTAB * 2);
-    glBindTexture(GL_TEXTURE_2D, m_textures[LOD].kd);
+    glBindTexture(GL_TEXTURE_2D, m_textures[LOD].ka);
     glActiveTexture(GL_TEXTURE1 + MAXTAB * 2);
+    glBindTexture(GL_TEXTURE_2D, m_textures[LOD].kd);
+    glActiveTexture(GL_TEXTURE2 + MAXTAB * 2);
     glBindTexture(GL_TEXTURE_2D, m_textures[LOD].ks);
 
     TexObjectManager::shadowRender(LOD);
@@ -41,6 +44,8 @@ void TexObjectManager::render(const std::vector<LightManager>& AllLights, const 
     glActiveTexture(GL_TEXTURE0 + MAXTAB * 2);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE1 + MAXTAB * 2);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE2 + MAXTAB * 2);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     postrender();

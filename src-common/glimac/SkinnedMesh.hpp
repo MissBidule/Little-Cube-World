@@ -25,7 +25,7 @@ public:
 
     void render();
 
-    void render(float seconds, GLint uBoneTransforms, GLint uKa, GLint uKd, GLint uKs, GLint uShininess, GLint uOpacity);
+    void render(float seconds, GLint uBoneTransforms, GLint uMovement, GLint uKa, GLint uKd, GLint uKs, GLint uShininess, GLint uOpacity);
 
     inline int NumBones() { return m_BoneNameToIndexMap.size(); }
 

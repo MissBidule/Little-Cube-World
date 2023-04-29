@@ -31,6 +31,7 @@ struct Color {
 };
 
 struct Texture {
+    GLuint ka;
     GLuint kd;
     GLuint ks;
 

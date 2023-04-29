@@ -12,6 +12,7 @@ private:
     GLint m_uShininess;
     GLint m_uOpacity;
     GLint m_uBoneTransforms;
+    GLint m_uMovement;
 
     p6::Context* m_ctx;
 

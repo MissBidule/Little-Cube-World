@@ -5,7 +5,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 SkinnedObjectManager::SkinnedObjectManager(const std::string& vsPath, const std::string& fsPath, p6::Context& ctx)
-    : ObjectManager(vsPath, fsPath), m_uKa(glGetUniformLocation(m_Program.id(), "uColor.ka")), m_uKd(glGetUniformLocation(m_Program.id(), "uColor.kd")), m_uKs(glGetUniformLocation(m_Program.id(), "uColor.ks")), m_uShininess(glGetUniformLocation(m_Program.id(), "uColor.shininess")), m_uOpacity(glGetUniformLocation(m_Program.id(), "uColor.opacity")), m_uBoneTransforms(glGetUniformLocation(m_Program.id(), "uBoneTransforms[0]")), m_ctx(&ctx)
+    : ObjectManager(vsPath, fsPath), m_uKa(glGetUniformLocation(m_Program.id(), "uColor.ka")), m_uKd(glGetUniformLocation(m_Program.id(), "uColor.kd")), m_uKs(glGetUniformLocation(m_Program.id(), "uColor.ks")), m_uShininess(glGetUniformLocation(m_Program.id(), "uColor.shininess")), m_uOpacity(glGetUniformLocation(m_Program.id(), "uColor.opacity")), m_uBoneTransforms(glGetUniformLocation(m_Program.id(), "uBoneTransforms[0]")), m_uMovement(glGetUniformLocation(m_Program.id(), "uMovement")), m_ctx(&ctx)
 {}
 
 std::vector<glm::mat4> SkinnedObjectManager::getBoneTransforms(int LOD)
@@ -30,7 +30,7 @@ void SkinnedObjectManager::render(const std::vector<LightManager>& AllLights, co
 {
     prerender(AllLights);
 
-    m_meshes[LOD]->render(m_ctx->time(), m_uBoneTransforms, m_uKa, m_uKd, m_uKs, m_uShininess, m_uOpacity);
+    m_meshes[LOD]->render(m_ctx->time(), m_uBoneTransforms, m_uMovement, m_uKa, m_uKd, m_uKs, m_uShininess, m_uOpacity);
 
     postrender();
 }

@@ -9,7 +9,7 @@
 
 class ObjectManager {
 protected:
-    const unsigned int MAXTAB = 7;
+    const unsigned int MAXTAB = 3;
 
     unsigned int m_LODsNB = 0;
 

@@ -52,4 +52,4 @@ function(add_project PROJECT_NAME)
     Cool__target_copy_folder(${TARGET_NAME} ${PROJECT_NAME}/shaders shaders)
 endfunction(add_project)
 
-add_project(project)
+add_project(scene)
