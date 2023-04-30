@@ -74,6 +74,18 @@ private:
     SkinnedObjectManager*              m_river  = nullptr;
     const int                          WLILY_NB = 5;
     std::vector<SkinnedObjectManager*> m_wlily;
+    const int                          ROCK_NB = 6;
+    std::vector<SkinnedObjectManager*> m_rocks;
+    const int                          LILROCK_NB = 15;
+    std::vector<SkinnedObjectManager*> m_lilrocks;
+    const int                          LONGTREE_NB = 5;
+    std::vector<SkinnedObjectManager*> m_longtrees;
+    const int                          BIGTREE_NB = 6;
+    const int                          TREESIDE   = 27;
+    const float                        TREEBEGIN  = -1.5f;
+    std::vector<SkinnedObjectManager*> m_bigtrees;
+    const int                          BUSH_NB = 9;
+    std::vector<SkinnedObjectManager*> m_bushes;
     TexObjectManager*                  m_floor = nullptr; // HELPER
     TexObjectManager*                  m_limit = nullptr;
 };

@@ -509,7 +509,7 @@ void SkinnedMesh::render(float seconds, GLint uBoneTransforms, GLint uMovement, 
 
         assert(MaterialIndex < m_Ka.size());
 
-        glUniform3fv(uKa, 1, glm::value_ptr(m_Kd[MaterialIndex] * 0.25f));
+        glUniform3fv(uKa, 1, glm::value_ptr(m_Kd[MaterialIndex] * 0.3f));
         glUniform3fv(uKd, 1, glm::value_ptr(m_Kd[MaterialIndex]));
         glUniform3fv(uKs, 1, glm::value_ptr(m_Ks[MaterialIndex]));
         glUniform1f(uShininess, m_Ni[MaterialIndex]);

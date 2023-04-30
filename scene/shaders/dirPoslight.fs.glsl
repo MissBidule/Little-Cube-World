@@ -147,14 +147,22 @@ void main() {
     vec3 maxLight = vec3(0);
     for (int i = 0; i < uLightNB; i++) {
 
+        //the multiple ifs prevent lag (idk why)
+        //calcShadowFactorPCF(i) is laggy
         if (uLight[i].type == 0) {
-            light = calcShadowFactorPCF(i) * blinnPhong(i);
+            if (i == 0) light = calcShadowFactorPCF(0) * blinnPhong(0);
+            if (i == 1) light = calcShadowFactorPCF(1) * blinnPhong(1);
+            if (i == 2) light = calcShadowFactorPCF(2) * blinnPhong(2);
         }
         else if (uLight[i].type == 1) {
-            light = calcShadowFactorPCF(i) * PointblinnPhong(i);
+            if (i == 0) light = calcShadowFactorPCF(0) * PointblinnPhong(0);
+            if (i == 1) light = calcShadowFactorPCF(1) * PointblinnPhong(1);
+            if (i == 2) light = calcShadowFactorPCF(2) * PointblinnPhong(2);
         }
         else {
-            light = calcShadowFactorPointLight(i) * PointblinnPhong(i);
+            if (i == 0) light = calcShadowFactorPointLight(0) * PointblinnPhong(0);
+            if (i == 1) light = calcShadowFactorPointLight(1) * PointblinnPhong(1);
+            if (i == 2) light = calcShadowFactorPointLight(2) * PointblinnPhong(2);
         }
 
         maxLight = vec3(max(maxLight.x, light.x), max(maxLight.y, light.y), max(maxLight.z, light.z));
