@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <iomanip>
 #include "ShadowMap.hpp"
 #include "img/src/Image.h"
 #include "p6/p6.h"

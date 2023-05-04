@@ -20,7 +20,7 @@ void App::init()
 
 void App::initAllObject()
 {
-    // HERE WE CREATE THE TYPE OF EACH OBJECT - SIMPLE / TEXTURE / ANIMATED AND WE ADD THEM TO THE GLOBAL LIST//
+    // HERE WE CREATE THE TYPE OF EACH OBJECT - SIMPLE / TEXTURE / FBX AND WE ADD THEM TO THE GLOBAL LIST//
 
     // sun
     m_sun = new SimpleObjectManager("shaders/3D.vs.glsl", "shaders/dirPoslight.fs.glsl");
@@ -50,12 +50,20 @@ void App::initAllObject()
         m_ObjList.emplace_back(rock);
     }
 
-    // little rocks
-    for (int i = 0; i < LILROCK_NB; i++)
+    // clovers
+    for (int i = 0; i < CLOVER_NB; i++)
     {
-        auto* lilrock = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
-        m_lilrocks.emplace_back(lilrock);
-        m_ObjList.emplace_back(lilrock);
+        auto* clover = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+        m_clovers.emplace_back(clover);
+        m_ObjList.emplace_back(clover);
+    }
+
+    // flowers
+    for (int i = 0; i < FLOWER_NB; i++)
+    {
+        auto* flower = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+        m_flowers.emplace_back(flower);
+        m_ObjList.emplace_back(flower);
     }
 
     // long trees
@@ -82,6 +90,38 @@ void App::initAllObject()
         m_ObjList.emplace_back(bush);
     }
 
+    // bridge
+    m_bridge = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_bridge);
+
+    // arch
+    m_arch = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_arch);
+
+    // vegetables
+    m_veggies = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_veggies);
+
+    // wheelbarrow
+    m_wheelb = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_wheelb);
+
+    // bench
+    m_bench = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_bench);
+
+    // fountain stone
+    m_fountainStone = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_fountainStone);
+
+    // house
+    m_house = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_house);
+
+    // fountain
+    m_fountain = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_fountain);
+
     // Floor HELPER
     m_floor = new TexObjectManager("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
     m_ObjList.emplace_back(m_floor);
@@ -95,9 +135,9 @@ void App::initAllObject()
     //--------------------------------SUN---------------------
 
     glimac::Color sunColor{
-        glm::vec3(1, 1, 0.45),
-        glm::vec3(1, 1, 0.45),
-        glm::vec3(1, 1, 0.45),
+        glm::vec3(1, 1, 0.35),
+        glm::vec3(1, 1, 0.35),
+        glm::vec3(1, 1, 0.35),
         1,
         1};
 
@@ -120,9 +160,11 @@ void App::initAllObject()
     m_river->addSkinnedMesh("assets/models/river.fbx");
 
     // MM OF RIVER
-    glm::mat4 river_MMatrix = glm::mat4(1);
+    glm::mat4 river_MMatrix = glm::translate(glm::mat4(1), glm::vec3(12.5f, 0, -12.5f));
     // BCS IT'S AN FBX OBJECT
-    river_MMatrix = glm::rotate(river_MMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    // river_MMatrix = glm::rotate(river_MMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    // idk what happened with the model ??
+    river_MMatrix = glm::scale(river_MMatrix, glm::vec3(0.01, 0.01, 0.01));
     //
     m_river->m_MMatrix = river_MMatrix;
 
@@ -182,9 +224,9 @@ void App::initAllObject()
         m_rocks[i]->m_MMatrix = rockMMatrix;
     }
 
-    //-------------------------LITTLE ROCKS---------------------
+    //-------------------------CLOVERS---------------------
 
-    std::vector<glm::vec3> lilrockT = {
+    std::vector<glm::vec3> cloverT = {
         glm::vec3(2, 0, -10),
         glm::vec3(2, 0, -17),
         glm::vec3(8, 0, -7),
@@ -201,13 +243,40 @@ void App::initAllObject()
         glm::vec3(21, 0, -16),
         glm::vec3(24, 0, -11)};
 
-    for (int i = 0; i < LILROCK_NB; i++)
+    for (int i = 0; i < CLOVER_NB; i++)
     {
-        m_lilrocks[i]->addSkinnedMesh("assets/models/littlerock.fbx");
+        m_clovers[i]->addSkinnedMesh("assets/models/clover.fbx");
+        m_clovers[i]->addSkinnedMesh("assets/models/clover2.fbx");
 
-        glm::mat4 lilrockMMatrix = glm::translate(glm::mat4(1), lilrockT[i]);
-        lilrockMMatrix           = glm::rotate(lilrockMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
-        m_lilrocks[i]->m_MMatrix = lilrockMMatrix;
+        glm::mat4 cloverMMatrix = glm::translate(glm::mat4(1), cloverT[i]);
+        cloverMMatrix           = glm::rotate(cloverMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        m_clovers[i]->m_MMatrix = cloverMMatrix;
+    }
+
+    //-------------------------FLOWERS---------------------
+
+    std::vector<glm::vec3> flowerT = {
+        glm::vec3(2, 0, -21),
+        glm::vec3(3, 0, -19),
+        glm::vec3(4, 0, -22),
+        glm::vec3(5, 0, -20),
+        glm::vec3(7, 0, -19),
+        glm::vec3(9, 0, -21),
+        glm::vec3(10, 0, -23),
+        glm::vec3(11, 0, -19),
+        glm::vec3(13, 0, -23),
+        glm::vec3(15, 0, -19),
+        glm::vec3(17, 0, -22),
+        glm::vec3(18, 0, -20)};
+
+    for (int i = 0; i < FLOWER_NB; i++)
+    {
+        m_flowers[i]->addSkinnedMesh("assets/models/flower.fbx");
+        m_flowers[i]->addSkinnedMesh("assets/models/flower2.fbx");
+
+        glm::mat4 flowerMMatrix = glm::translate(glm::mat4(1), flowerT[i]);
+        flowerMMatrix           = glm::rotate(flowerMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        m_flowers[i]->m_MMatrix = flowerMMatrix;
     }
 
     //-------------------------LONG TREES---------------------
@@ -216,7 +285,6 @@ void App::initAllObject()
         glm::vec3(1, 0, -19),
         glm::vec3(1, 0, -23),
         glm::vec3(3, 0, 0),
-        glm::vec3(3, 0, -7),
         glm::vec3(7, 0, -3)};
 
     for (int i = 0; i < LONGTREE_NB; i++)
@@ -297,6 +365,74 @@ void App::initAllObject()
         m_bushes[i]->m_MMatrix = bushMMatrix;
     }
 
+    //--------------------------------BRIDGE---------------------
+
+    m_bridge->addSkinnedMesh("assets/models/bridge.fbx");
+
+    glm::mat4 bridgeMMatrix = glm::translate(glm::mat4(1), glm::vec3(10, 0, -8));
+    bridgeMMatrix           = glm::rotate(bridgeMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_bridge->m_MMatrix     = bridgeMMatrix;
+
+    //--------------------------------ARCH---------------------
+
+    m_arch->addSkinnedMesh("assets/models/arch.fbx");
+
+    glm::mat4 archMMatrix = glm::translate(glm::mat4(1), glm::vec3(12, 0, -18));
+    archMMatrix           = glm::rotate(archMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_arch->m_MMatrix     = archMMatrix;
+
+    //--------------------------------VEGETABLES---------------------
+
+    m_veggies->addSkinnedMesh("assets/models/vegetables.fbx");
+    m_veggies->addSkinnedMesh("assets/models/vegetables2.fbx");
+
+    glm::mat4 veggieMMatrix = glm::translate(glm::mat4(1), glm::vec3(12, 0, -20));
+    veggieMMatrix           = glm::rotate(veggieMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_veggies->m_MMatrix    = veggieMMatrix;
+
+    //--------------------------------WHEELBARROW---------------------
+
+    m_wheelb->addSkinnedMesh("assets/models/wheelb.fbx");
+
+    glm::mat4 wheelbMMatrix = glm::translate(glm::mat4(1), glm::vec3(6, 0, -15));
+    wheelbMMatrix           = glm::rotate(wheelbMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_wheelb->m_MMatrix     = wheelbMMatrix;
+
+    //--------------------------------BENCH---------------------
+
+    m_bench->addSkinnedMesh("assets/models/bench.fbx");
+
+    glm::mat4 benchMMatrix = glm::translate(glm::mat4(1), glm::vec3(2, 0, -20));
+    benchMMatrix           = glm::rotate(benchMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    benchMMatrix           = glm::rotate(benchMMatrix, glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+    m_bench->m_MMatrix     = benchMMatrix;
+
+    //--------------------------------FOUNTAIN---------------------
+
+    m_fountain->addSkinnedMesh("assets/models/fountain.fbx");
+    m_fountain->addSkinnedMesh("assets/models/fountain2.fbx");
+
+    glm::mat4 fountainMMatrix = glm::translate(glm::mat4(1), glm::vec3(7.5f, 0.25f, -21.5f));
+    fountainMMatrix           = glm::scale(fountainMMatrix, glm::vec3(0.01, 0.01, 0.01));
+    m_fountain->m_MMatrix     = fountainMMatrix;
+
+    //--------------------------------FOUNTAIN STONE---------------------
+
+    m_fountainStone->addSkinnedMesh("assets/models/fountainStone.fbx");
+    m_fountainStone->addSkinnedMesh("assets/models/fountainStone2.fbx");
+
+    glm::mat4 fountainStoneMMatrix = glm::translate(glm::mat4(1), glm::vec3(7.5f, 0.25f, -21.5f));
+    fountainStoneMMatrix           = glm::rotate(fountainStoneMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_fountainStone->m_MMatrix     = fountainStoneMMatrix;
+
+    //--------------------------------HOUSE---------------------
+
+    m_house->addSkinnedMesh("assets/models/house.fbx");
+
+    glm::mat4 houseMMatrix = glm::translate(glm::mat4(1), glm::vec3(18.f, 0, -18.f));
+    houseMMatrix           = glm::rotate(houseMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_house->m_MMatrix     = houseMMatrix;
+
     //--------------------------------FLOOR---------------------
 
     img::Image floorImg = p6::load_image_buffer("assets/textures/test.jpg");
@@ -328,8 +464,8 @@ void App::initAllObject()
 
     m_limit->addManualTexMesh(glimac::quad_vertices(1.f), limitTex);
 
-    glm::mat4 limitMMatrix = glm::translate(glm::mat4(1), glm::vec3(12.5f, 10.f, -12.5f));
-    limitMMatrix           = glm::scale(limitMMatrix, glm::vec3(31.f, 29.f, 31.f));
+    glm::mat4 limitMMatrix = glm::translate(glm::mat4(1), glm::vec3(12.5f, 4.f, -12.5f));
+    limitMMatrix           = glm::scale(limitMMatrix, glm::vec3(31.f, 25.f, 31.f));
     m_limit->m_MMatrix     = limitMMatrix;
     // We ignore the shadow because we navigate IN the limits
     m_limit->ignoreShadowRender = true;
@@ -337,7 +473,11 @@ void App::initAllObject()
     // WE INIT ALL VAO AND VBO - NOTHING TO ADD HERE//
 
     // Do not forget particles//
-    for (auto& i : m_Particles.m_meshes)
+    for (auto& i : m_FireParticles.m_meshes)
+    {
+        i->initVaoVbo();
+    }
+    for (auto& i : m_ChimneyParticles.m_meshes)
     {
         i->initVaoVbo();
     }
@@ -351,8 +491,8 @@ void App::initAllObject()
 
     // CREATE LIGHTS up to 7
     m_LightList.emplace_back(glimac::LightType::Directional);
-    m_LightList[0].setPosition(glm::vec3(8, 50, 0));
-    m_LightList[0].m_color = glm::vec3(1.f, 1.f, .8f);
+    m_LightList[0].setPosition(glm::vec3(20, 50, 0));
+    m_LightList[0].m_color = glm::vec3(.8f, .8f, .6f);
 }
 
 void App::initViewProjection()

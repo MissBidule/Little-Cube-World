@@ -62,7 +62,8 @@ private:
 
     p6::Context                 m_ctx;
     std::vector<ObjectManager*> m_ObjList;
-    ParticleManager             m_Particles;
+    ParticleManager             m_FireParticles;
+    ParticleManager             m_ChimneyParticles;
     std::vector<LightManager>   m_LightList;
     std::vector<ShadowManager>  m_ShadowProgList;
     FreeflyCamera               m_ViewMatrixCamera;
@@ -76,8 +77,10 @@ private:
     std::vector<SkinnedObjectManager*> m_wlily;
     const int                          ROCK_NB = 6;
     std::vector<SkinnedObjectManager*> m_rocks;
-    const int                          LILROCK_NB = 15;
-    std::vector<SkinnedObjectManager*> m_lilrocks;
+    const int                          CLOVER_NB = 15;
+    std::vector<SkinnedObjectManager*> m_clovers;
+    const int                          FLOWER_NB = 12;
+    std::vector<SkinnedObjectManager*> m_flowers;
     const int                          LONGTREE_NB = 5;
     std::vector<SkinnedObjectManager*> m_longtrees;
     const int                          BIGTREE_NB = 6;
@@ -86,6 +89,14 @@ private:
     std::vector<SkinnedObjectManager*> m_bigtrees;
     const int                          BUSH_NB = 9;
     std::vector<SkinnedObjectManager*> m_bushes;
-    TexObjectManager*                  m_floor = nullptr; // HELPER
-    TexObjectManager*                  m_limit = nullptr;
+    SkinnedObjectManager*              m_bridge        = nullptr;
+    SkinnedObjectManager*              m_arch          = nullptr;
+    SkinnedObjectManager*              m_veggies       = nullptr;
+    SkinnedObjectManager*              m_wheelb        = nullptr;
+    SkinnedObjectManager*              m_bench         = nullptr;
+    SkinnedObjectManager*              m_fountain      = nullptr;
+    SkinnedObjectManager*              m_fountainStone = nullptr;
+    SkinnedObjectManager*              m_house         = nullptr;
+    TexObjectManager*                  m_floor         = nullptr; // HELPER
+    TexObjectManager*                  m_limit         = nullptr;
 };

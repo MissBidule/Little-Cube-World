@@ -10,7 +10,7 @@
 LightManager::LightManager(glimac::LightType type)
     : m_color(glm::vec3(0)), m_type(type), m_frontT(0), m_leftT(0), m_upR(0), m_leftR(0), m_position(glm::vec3(0)), m_ProjMatrix(glm::mat4(0))
 {
-    float valueOrtho = 35.f;
+    float valueOrtho = 45.f;
 
     switch (type)
     {

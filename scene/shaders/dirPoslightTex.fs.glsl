@@ -1,7 +1,9 @@
 #version 330
 
+const int MAXTAB = 4;
+
 //variables d'entrées
-in vec4 vLightSpacePos[3];
+in vec4 vLightSpacePos[MAXTAB];
 in vec3 vPosition_vs; //w0 normalize(-vPos)
 in vec3 vNormal_vs;
 in vec2 vTexCoords;
@@ -28,15 +30,17 @@ struct Light {
     float ufar_plane;
 };
 
-uniform Light uLight[3];
+uniform Light uLight[MAXTAB];
 
 uniform sampler2D uShadowMap_0;
 uniform sampler2D uShadowMap_1;
 uniform sampler2D uShadowMap_2;
+uniform sampler2D uShadowMap_3;
 
 uniform samplerCube uShadowCubeMap_0;
 uniform samplerCube uShadowCubeMap_1;
 uniform samplerCube uShadowCubeMap_2;
+uniform samplerCube uShadowCubeMap_3;
 
 uniform int uLightNB;
 
@@ -78,6 +82,9 @@ float calcShadowFactorPointLight(int light) {
         break;
     case 2:
         SampledDistance = texture(uShadowCubeMap_2, LightToVertex).r;
+        break;
+    case 3:
+        SampledDistance = texture(uShadowCubeMap_3, LightToVertex).r;
         break;
     }
 
@@ -127,6 +134,9 @@ float calcShadowFactorPCF(int light) {
             case 2:
                 depth = texture(uShadowMap_2, UVCoords.xy + Offset).x;
                 break;
+            case 3:
+                depth = texture(uShadowMap_3, UVCoords.xy + Offset).x;
+                break;
             }
 
             if (depth + bias < UVCoords.z)
@@ -146,14 +156,22 @@ void main() {
     vec3 maxLight = vec3(0);
     for (int i = 0; i < uLightNB; i++) {
 
+        //the multiple ifs prevent lag (idk why)
+        //calcShadowFactorPCF(i) is laggy
         if (uLight[i].type == 0) {
-            light = calcShadowFactorPCF(i) * blinnPhong(i);
+            if (i == 0) light = calcShadowFactorPCF(0) * blinnPhong(0);
+            if (i == 1) light = calcShadowFactorPCF(1) * blinnPhong(1);
+            if (i == 2) light = calcShadowFactorPCF(2) * blinnPhong(2);
         }
         else if (uLight[i].type == 1) {
-            light = calcShadowFactorPCF(i) * PointblinnPhong(i);
+            if (i == 0) light = calcShadowFactorPCF(0) * PointblinnPhong(0);
+            if (i == 1) light = calcShadowFactorPCF(1) * PointblinnPhong(1);
+            if (i == 2) light = calcShadowFactorPCF(2) * PointblinnPhong(2);
         }
         else {
-            light = calcShadowFactorPointLight(i) * PointblinnPhong(i);
+            if (i == 0) light = calcShadowFactorPointLight(0) * PointblinnPhong(0);
+            if (i == 1) light = calcShadowFactorPointLight(1) * PointblinnPhong(1);
+            if (i == 2) light = calcShadowFactorPointLight(2) * PointblinnPhong(2);
         }
 
         maxLight = vec3(max(maxLight.x, light.x), max(maxLight.y, light.y), max(maxLight.z, light.z));

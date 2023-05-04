@@ -93,7 +93,9 @@ void App::loop()
     // ALL OBJECTS UPDATES//
 
     // LA. Création et actualisation des particules de particule
-    m_Particles.refreshParticles(glm::vec3(14.f, 0.5f, -2.f), m_ViewMatrixCamera.getPosition(), m_ctx.delta_time());
+    m_FireParticles.refreshParticles(glm::vec3(14.f, 0.5f, -2.f), m_ViewMatrixCamera.getPosition(), m_ctx.delta_time());
+
+    m_ChimneyParticles.refreshParticles(glm::vec3(21.f, 6.5f, -22.f), m_ViewMatrixCamera.getPosition(), m_ctx.delta_time());
 
     // POSITION OF LIGHT IF IT IS UPDATED//
     m_LightList[0].rotateLeft(glm::degrees(m_ctx.delta_time()));
@@ -170,7 +172,16 @@ void App::lightPass()
     }
 
     // PARTICLES //
-    for (auto& particle : m_Particles.m_meshes)
+    for (auto& particle : m_FireParticles.m_meshes)
+    {
+        particle->m_Program.use();
+
+        particle->uniformRender(std::vector<LightManager>(), 0, m_ViewMatrixCamera.getViewMatrix(), m_ProjMatrix);
+
+        particle->render({}, 0);
+    }
+
+    for (auto& particle : m_ChimneyParticles.m_meshes)
     {
         particle->m_Program.use();
 

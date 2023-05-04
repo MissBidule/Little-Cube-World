@@ -1,7 +1,9 @@
 #version 330
 
+const int MAXTAB = 4;
+
 //variables d'entrées
-in vec4 vLightSpacePos[3];
+in vec4 vLightSpacePos[MAXTAB];
 in vec3 vPosition_vs; //w0 normalize(-vPos)
 in vec3 vNormal_vs;
 in vec2 vTexCoords;
@@ -28,15 +30,17 @@ struct Light {
     float ufar_plane;
 };
 
-uniform Light uLight[3];
+uniform Light uLight[MAXTAB];
 
 uniform sampler2D uShadowMap_0;
 uniform sampler2D uShadowMap_1;
 uniform sampler2D uShadowMap_2;
+uniform sampler2D uShadowMap_3;
 
 uniform samplerCube uShadowCubeMap_0;
 uniform samplerCube uShadowCubeMap_1;
 uniform samplerCube uShadowCubeMap_2;
+uniform samplerCube uShadowCubeMap_3;
 
 uniform int uLightNB;
 
@@ -79,6 +83,9 @@ float calcShadowFactorPointLight(int light) {
         break;
     case 2:
         SampledDistance = texture(uShadowCubeMap_2, LightToVertex).r;
+        break;
+    case 3:
+        SampledDistance = texture(uShadowCubeMap_3, LightToVertex).r;
         break;
     }
 
@@ -127,6 +134,9 @@ float calcShadowFactorPCF(int light) {
                 break;
             case 2:
                 depth = texture(uShadowMap_2, UVCoords.xy + Offset).x;
+                break;
+            case 3:
+                depth = texture(uShadowMap_3, UVCoords.xy + Offset).x;
                 break;
             }
 
