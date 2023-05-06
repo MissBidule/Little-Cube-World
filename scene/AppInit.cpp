@@ -1,6 +1,7 @@
 #include <cstdarg>
 #include <glimac/SimpleObjectManager.hpp>
 #include <glimac/SkinnedObjectManager.hpp>
+#include <glimac/TrackballCamera.hpp>
 #include <vector>
 #include "App.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -25,6 +26,10 @@ void App::initAllObject()
     // sun
     m_sun = new SimpleObjectManager("shaders/3D.vs.glsl", "shaders/dirPoslight.fs.glsl");
     m_ObjList.emplace_back(m_sun);
+
+    // moon
+    m_moon = new SimpleObjectManager("shaders/3D.vs.glsl", "shaders/dirPoslight.fs.glsl");
+    m_ObjList.emplace_back(m_moon);
 
     // ground
     m_ground = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
@@ -122,13 +127,28 @@ void App::initAllObject()
     m_fountain = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
     m_ObjList.emplace_back(m_fountain);
 
-    // Floor HELPER
-    m_floor = new TexObjectManager("shaders/3D.vs.glsl", "shaders/dirPoslightTex.fs.glsl");
-    m_ObjList.emplace_back(m_floor);
+    // cat
+    m_cat = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_cat);
+
+    // cat head
+    m_catHead = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_catHead);
+
+    // fire
+    m_fire = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_fire);
+
+    // fire wood
+    m_firewood = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+    m_ObjList.emplace_back(m_firewood);
 
     // Limit
     m_limit = new TexObjectManager("shaders/3D.vs.glsl", "shaders/limit.fs.glsl");
     m_ObjList.emplace_back(m_limit);
+
+    // Main character mesh
+    m_Character.createCharacter("assets/models/character.fbx", m_ctx);
 
     // THEN WE ADD THE MAIN CONFIGURATION (COLOR/TEXTURE/MODEL) AND MOVEMENT IF THE OBJECT IS STATIC//
 
@@ -143,6 +163,18 @@ void App::initAllObject()
 
     m_sun->addManualMesh(glimac::quad_vertices(1.f), sunColor);
     m_sun->ignoreShadowRender = true;
+
+    //--------------------------------MOON---------------------
+
+    glimac::Color moonColor{
+        glm::vec3(1, 1, 0.55),
+        glm::vec3(1, 1, 0.55),
+        glm::vec3(1, 1, 0.55),
+        1,
+        1};
+
+    m_moon->addManualMesh(glimac::quad_vertices(1.f), moonColor);
+    m_moon->ignoreShadowRender = true;
 
     //--------------------------------GROUND---------------------
 
@@ -161,8 +193,6 @@ void App::initAllObject()
 
     // MM OF RIVER
     glm::mat4 river_MMatrix = glm::translate(glm::mat4(1), glm::vec3(12.5f, 0, -12.5f));
-    // BCS IT'S AN FBX OBJECT
-    // river_MMatrix = glm::rotate(river_MMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
     // idk what happened with the model ??
     river_MMatrix = glm::scale(river_MMatrix, glm::vec3(0.01, 0.01, 0.01));
     //
@@ -402,9 +432,10 @@ void App::initAllObject()
 
     m_bench->addSkinnedMesh("assets/models/bench.fbx");
 
-    glm::mat4 benchMMatrix = glm::translate(glm::mat4(1), glm::vec3(2, 0, -20));
+    glm::mat4 benchMMatrix = glm::translate(glm::mat4(1), glm::vec3(2, 0, -20.375));
     benchMMatrix           = glm::rotate(benchMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
     benchMMatrix           = glm::rotate(benchMMatrix, glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+    benchMMatrix           = glm::scale(benchMMatrix, glm::vec3(0.75f, 0.75f, 0.75f));
     m_bench->m_MMatrix     = benchMMatrix;
 
     //--------------------------------FOUNTAIN---------------------
@@ -412,6 +443,7 @@ void App::initAllObject()
     m_fountain->addSkinnedMesh("assets/models/fountain.fbx");
     m_fountain->addSkinnedMesh("assets/models/fountain2.fbx");
 
+    // idk what happened with the model ??
     glm::mat4 fountainMMatrix = glm::translate(glm::mat4(1), glm::vec3(7.5f, 0.25f, -21.5f));
     fountainMMatrix           = glm::scale(fountainMMatrix, glm::vec3(0.01, 0.01, 0.01));
     m_fountain->m_MMatrix     = fountainMMatrix;
@@ -433,27 +465,43 @@ void App::initAllObject()
     houseMMatrix           = glm::rotate(houseMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
     m_house->m_MMatrix     = houseMMatrix;
 
-    //--------------------------------FLOOR---------------------
+    //--------------------------------CAT---------------------
 
-    img::Image floorImg = p6::load_image_buffer("assets/textures/test.jpg");
+    m_cat->addSkinnedMesh("assets/models/cat.fbx");
 
-    glimac::Texture floorTex{
-        glimac::textureToUVtex(floorImg),
-        glimac::textureToUVtex(floorImg),
-        glimac::textureToUVtex(floorImg),
-        0.6,
-        0.1};
+    // idk what happened with the model ??
+    glm::mat4 catMMatrix = glm::translate(glm::mat4(1), glm::vec3(20.8f, 1.5f, -14.f));
+    catMMatrix           = glm::scale(catMMatrix, glm::vec3(0.01, 0.01, 0.01));
+    m_cat->m_MMatrix     = catMMatrix;
 
-    m_floor->addManualTexMesh(glimac::quad_vertices(1.f), floorTex);
+    //--------------------------------CAT HEAD---------------------
 
-    glm::mat4 floorMMatrix      = glm::translate(glm::mat4(1), glm::vec3(12.5f, -0.4f, -12.5f));
-    floorMMatrix                = glm::scale(floorMMatrix, glm::vec3(25.f, 1.f, 25.f));
-    m_floor->m_MMatrix          = floorMMatrix;
-    m_floor->ignoreShadowRender = true;
+    m_catHead->addSkinnedMesh("assets/models/catHead.fbx");
+
+    glm::mat4 catHeadMMatrix = glm::translate(glm::mat4(1), glm::vec3(20.8f, 1.55f, -14.f));
+    catHeadMMatrix           = glm::rotate(catHeadMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_catHead->m_MMatrix     = catHeadMMatrix;
+
+    //--------------------------------FIRE---------------------
+
+    m_fire->addSkinnedMesh("assets/models/fire.fbx");
+
+    glm::mat4 fireMMatrix      = glm::translate(glm::mat4(1), glm::vec3(13.f, 0.f, -1.f));
+    fireMMatrix                = glm::rotate(fireMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_fire->m_MMatrix          = fireMMatrix;
+    m_fire->ignoreShadowRender = true;
+
+    //--------------------------------FIRE WOOD---------------------
+
+    m_firewood->addSkinnedMesh("assets/models/firewood.fbx");
+
+    glm::mat4 firewoodMMatrix = glm::translate(glm::mat4(1), glm::vec3(13.f, 0.f, -1.f));
+    firewoodMMatrix           = glm::rotate(firewoodMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+    m_firewood->m_MMatrix     = firewoodMMatrix;
 
     //--------------------------------LIMIT---------------------
 
-    img::Image limitImg = p6::load_image_buffer("assets/textures/test.png");
+    img::Image limitImg = p6::load_image_buffer("assets/textures/limit.png");
 
     glimac::Texture limitTex{
         glimac::textureToUVtex(limitImg),
@@ -471,6 +519,8 @@ void App::initAllObject()
     m_limit->ignoreShadowRender = true;
 
     // WE INIT ALL VAO AND VBO - NOTHING TO ADD HERE//
+
+    m_Character.initVaoVbo();
 
     // Do not forget particles//
     for (auto& i : m_FireParticles.m_meshes)
@@ -491,15 +541,24 @@ void App::initAllObject()
 
     // CREATE LIGHTS up to 7
     m_LightList.emplace_back(glimac::LightType::Directional);
-    m_LightList[0].setPosition(glm::vec3(20, 50, 0));
+    m_LightList[0].setPosition(glm::vec3(0, 50, 0));
     m_LightList[0].m_color = glm::vec3(.8f, .8f, .6f);
+    m_LightList.emplace_back(glimac::LightType::Point);
+    m_LightList[1].setPosition(glm::vec3(14.f, 0.625f, -2.f));
+    m_LightList[1].m_color = glm::vec3(.5f, .3f, .1f);
+    m_LightList.emplace_back(glimac::LightType::Point);
+    m_LightList[2].m_color = glm::vec3(.3f, .3f, .1f);
+
+    m_Character.setLight(m_LightList[2]);
+
+    m_LightList[0].rotateLeft(90);
 }
 
 void App::initViewProjection()
 {
-    // MAIN CAMERA
-    m_ViewMatrixCamera = FreeflyCamera();
-    m_ViewMatrixCamera.setPos(glm::vec3(13, 2, -5));
+    // THE CHARACTER AND CAMERA
+    m_Character.setPosition(glm::vec3(13, 1.5, -5));
+    m_Character.zoom(-2.f);
 
     // PROJECTION
     m_ProjMatrix = glm::perspective(glm::radians(70.f), m_ctx.aspect_ratio(), 0.1f, 100.f);

@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <glimac/ParticleManager.hpp>
 #include <glimac/SimpleObjectManager.hpp>
+#include <glimac/character.hpp>
 #include <glimac/common.hpp>
 #include <iostream>
 #include <vector>
@@ -66,11 +67,14 @@ private:
     ParticleManager             m_ChimneyParticles;
     std::vector<LightManager>   m_LightList;
     std::vector<ShadowManager>  m_ShadowProgList;
-    FreeflyCamera               m_ViewMatrixCamera;
+    Character                   m_Character;
     glm::mat4                   m_ProjMatrix;
+    float                       m_skyTime = 1;
+    bool                        m_night   = true;
 
     // Objects of the scene
     SimpleObjectManager*               m_sun    = nullptr;
+    SimpleObjectManager*               m_moon   = nullptr;
     SkinnedObjectManager*              m_ground = nullptr;
     SkinnedObjectManager*              m_river  = nullptr;
     const int                          WLILY_NB = 5;
@@ -97,6 +101,9 @@ private:
     SkinnedObjectManager*              m_fountain      = nullptr;
     SkinnedObjectManager*              m_fountainStone = nullptr;
     SkinnedObjectManager*              m_house         = nullptr;
-    TexObjectManager*                  m_floor         = nullptr; // HELPER
+    SkinnedObjectManager*              m_cat           = nullptr;
+    SkinnedObjectManager*              m_catHead       = nullptr;
+    SkinnedObjectManager*              m_fire          = nullptr;
+    SkinnedObjectManager*              m_firewood      = nullptr;
     TexObjectManager*                  m_limit         = nullptr;
 };

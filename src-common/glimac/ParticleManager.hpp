@@ -13,9 +13,9 @@
 class ParticleManager {
 private:
     // LA. Choix du nombre de particules
-    static const int MaxParticles = 40;
+    static const int MaxParticles = 30;
     // LA. Temps de survie en secondes d'une particule
-    const float MaxLife = 1.f;
+    const float MaxLife = 2.f;
     // LA. Containeur de particules
     std::vector<glimac::Particle> m_ParticlesContainer;
     int                           m_LastUsedParticle = 0;

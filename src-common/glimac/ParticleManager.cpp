@@ -126,8 +126,8 @@ void ParticleManager::refreshParticles(glm::vec3 position, glm::vec3 cameraPosit
                 p.color.a = 1 - (p.stade / static_cast<float>(m_nbStades));
 
                 // Simulate simple physics : gravity only, no collisions
-                p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float)delta * 0.5f;
-                float speedFactor = 0.15f;
+                p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float)delta * 0.2f;
+                float speedFactor = 0.08f;
                 p.position += p.speed * (float)delta * speedFactor;
                 p.cameraPosition = pow(distance(p.position, cameraPosition), 2);
             }

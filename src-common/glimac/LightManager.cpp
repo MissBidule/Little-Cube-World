@@ -23,7 +23,7 @@ LightManager::LightManager(glimac::LightType type)
         break;
 
     case glimac::LightType::Point:
-        m_ProjMatrix = glm::perspective(glm::radians(90.f), 4096 / static_cast<float>(4096), 0.1f, m_far_plane);
+        m_ProjMatrix = glm::perspective(glm::radians(90.f), 4096 / static_cast<float>(4096), 0.01f, m_far_plane);
         break;
     }
 }
@@ -85,7 +85,7 @@ void LightManager::moveFront(float t)
 {
     if (m_type == glimac::LightType::Directional)
     {
-        m_ViewMatrixDirLight.moveFront(t);
+        m_ViewMatrixDirLight.zoom(t);
         return;
     }
     m_ViewMatrixSpotPointLight.moveFront(t);
@@ -126,6 +126,15 @@ void LightManager::rotateLeft(float degrees)
         m_ViewMatrixSpotPointLight.rotateLeft(-degrees);
     }
     m_leftR += degrees;
+}
+
+void LightManager::setPhi(float degrees)
+{
+    if (m_type == glimac::LightType::Point)
+    {
+        m_ViewMatrixSpotPointLight.setPhi(degrees);
+    }
+    m_leftR = degrees;
 }
 
 glm::mat4 LightManager::getMMatrix() const

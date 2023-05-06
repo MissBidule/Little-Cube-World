@@ -10,8 +10,13 @@ SkinnedObjectManager::SkinnedObjectManager(const std::string& vsPath, const std:
 
 std::vector<glm::mat4> SkinnedObjectManager::getBoneTransforms(int LOD)
 {
+    float time = m_ctx->time();
+
+    if (!autoplay)
+        time = 0;
+
     std::vector<glm::mat4> Transforms;
-    m_meshes[LOD]->GetBoneTransforms(m_ctx->time(), Transforms);
+    m_meshes[LOD]->GetBoneTransforms(time, Transforms);
     return Transforms;
 }
 
@@ -30,7 +35,12 @@ void SkinnedObjectManager::render(const std::vector<LightManager>& AllLights, co
 {
     prerender(AllLights);
 
-    m_meshes[LOD]->render(m_ctx->time(), m_uBoneTransforms, m_uMovement, m_uKa, m_uKd, m_uKs, m_uShininess, m_uOpacity);
+    float time = m_ctx->time();
+
+    if (!autoplay)
+        time = 0;
+
+    m_meshes[LOD]->render(time, m_uBoneTransforms, m_uMovement, m_uKa, m_uKd, m_uKs, m_uShininess, m_uOpacity);
 
     postrender();
 }

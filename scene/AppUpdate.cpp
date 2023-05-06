@@ -23,19 +23,19 @@ void App::keyEvent()
     // CAMERA CONTROL
     if (Z)
     {
-        m_ViewMatrixCamera.moveFront(0.1);
+        m_Character.moveFront(0.15);
     }
     if (Q)
     {
-        m_ViewMatrixCamera.moveLeft(0.1);
+        m_Character.moveLeft(0.15);
     }
     if (S)
     {
-        m_ViewMatrixCamera.moveFront(-0.1);
+        m_Character.moveFront(-0.15);
     }
     if (D)
     {
-        m_ViewMatrixCamera.moveLeft(-0.1);
+        m_Character.moveLeft(-0.15);
     }
 }
 
@@ -80,8 +80,8 @@ void App::actionEvent()
     };
 
     m_ctx.mouse_dragged = [&](const p6::MouseDrag& button) {
-        m_ViewMatrixCamera.rotateLeft(button.delta.x * 50);
-        m_ViewMatrixCamera.rotateUp(-button.delta.y * 50);
+        m_Character.rotateLeft(button.delta.x * 50);
+        m_Character.rotateUp(-button.delta.y * 50);
     };
 }
 
@@ -92,20 +92,31 @@ void App::loop()
 
     // ALL OBJECTS UPDATES//
 
-    // LA. Création et actualisation des particules de particule
-    m_FireParticles.refreshParticles(glm::vec3(14.f, 0.5f, -2.f), m_ViewMatrixCamera.getPosition(), m_ctx.delta_time());
+    // character update
+    m_Character.m_isMoving = Z || Q || S || D;
+    m_Character.updatePosition();
 
-    m_ChimneyParticles.refreshParticles(glm::vec3(21.f, 6.5f, -22.f), m_ViewMatrixCamera.getPosition(), m_ctx.delta_time());
+    // LA. Création et actualisation des particules de particule
+    m_FireParticles.refreshParticles(glm::vec3(14.f, 0.625f, -2.f), m_Character.getPosition(), m_ctx.delta_time());
+
+    m_ChimneyParticles.refreshParticles(glm::vec3(21.f, 6.5f, -22.f), m_Character.getPosition(), m_ctx.delta_time());
 
     // POSITION OF LIGHT IF IT IS UPDATED//
-    m_LightList[0].rotateLeft(glm::degrees(m_ctx.delta_time()));
+    m_LightList[0].rotateUp(m_ctx.delta_time() * 0.05f * 180.f);
 
     // UPDATES OF ALL OBJECT MMATRIX IF IT IS UPDATED//
     glm::vec3 lightPosition = glm::vec3(m_LightList[0].getMMatrix() * glm::vec4(m_LightList[0].getPosition(), 1));
     glm::mat4 sun_MMatrix   = glm::translate(glm::mat4(1), lightPosition);
-    sun_MMatrix             = glm::translate(sun_MMatrix, glm::vec3(12.5f, 0, -12.5f));
+    sun_MMatrix             = glm::translate(sun_MMatrix, glm::vec3(12.5f, 0, -20.f));
     sun_MMatrix             = glm::scale(sun_MMatrix, glm::vec3(10, 10, 10));
-    m_sun->m_MMatrix        = sun_MMatrix;
+
+    m_sun->m_MMatrix = sun_MMatrix;
+
+    glm::mat4 moon_MMatrix = glm::translate(glm::mat4(1), glm::vec3(-lightPosition.x, -lightPosition.y, lightPosition.z));
+    moon_MMatrix           = glm::translate(moon_MMatrix, glm::vec3(12.5f, 0, -20.f));
+    moon_MMatrix           = glm::scale(moon_MMatrix, glm::vec3(5, 5, 5));
+
+    m_moon->m_MMatrix = moon_MMatrix;
 }
 
 void App::shadowPass()
@@ -144,6 +155,9 @@ void App::shadowPass()
                 obj->shadowRender(LOD);
             }
 
+            m_ShadowProgList[i].SendOBJtransform(m_Character.getMMatrix(), m_Character.getBoneTransforms());
+            m_Character.shadowRender();
+
             glBindVertexArray(0);
         }
     }
@@ -155,7 +169,23 @@ void App::lightPass()
 
     glViewport(0, 0, m_ctx.current_canvas_width(), m_ctx.current_canvas_height());
 
-    glClearColor(0.2f, 0.2f, 0.2f, 1.f);
+    m_skyTime += (m_night ? -m_ctx.delta_time() * 0.05 : m_ctx.delta_time() * 0.05);
+
+    if (m_skyTime > 1)
+    {
+        m_night   = true;
+        m_skyTime = 1;
+    }
+    if (m_skyTime < 0)
+    {
+        m_night   = false;
+        m_skyTime = 0;
+    }
+
+    glClearColor(m_skyTime * 0.4f, m_skyTime * 0.7f, 0.2f + m_skyTime * 0.8f, 1.f);
+
+    // turns the light on during the night
+    m_Character.m_switch = m_skyTime <= 0.5;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -166,17 +196,23 @@ void App::lightPass()
 
         obj->m_Program.use();
 
-        obj->uniformRender(m_LightList, LOD, m_ViewMatrixCamera.getViewMatrix(), m_ProjMatrix);
+        obj->uniformRender(m_LightList, LOD, m_Character.getViewMatrix(), m_ProjMatrix);
 
         obj->render(m_LightList, LOD);
     }
+
+    m_Character.use();
+
+    m_Character.uniformRender(m_LightList, m_ProjMatrix);
+
+    m_Character.render(m_LightList);
 
     // PARTICLES //
     for (auto& particle : m_FireParticles.m_meshes)
     {
         particle->m_Program.use();
 
-        particle->uniformRender(std::vector<LightManager>(), 0, m_ViewMatrixCamera.getViewMatrix(), m_ProjMatrix);
+        particle->uniformRender(std::vector<LightManager>(), 0, m_Character.getViewMatrix(), m_ProjMatrix);
 
         particle->render({}, 0);
     }
@@ -185,7 +221,7 @@ void App::lightPass()
     {
         particle->m_Program.use();
 
-        particle->uniformRender(std::vector<LightManager>(), 0, m_ViewMatrixCamera.getViewMatrix(), m_ProjMatrix);
+        particle->uniformRender(std::vector<LightManager>(), 0, m_Character.getViewMatrix(), m_ProjMatrix);
 
         particle->render({}, 0);
     }
@@ -193,7 +229,7 @@ void App::lightPass()
 
 int App::LODtoShow(const ObjectManager* obj)
 {
-    glm::vec3 position = obj->getPosition(m_ViewMatrixCamera.getViewMatrix(), m_ProjMatrix);
+    glm::vec3 position = obj->getPosition(m_Character.getViewMatrix(), m_ProjMatrix);
     double    distance = glm::distance2(position, glm::vec3(0));
 
     // when distance is > LODdistance use 2nd LOD

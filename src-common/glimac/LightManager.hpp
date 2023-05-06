@@ -20,6 +20,7 @@ public:
     void moveLeft(float t);
     void rotateUp(float degrees);
     void rotateLeft(float degrees);
+    void setPhi(float degrees);
 
     glm::mat4         getMMatrix() const;
     glm::mat4         getVMatrix() const;

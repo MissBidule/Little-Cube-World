@@ -158,7 +158,7 @@ void main() {
     for (int i = 0; i < uLightNB; i++) {
 
         //the multiple ifs prevent lag (idk why)
-        //calcShadowFactorPCF(i) is laggy
+        //calcShadowFactor[...](i) is laggy
         if (uLight[i].type == 0) {
             if (i == 0) light = calcShadowFactorPCF(0) * blinnPhong(0);
             if (i == 1) light = calcShadowFactorPCF(1) * blinnPhong(1);
