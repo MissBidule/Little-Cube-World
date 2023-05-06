@@ -6,7 +6,7 @@ layout(location = 2) in vec2 aVertexTexCoords;
 layout(location = 3) in ivec4 aBoneIDs;
 layout(location = 4) in vec4 aWeights;
 
-const int MAXTAB = 4;
+const int MAXTAB = 3;
 
 //Variables de sorties
 out vec3 vPosition_vs;
