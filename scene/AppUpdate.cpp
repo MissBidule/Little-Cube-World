@@ -107,7 +107,7 @@ void App::loop()
 
     if(!timeIsPaused){
         // POSITION OF LIGHT IF IT IS UPDATED//
-        m_LightList[0].rotateUp(m_ctx.delta_time() * 0.05f * 180.f);
+        m_LightList[0].rotateUp(m_ctx.delta_time() * 0.05f * 180.f * timeCoefficient);
 
         // UPDATES OF ALL OBJECT MMATRIX IF IT IS UPDATED//
         glm::vec3 lightPosition = glm::vec3(m_LightList[0].getMMatrix() * glm::vec4(m_LightList[0].getPosition(), 1));
@@ -161,6 +161,17 @@ void App::shadowPass()
                 obj->shadowRender(LOD);
             }
 
+             for (auto& currentBoid : m_Boids)
+            {
+                if (currentBoid->ignoreShadowRender)
+                    continue;
+
+                int LOD = LODtoShow(currentBoid);
+
+                m_ShadowProgList[i].SendOBJtransform(currentBoid->m_MMatrix, currentBoid->getBoneTransforms(LOD));
+                currentBoid->shadowRender(LOD);
+            }
+
             m_ShadowProgList[i].SendOBJtransform(m_Character.getMMatrix(), m_Character.getBoneTransforms());
             m_Character.shadowRender();
 
@@ -177,11 +188,12 @@ void App::lightPass()
 
     ImGui::Begin("Scene settings");
     ImGui::Checkbox("Pause Time", &timeIsPaused);
+    ImGui::SliderFloat("time coefficient", &timeCoefficient, .01f, 2.f);
     ImGui::End();
 
 
     if(!timeIsPaused)
-        m_skyTime += (m_night ? -m_ctx.delta_time() * 0.05 : m_ctx.delta_time() * 0.05);
+        m_skyTime += (m_night ? -m_ctx.delta_time() * 0.05 : m_ctx.delta_time() * 0.05)*timeCoefficient;
 
     if (m_skyTime > 1)
     {
@@ -212,6 +224,17 @@ void App::lightPass()
         obj->uniformRender(m_LightList, LOD, m_Character.getViewMatrix(), m_ProjMatrix);
 
         obj->render(m_LightList, LOD);
+    }
+
+     for (auto& currentBoid : m_Boids)
+    {
+        int LOD = LODtoShow(currentBoid);
+
+        currentBoid->m_Program.use();
+
+        currentBoid->uniformRender(m_LightList, LOD, m_Character.getViewMatrix(), m_ProjMatrix);
+
+        currentBoid->render(m_LightList, LOD);
     }
 
     m_Character.use();

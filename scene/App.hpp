@@ -75,6 +75,7 @@ private:
     glm::mat4                   m_ProjMatrix;
     float                       m_skyTime = 1;
     bool                        m_night   = true;
+    float timeCoefficient = 1.f;
 
     // Objects of the scene
     SimpleObjectManager*               m_sun    = nullptr;
