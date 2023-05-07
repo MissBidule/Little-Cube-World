@@ -24,6 +24,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/vector_angle.hpp"
 #include "p6/p6.h"
+#include "boids/Flock.hpp"
 
 class App {
 public:
@@ -56,6 +57,8 @@ private:
     int const shadow_size = 4096;
     int const LODdistance = 300;
 
+    bool timeIsPaused = false;
+
     bool Z = false;
     bool Q = false;
     bool S = false;
@@ -63,6 +66,7 @@ private:
 
     p6::Context                 m_ctx;
     std::vector<ObjectManager*> m_ObjList;
+    std::vector<ObjectManager*> m_Boids;
     ParticleManager             m_FireParticles;
     ParticleManager             m_ChimneyParticles;
     std::vector<LightManager>   m_LightList;
@@ -93,6 +97,8 @@ private:
     std::vector<SkinnedObjectManager*> m_bigtrees;
     const int                          BUSH_NB = 9;
     std::vector<SkinnedObjectManager*> m_bushes;
+    const int                          BOIDS_NB = 90;
+    std::vector<SkinnedObjectManager*> m_boids;
     SkinnedObjectManager*              m_bridge        = nullptr;
     SkinnedObjectManager*              m_arch          = nullptr;
     SkinnedObjectManager*              m_veggies       = nullptr;
@@ -105,5 +111,9 @@ private:
     SkinnedObjectManager*              m_catHead       = nullptr;
     SkinnedObjectManager*              m_fire          = nullptr;
     SkinnedObjectManager*              m_firewood      = nullptr;
+    SkinnedObjectManager*              m_boid          = nullptr;
     TexObjectManager*                  m_limit         = nullptr;
+
+    Flock fishFlock= Flock (10.f,0.f,10.f,BOIDS_NB);
+
 };

@@ -101,22 +101,28 @@ void App::loop()
 
     m_ChimneyParticles.refreshParticles(glm::vec3(21.f, 6.5f, -22.f), m_Character.getPosition(), m_ctx.delta_time());
 
-    // POSITION OF LIGHT IF IT IS UPDATED//
-    m_LightList[0].rotateUp(m_ctx.delta_time() * 0.05f * 180.f);
+    // Boids
+    fishFlock.simulate();
+    fishFlock.displayParam();
 
-    // UPDATES OF ALL OBJECT MMATRIX IF IT IS UPDATED//
-    glm::vec3 lightPosition = glm::vec3(m_LightList[0].getMMatrix() * glm::vec4(m_LightList[0].getPosition(), 1));
-    glm::mat4 sun_MMatrix   = glm::translate(glm::mat4(1), lightPosition);
-    sun_MMatrix             = glm::translate(sun_MMatrix, glm::vec3(12.5f, 0, -20.f));
-    sun_MMatrix             = glm::scale(sun_MMatrix, glm::vec3(10, 10, 10));
+    if(!timeIsPaused){
+        // POSITION OF LIGHT IF IT IS UPDATED//
+        m_LightList[0].rotateUp(m_ctx.delta_time() * 0.05f * 180.f);
 
-    m_sun->m_MMatrix = sun_MMatrix;
+        // UPDATES OF ALL OBJECT MMATRIX IF IT IS UPDATED//
+        glm::vec3 lightPosition = glm::vec3(m_LightList[0].getMMatrix() * glm::vec4(m_LightList[0].getPosition(), 1));
+        glm::mat4 sun_MMatrix   = glm::translate(glm::mat4(1), lightPosition);
+        sun_MMatrix             = glm::translate(sun_MMatrix, glm::vec3(12.5f, 0, -20.f));
+        sun_MMatrix             = glm::scale(sun_MMatrix, glm::vec3(10, 10, 10));
 
-    glm::mat4 moon_MMatrix = glm::translate(glm::mat4(1), glm::vec3(-lightPosition.x, -lightPosition.y, lightPosition.z));
-    moon_MMatrix           = glm::translate(moon_MMatrix, glm::vec3(12.5f, 0, -20.f));
-    moon_MMatrix           = glm::scale(moon_MMatrix, glm::vec3(5, 5, 5));
+        m_sun->m_MMatrix = sun_MMatrix;
 
-    m_moon->m_MMatrix = moon_MMatrix;
+        glm::mat4 moon_MMatrix = glm::translate(glm::mat4(1), glm::vec3(-lightPosition.x, -lightPosition.y, lightPosition.z));
+        moon_MMatrix           = glm::translate(moon_MMatrix, glm::vec3(12.5f, 0, -20.f));
+        moon_MMatrix           = glm::scale(moon_MMatrix, glm::vec3(5, 5, 5));
+
+        m_moon->m_MMatrix = moon_MMatrix;
+    }
 }
 
 void App::shadowPass()
@@ -169,7 +175,13 @@ void App::lightPass()
 
     glViewport(0, 0, m_ctx.current_canvas_width(), m_ctx.current_canvas_height());
 
-    m_skyTime += (m_night ? -m_ctx.delta_time() * 0.05 : m_ctx.delta_time() * 0.05);
+    ImGui::Begin("Scene settings");
+    ImGui::Checkbox("Pause Time", &timeIsPaused);
+    ImGui::End();
+
+
+    if(!timeIsPaused)
+        m_skyTime += (m_night ? -m_ctx.delta_time() * 0.05 : m_ctx.delta_time() * 0.05);
 
     if (m_skyTime > 1)
     {
@@ -189,6 +201,7 @@ void App::lightPass()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    
     // AUTOMATIC//
     for (auto& obj : m_ObjList)
     {

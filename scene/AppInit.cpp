@@ -39,6 +39,14 @@ void App::initAllObject()
     m_river = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
     m_ObjList.emplace_back(m_river);
 
+    // boids
+    for (int i = 0; i < BOIDS_NB; i++)
+    {
+        auto* boid = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+        m_boids.emplace_back(boid);
+        m_Boids.emplace_back(boid);
+    }
+
     // waterlily
     for (int i = 0; i < WLILY_NB; i++)
     {
@@ -338,6 +346,19 @@ void App::initAllObject()
         glm::vec3(5, 0, -2),
         glm::vec3(8, 0, -1)};
 
+
+    //-------------------------BOIDS---------------------
+
+    
+    for (int i = 0; i < BOIDS_NB; i++)
+    {
+        m_boids[i]->addSkinnedMesh("assets/models/flower.fbx");
+        m_boids[i]->addSkinnedMesh("assets/models/flower2.fbx");
+
+        glm::mat4 boidMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        boidMMatrix           = glm::rotate(boidMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        m_boids[i]->m_MMatrix = boidMMatrix;
+    }
     // around the scene
 
     const int TREEWIDTH = 3;
@@ -533,6 +554,11 @@ void App::initAllObject()
     }
 
     for (auto& i : m_ObjList)
+    {
+        i->initVaoVbo();
+    }
+
+    for (auto& i : m_Boids)
     {
         i->initVaoVbo();
     }
