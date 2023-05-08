@@ -66,7 +66,6 @@ private:
 
     p6::Context                 m_ctx;
     std::vector<ObjectManager*> m_ObjList;
-    std::vector<ObjectManager*> m_Boids;
     ParticleManager             m_FireParticles;
     ParticleManager             m_ChimneyParticles;
     std::vector<LightManager>   m_LightList;
@@ -98,8 +97,10 @@ private:
     std::vector<SkinnedObjectManager*> m_bigtrees;
     const int                          BUSH_NB = 9;
     std::vector<SkinnedObjectManager*> m_bushes;
-    const int                          BOIDS_NB = 40;
-    std::vector<SkinnedObjectManager*> m_boids;
+    const int                          FISHES_NB = 20;
+    const int                          BIRDS_NB = 20;
+    std::vector<SkinnedObjectManager*> m_fishes;
+    std::vector<SkinnedObjectManager*> m_birds;
     SkinnedObjectManager*              m_bridge        = nullptr;
     SkinnedObjectManager*              m_arch          = nullptr;
     SkinnedObjectManager*              m_veggies       = nullptr;
@@ -112,9 +113,12 @@ private:
     SkinnedObjectManager*              m_catHead       = nullptr;
     SkinnedObjectManager*              m_fire          = nullptr;
     SkinnedObjectManager*              m_firewood      = nullptr;
-    SkinnedObjectManager*              m_boid          = nullptr;
+    SkinnedObjectManager*              m_bird          = nullptr;
+    SkinnedObjectManager*              m_fish          = nullptr;
     TexObjectManager*                  m_limit         = nullptr;
 
-    Flock fishFlock= Flock (glm::vec3(35,12,20), glm::vec3(-7,8,-90),BOIDS_NB);
+    Flock fishFlock= Flock (glm::vec3(26,6,16), glm::vec3(-1,2,6),FISHES_NB);
+    Flock birdFlock= Flock (glm::vec3(35,12,20), glm::vec3(-7,8,-90),BIRDS_NB);
+
 
 };

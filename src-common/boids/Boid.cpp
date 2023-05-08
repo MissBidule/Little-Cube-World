@@ -2,7 +2,7 @@
 #include "Tools.hpp"
 
 
-Boid :: Boid(glm::vec3 pos, glm::vec3 maxPos,glm::vec3 minPos) : maxPos(maxPos), minPos(minPos), position(pos) {
+Boid :: Boid(glm::vec3 pos, glm::vec3 maxPos,glm::vec3 minPos) : position(pos),maxPos(maxPos), minPos(minPos)  {
 
     velocity = glm::vec3(getRandomNumber(0, 0.01f)-0.005f,getRandomNumber(0, 0.01f)-0.005f,getRandomNumber(0, 0.01f)-0.005f);
 

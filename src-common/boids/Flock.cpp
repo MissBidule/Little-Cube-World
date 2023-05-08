@@ -72,19 +72,19 @@ glm::vec3 Flock :: alignment(Boid& boid){
 glm::vec3 Flock :: boundaries(Boid& boid){
 
     glm::vec3 v;
-    if(boid.getPos().x < boundaryVecMin.x){
+    if(boid.getPos().x < minPos.x){
         v.x = BoundaryWallValue;
-    }else if(boid.getPos().x > boundaryVecMax.x){
+    }else if(boid.getPos().x > maxPos.x){
         v.x = -BoundaryWallValue;
     }
-    if(boid.getPos().y < boundaryVecMin.y){
+    if(boid.getPos().y < minPos.y){
         v.y = BoundaryWallValue;
-    }else if(boid.getPos().y > boundaryVecMax.y){
+    }else if(boid.getPos().y > maxPos.y){
         v.y = -BoundaryWallValue;
     }
-    if(boid.getPos().z < boundaryVecMin.z){
+    if(boid.getPos().z < minPos.z){
         v.z = BoundaryWallValue;
-    }else if(boid.getPos().z > boundaryVecMax.z){
+    }else if(boid.getPos().z > maxPos.z){
         v.z = -BoundaryWallValue;
     }
     return v;

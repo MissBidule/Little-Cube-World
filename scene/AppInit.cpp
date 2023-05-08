@@ -40,12 +40,18 @@ void App::initAllObject()
     m_ObjList.emplace_back(m_river);
 
     // boids
-    for (int i = 0; i < BOIDS_NB; i++)
+    for (int i = 0; i < BIRDS_NB; i++)
     {
-        auto* boid = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
-        m_boids.emplace_back(boid);
-        m_Boids.emplace_back(boid);
+        auto* bird = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+        m_birds.emplace_back(bird);
     }
+
+    for (int i = 0; i < FISHES_NB; i++)
+    {
+        auto* fish = new SkinnedObjectManager("shaders/3Dbones.vs.glsl", "shaders/dirPoslight.fs.glsl", m_ctx);
+        m_fishes.emplace_back(fish);
+    }
+
 
     // waterlily
     for (int i = 0; i < WLILY_NB; i++)
@@ -209,14 +215,24 @@ void App::initAllObject()
     //-------------------------BOIDS---------------------
 
     
-    for (int i = 0; i < BOIDS_NB; i++)
+    for (int i = 0; i < BIRDS_NB; i++)
     {
-        m_boids[i]->addSkinnedMesh("assets/models/littlerock.fbx");
-        m_boids[i]->addSkinnedMesh("assets/models/littlerock.fbx");
+        m_birds[i]->addSkinnedMesh("assets/models/littlerock.fbx");
+        m_birds[i]->addSkinnedMesh("assets/models/littlerock.fbx");
 
-        glm::mat4 boidMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
-        boidMMatrix           = glm::rotate(boidMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
-        m_boids[i]->m_MMatrix = boidMMatrix;
+        glm::mat4 birdMMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
+        birdMMatrix           = glm::rotate(birdMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        m_birds[i]->m_MMatrix = birdMMatrix;
+    }
+
+    for (int i = 0; i < FISHES_NB; i++)
+    {
+        m_fishes[i]->addSkinnedMesh("assets/models/littlerock.fbx");
+        m_fishes[i]->addSkinnedMesh("assets/models/littlerock.fbx");
+
+        glm::mat4 fishMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        fishMMatrix           = glm::rotate(fishMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        m_fishes[i]->m_MMatrix = fishMMatrix;
     }
 
     //--------------------------------WATERLILY---------------------
@@ -559,8 +575,13 @@ void App::initAllObject()
     {
         i->initVaoVbo();
     }
+    //BOIDS
 
-    for (auto& i : m_Boids)
+    for (auto& i : m_birds)
+    {
+        i->initVaoVbo();
+    }
+    for (auto& i : m_fishes)
     {
         i->initVaoVbo();
     }

@@ -104,11 +104,20 @@ void App::loop()
     // Boids
     fishFlock.simulate();
     fishFlock.displayParam();
+    
+    birdFlock.simulate();
+    birdFlock.displayParam();
 
-    for (int i = 0; i < BOIDS_NB; i++){
+    for (int i = 0; i < BIRDS_NB; i++){
+      
+        glm::mat4 currentBoid_MMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
+        m_birds[i]->m_MMatrix = currentBoid_MMatrix;
+     }      
+
+     for (int i = 0; i < FISHES_NB; i++){
       
         glm::mat4 currentBoid_MMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
-        m_boids[i]->m_MMatrix = currentBoid_MMatrix;
+        m_fishes[i]->m_MMatrix = currentBoid_MMatrix;
      }      
 
     if(!timeIsPaused){
@@ -156,7 +165,20 @@ void App::shadowPass()
 
             m_ShadowProgList[i].use();
 
-             for (auto& currentBoid : m_Boids)
+            //BOIDS
+
+             for (auto& currentBoid : m_birds)
+            {
+                if (currentBoid->ignoreShadowRender)
+                    continue;
+
+                int LOD = LODtoShow(currentBoid);
+
+                m_ShadowProgList[i].SendOBJtransform(currentBoid->m_MMatrix, currentBoid->getBoneTransforms(LOD));
+                currentBoid->shadowRender(LOD);
+            }
+
+            for (auto& currentBoid : m_fishes)
             {
                 if (currentBoid->ignoreShadowRender)
                     continue;
@@ -221,7 +243,18 @@ void App::lightPass()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (auto& currentBoid : m_Boids)
+    for (auto& currentBoid : m_birds)
+    {
+        int LOD = LODtoShow(currentBoid);
+
+        currentBoid->m_Program.use();
+
+        currentBoid->uniformRender(m_LightList, LOD, m_Character.getViewMatrix(), m_ProjMatrix);
+
+        currentBoid->render(m_LightList, LOD);
+    }
+
+    for (auto& currentBoid : m_fishes)
     {
         int LOD = LODtoShow(currentBoid);
 
