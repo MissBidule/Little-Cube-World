@@ -49,3 +49,11 @@ void Boid :: render(){
     
 }
 
+float Boid::getAngle(){
+    return std::atan2(velocity.y, velocity.x) ; // heading angle in x-y plane
+}
+
+float Boid :: getPitch(){
+    return -std::atan2(velocity.z, std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y)) ; // pitch angle
+
+}

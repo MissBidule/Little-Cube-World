@@ -38,5 +38,9 @@ public:
 
     void render();
 
+    float getPitch();
+
+    float getAngle();
+
 };
 

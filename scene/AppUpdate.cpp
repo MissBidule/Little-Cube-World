@@ -111,12 +111,16 @@ void App::loop()
     for (int i = 0; i < BIRDS_NB; i++){
       
         glm::mat4 currentBoid_MMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
+        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, birdFlock.myBoids[i].getAngle(), glm::vec3(0.f,0.f,1.f));
+        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, birdFlock.myBoids[i].getPitch(), glm::vec3(1.f,0.f,0.f));
         m_birds[i]->m_MMatrix = currentBoid_MMatrix;
      }      
 
      for (int i = 0; i < FISHES_NB; i++){
       
         glm::mat4 currentBoid_MMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, fishFlock.myBoids[i].getAngle(), glm::vec3(0.f,0.f,1.f));
+        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, fishFlock.myBoids[i].getPitch(), glm::vec3(1.f,0.f,0.f));
         m_fishes[i]->m_MMatrix = currentBoid_MMatrix;
      }      
 
