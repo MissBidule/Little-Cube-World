@@ -11,7 +11,7 @@ class Flock{
 
     public:
         Flock();
-        Flock(glm::vec3 maxPos, glm::vec3 minPos, int numberOfBoids);
+        Flock(glm::vec3 maxPos, glm::vec3 minPos, int numberOfBoids, std::string name);
         std::vector<Boid> getMyBoids() const { return myBoids; }
         glm::vec3 alignment(Boid& boid);
         void simulate();
@@ -28,11 +28,11 @@ class Flock{
     private:
         glm::vec3 maxPos;
         glm::vec3 minPos;
-        float distanceToFollow = 0.01f;
-        float cohesionDistance = 0.01f;
+        float distanceToFollow = 5.f;
+        float cohesionDistance = 3.f;
         const int numberOfBoids;
-        float separationDistance = 0.01f;
-        float speedLimit = 0.003f;
+        float separationDistance = 0.5f;
+        float speedLimit = 0.3f;
         glm::vec3 boundaryVecMax = glm::vec3(2.f,2.f,2.f);
         glm::vec3 boundaryVecMin = glm::vec3(-2.f,-2.f,-2.f);
         float BoundaryWallValue = 0.001f;
@@ -40,7 +40,8 @@ class Flock{
         float cohesionCoeff = 1.f;
         float separationCoeff = 1.0f;
         float alignmentCoeff = 1.0f;
-        float boundaryCoeff = 1.0f;
+        float boundaryCoeff = 6.0f;
+        std::string name;
 
 
 };

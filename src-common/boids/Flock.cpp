@@ -3,7 +3,7 @@
 #include <cmath>
 
 
-Flock::Flock(glm::vec3 maxPos, glm::vec3 minPos, int numberOfBoids): maxPos(maxPos), minPos(minPos),numberOfBoids(numberOfBoids){
+Flock::Flock(glm::vec3 maxPos, glm::vec3 minPos, int numberOfBoids, std::string name): maxPos(maxPos), minPos(minPos),numberOfBoids(numberOfBoids), name(name){
 
     for(int i=0; i<numberOfBoids; i++){
         glm::vec3 RandCoord = glm::vec3(getRandomNumber(minPos.x, maxPos.x),
@@ -114,7 +114,7 @@ void Flock :: simulate(){
 }
 
 void Flock::displayParam(){
-    ImGui::Begin("Flock settings");
+    ImGui::Begin(("Flock settings "+name).c_str());
     ImGui::Text("maxSpeed");
     ImGui::SliderFloat("Max speed", &speedLimit, .001f, 10.f);
     ImGui::SliderFloat("Distance see for alignment", &distanceToFollow, .01f, 10);
