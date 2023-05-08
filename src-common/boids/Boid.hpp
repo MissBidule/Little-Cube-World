@@ -10,17 +10,15 @@
 class Boid {
 private:
     glm::vec3 position;
-    float color = 1.f;
-    float maxX;
-    float maxY;
-    float maxZ;
-    float speed = 0.002f;
+    glm::vec3 maxPos;
+    glm::vec3 minPos;
+    float speed = 0.2f;
     glm::vec3 velocity;
 
 public:
     Boid();
 
-    Boid(float x, float y, float z, float color, float maxX, float maxY, float maxZ);
+    Boid(glm::vec3 pos,glm::vec3 maxPos, glm::vec3 minPos);
 
     glm::vec3 getPos() const { return position;}
 
@@ -33,8 +31,6 @@ public:
     void setVelocity(glm::vec3 newVel){velocity=newVel;}
 
     float getSpeed() const { return speed; }
-
-    float getColor() const { return color; }
 
     float distanceWithBoid(Boid toCheck)  const ;
 

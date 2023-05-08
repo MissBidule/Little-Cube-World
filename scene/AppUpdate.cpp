@@ -105,6 +105,12 @@ void App::loop()
     fishFlock.simulate();
     fishFlock.displayParam();
 
+    for (int i = 0; i < BOIDS_NB; i++){
+      
+        glm::mat4 currentBoid_MMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        m_boids[i]->m_MMatrix = currentBoid_MMatrix;
+     }      
+
     if(!timeIsPaused){
         // POSITION OF LIGHT IF IT IS UPDATED//
         m_LightList[0].rotateUp(m_ctx.delta_time() * 0.05f * 180.f * timeCoefficient);
@@ -150,6 +156,17 @@ void App::shadowPass()
 
             m_ShadowProgList[i].use();
 
+             for (auto& currentBoid : m_Boids)
+            {
+                if (currentBoid->ignoreShadowRender)
+                    continue;
+
+                int LOD = LODtoShow(currentBoid);
+
+                m_ShadowProgList[i].SendOBJtransform(currentBoid->m_MMatrix, currentBoid->getBoneTransforms(LOD));
+                currentBoid->shadowRender(LOD);
+            }
+
             for (auto& obj : m_ObjList)
             {
                 if (obj->ignoreShadowRender)
@@ -161,16 +178,7 @@ void App::shadowPass()
                 obj->shadowRender(LOD);
             }
 
-             for (auto& currentBoid : m_Boids)
-            {
-                if (currentBoid->ignoreShadowRender)
-                    continue;
-
-                int LOD = LODtoShow(currentBoid);
-
-                m_ShadowProgList[i].SendOBJtransform(currentBoid->m_MMatrix, currentBoid->getBoneTransforms(LOD));
-                currentBoid->shadowRender(LOD);
-            }
+            
 
             m_ShadowProgList[i].SendOBJtransform(m_Character.getMMatrix(), m_Character.getBoneTransforms());
             m_Character.shadowRender();
@@ -213,6 +221,18 @@ void App::lightPass()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    for (auto& currentBoid : m_Boids)
+    {
+        int LOD = LODtoShow(currentBoid);
+
+        currentBoid->m_Program.use();
+
+        currentBoid->uniformRender(m_LightList, LOD, m_Character.getViewMatrix(), m_ProjMatrix);
+
+        currentBoid->render(m_LightList, LOD);
+    }
+
+
     
     // AUTOMATIC//
     for (auto& obj : m_ObjList)
@@ -226,17 +246,7 @@ void App::lightPass()
         obj->render(m_LightList, LOD);
     }
 
-     for (auto& currentBoid : m_Boids)
-    {
-        int LOD = LODtoShow(currentBoid);
-
-        currentBoid->m_Program.use();
-
-        currentBoid->uniformRender(m_LightList, LOD, m_Character.getViewMatrix(), m_ProjMatrix);
-
-        currentBoid->render(m_LightList, LOD);
-    }
-
+     
     m_Character.use();
 
     m_Character.uniformRender(m_LightList, m_ProjMatrix);

@@ -11,7 +11,7 @@ class Flock{
 
     public:
         Flock();
-        Flock(float maxX, float maxY, float maxZ, int numberOfBoids);
+        Flock(glm::vec3 maxPos, glm::vec3 minPos, int numberOfBoids);
         std::vector<Boid> getMyBoids() const { return myBoids; }
         glm::vec3 alignment(Boid& boid);
         void simulate();
@@ -26,9 +26,8 @@ class Flock{
 
 
     private:
-        float maxX;
-        float maxY;
-        float maxZ;
+        glm::vec3 maxPos;
+        glm::vec3 minPos;
         float distanceToFollow = 0.01f;
         float cohesionDistance = 0.01f;
         const int numberOfBoids;

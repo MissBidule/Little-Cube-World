@@ -98,7 +98,7 @@ private:
     std::vector<SkinnedObjectManager*> m_bigtrees;
     const int                          BUSH_NB = 9;
     std::vector<SkinnedObjectManager*> m_bushes;
-    const int                          BOIDS_NB = 90;
+    const int                          BOIDS_NB = 40;
     std::vector<SkinnedObjectManager*> m_boids;
     SkinnedObjectManager*              m_bridge        = nullptr;
     SkinnedObjectManager*              m_arch          = nullptr;
@@ -115,6 +115,6 @@ private:
     SkinnedObjectManager*              m_boid          = nullptr;
     TexObjectManager*                  m_limit         = nullptr;
 
-    Flock fishFlock= Flock (10.f,0.f,10.f,BOIDS_NB);
+    Flock fishFlock= Flock (glm::vec3(35,12,20), glm::vec3(-7,8,-90),BOIDS_NB);
 
 };

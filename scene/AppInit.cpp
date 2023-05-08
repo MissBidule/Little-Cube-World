@@ -206,6 +206,19 @@ void App::initAllObject()
     //
     m_river->m_MMatrix = river_MMatrix;
 
+    //-------------------------BOIDS---------------------
+
+    
+    for (int i = 0; i < BOIDS_NB; i++)
+    {
+        m_boids[i]->addSkinnedMesh("assets/models/littlerock.fbx");
+        m_boids[i]->addSkinnedMesh("assets/models/littlerock.fbx");
+
+        glm::mat4 boidMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        boidMMatrix           = glm::rotate(boidMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        m_boids[i]->m_MMatrix = boidMMatrix;
+    }
+
     //--------------------------------WATERLILY---------------------
 
     std::vector<glm::vec3> wlilyT = {
@@ -347,18 +360,7 @@ void App::initAllObject()
         glm::vec3(8, 0, -1)};
 
 
-    //-------------------------BOIDS---------------------
-
     
-    for (int i = 0; i < BOIDS_NB; i++)
-    {
-        m_boids[i]->addSkinnedMesh("assets/models/flower.fbx");
-        m_boids[i]->addSkinnedMesh("assets/models/flower2.fbx");
-
-        glm::mat4 boidMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
-        boidMMatrix           = glm::rotate(boidMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
-        m_boids[i]->m_MMatrix = boidMMatrix;
-    }
     // around the scene
 
     const int TREEWIDTH = 3;
@@ -573,7 +575,7 @@ void App::initAllObject()
     m_LightList[1].setPosition(glm::vec3(14.f, 0.625f, -2.f));
     m_LightList[1].m_color = glm::vec3(.5f, .3f, .1f);
     m_LightList.emplace_back(glimac::LightType::Point);
-    m_LightList[2].m_color = glm::vec3(.3f, .3f, .1f);
+    //m_LightList[2].m_color = glm::vec3(.3f, .3f, .1f);
 
     m_Character.setLight(m_LightList[2]);
 

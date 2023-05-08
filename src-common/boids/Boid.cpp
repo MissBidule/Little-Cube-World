@@ -2,39 +2,39 @@
 #include "Tools.hpp"
 
 
-Boid :: Boid(float x, float y, float z,  float color, float maxX, float maxY, float maxZ) : color(color), maxX(maxX), maxY(maxY), maxZ(maxZ) {
-    position = glm::vec3(x,y,z);
+Boid :: Boid(glm::vec3 pos, glm::vec3 maxPos,glm::vec3 minPos) : maxPos(maxPos), minPos(minPos), position(pos) {
+
     velocity = glm::vec3(getRandomNumber(0, 0.01f)-0.005f,getRandomNumber(0, 0.01f)-0.005f,getRandomNumber(0, 0.01f)-0.005f);
-    
+
 }
 
 void Boid::setPos(glm::vec3 newPos)
     {
 
-    if(newPos.x > maxX  ){
+    if(newPos.x > maxPos.x ){
 
-        newPos.x = -maxX;
+        newPos.x = minPos.x;
 
-    }else if(newPos.x < -maxX){
+    }else if(newPos.x < minPos.x){
 
-        newPos.x = maxX;
+        newPos.x = maxPos.x;
     }
 
-    if(newPos.y > maxY){
+    if(newPos.y > maxPos.y){
 
-        newPos.y = -maxY;
+        newPos.y = minPos.y;
 
-    }else if(newPos.y< -maxY){
+    }else if(newPos.y< minPos.y){
 
-        newPos.y = maxY;
+        newPos.y = maxPos.y;
 
-    }if(newPos.z > maxZ){
+    }if(newPos.z > maxPos.z){
 
-        newPos.z = -maxZ;
+        newPos.z = minPos.z;
 
-    }else if(newPos.z< -maxZ){
+    }else if(newPos.z< minPos.z){
 
-        newPos.z = maxZ;
+        newPos.z = maxPos.z;
 
     }
 

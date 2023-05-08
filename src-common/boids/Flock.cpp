@@ -3,13 +3,13 @@
 #include <cmath>
 
 
-Flock::Flock(float maxX, float maxY, float maxZ, int numberOfBoids): maxX(maxX), maxY(maxY), maxZ(maxZ), numberOfBoids(numberOfBoids){
+Flock::Flock(glm::vec3 maxPos, glm::vec3 minPos, int numberOfBoids): maxPos(maxPos), minPos(minPos),numberOfBoids(numberOfBoids){
 
     for(int i=0; i<numberOfBoids; i++){
-        glm::vec3 RandCoord = glm::vec3(getRandomNumber(-1, 1),
-                                        getRandomNumber(-1, 1),
-                                        getRandomNumber(-1, 1));
-        Boid toAdd = Boid(RandCoord.x * maxX, RandCoord.y * maxY, RandCoord.z * maxZ,1.f,maxX,maxY, maxZ);
+        glm::vec3 RandCoord = glm::vec3(getRandomNumber(minPos.x, maxPos.x),
+                                        getRandomNumber(minPos.y, maxPos.y),
+                                        getRandomNumber(minPos.z, maxPos.z));
+        Boid toAdd = Boid(RandCoord,maxPos, minPos);
         myBoids.push_back(toAdd);
     }
 
@@ -116,10 +116,10 @@ void Flock :: simulate(){
 void Flock::displayParam(){
     ImGui::Begin("Flock settings");
     ImGui::Text("maxSpeed");
-    ImGui::SliderFloat("Max speed", &speedLimit, .0001f, 0.1f);
-    ImGui::SliderFloat("Distance see for alignment", &distanceToFollow, .01f, 1);
-    ImGui::SliderFloat("Distance see for cohesion", &cohesionDistance, .01f, 1);
-    ImGui::SliderFloat("Distance see for separation", &separationDistance, .01f, 1);
+    ImGui::SliderFloat("Max speed", &speedLimit, .001f, 10.f);
+    ImGui::SliderFloat("Distance see for alignment", &distanceToFollow, .01f, 10);
+    ImGui::SliderFloat("Distance see for cohesion", &cohesionDistance, .01f, 10);
+    ImGui::SliderFloat("Distance see for separation", &separationDistance, .01f, 10);
 
     ImGui::SliderFloat("coefficient for alignment force", &alignmentCoeff, .1f, 10);
     ImGui::SliderFloat("coefficient for cohesion force", &cohesionCoeff, .1f, 10);
