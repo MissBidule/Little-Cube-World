@@ -41,8 +41,6 @@ protected:
     ObjectManager(const std::string& vsPath, const std::string& fsPath);
 
 public:
-    bool autoplay = true;
-
     virtual ~ObjectManager() = default;
 
     bool ignoreShadowRender = false;

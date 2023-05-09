@@ -52,6 +52,7 @@ void App::initAllObject()
         m_fishes.emplace_back(fish);
     }
 
+
     // waterlily
     for (int i = 0; i < WLILY_NB; i++)
     {
@@ -213,6 +214,7 @@ void App::initAllObject()
 
     //-------------------------BOIDS---------------------
 
+    
     for (int i = 0; i < BIRDS_NB; i++)
     {
         m_birds[i]->addSkinnedMesh("assets/models/lowpoly_bird.fbx");
@@ -227,7 +229,7 @@ void App::initAllObject()
         m_fishes[i]->addSkinnedMesh("assets/models/lowpoly_fish.fbx");
         m_fishes[i]->addSkinnedMesh("assets/models/lowpoly_fish.fbx");
 
-        glm::mat4 fishMMatrix  = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        glm::mat4 fishMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
         m_fishes[i]->m_MMatrix = fishMMatrix;
     }
 
@@ -371,6 +373,8 @@ void App::initAllObject()
         glm::vec3(5, 0, -2),
         glm::vec3(8, 0, -1)};
 
+
+    
     // around the scene
 
     const int TREEWIDTH = 3;
@@ -569,7 +573,7 @@ void App::initAllObject()
     {
         i->initVaoVbo();
     }
-    // BOIDS
+    //BOIDS
 
     for (auto& i : m_birds)
     {
@@ -589,10 +593,8 @@ void App::initAllObject()
     m_LightList.emplace_back(glimac::LightType::Point);
     m_LightList[1].setPosition(glm::vec3(14.f, 0.625f, -2.f));
     m_LightList[1].m_color = glm::vec3(.5f, .3f, .1f);
-    // REMOVE IF LAG
-    // m_LightList.emplace_back(glimac::LightType::Point);
-    // m_LightList[2].m_color = glm::vec3(.3f, .3f, .1f);
-    // REMOVE IF LAG
+    m_LightList.emplace_back(glimac::LightType::Point);
+    //m_LightList[2].m_color = glm::vec3(.3f, .3f, .1f);
 
     m_Character.setLight(m_LightList[2]);
 
