@@ -29,17 +29,17 @@ class Flock{
         glm::vec3 maxPos;
         glm::vec3 minPos;
         float distanceToFollow = 5.f;
-        float cohesionDistance = 3.f;
+        float cohesionDistance = 7.f;
         const int numberOfBoids;
-        float separationDistance = 0.5f;
+        float separationDistance = 0.8f;
         float speedLimit = 0.3f;
         glm::vec3 boundaryVecMax = glm::vec3(2.f,2.f,2.f);
         glm::vec3 boundaryVecMin = glm::vec3(-2.f,-2.f,-2.f);
-        float BoundaryWallValue = 0.001f;
+        float BoundaryWallValue = 10.f;
         bool isPaused = false;
-        float cohesionCoeff = 1.f;
+        float cohesionCoeff = 0.8f;
         float separationCoeff = 1.0f;
-        float alignmentCoeff = 1.0f;
+        float alignmentCoeff = 5.0f;
         float boundaryCoeff = 6.0f;
         std::string name;
 

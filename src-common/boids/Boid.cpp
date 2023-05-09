@@ -9,34 +9,34 @@ Boid :: Boid(glm::vec3 pos, glm::vec3 maxPos,glm::vec3 minPos) : position(pos),m
 }
 
 void Boid::setPos(glm::vec3 newPos)
-    {
+{
 
-    if(newPos.x > maxPos.x ){
+    // if(newPos.x > maxPos.x ){
 
-        newPos.x = minPos.x;
+    //     newPos.x = minPos.x;
 
-    }else if(newPos.x < minPos.x){
+    // }else if(newPos.x < minPos.x){
 
-        newPos.x = maxPos.x;
-    }
+    //     newPos.x = maxPos.x;
+    // }
 
-    if(newPos.y > maxPos.y){
+    // if(newPos.y > maxPos.y){
 
-        newPos.y = minPos.y;
+    //     newPos.y = minPos.y;
 
-    }else if(newPos.y< minPos.y){
+    // }else if(newPos.y< minPos.y){
 
-        newPos.y = maxPos.y;
+    //     newPos.y = maxPos.y;
 
-    }if(newPos.z > maxPos.z){
+    // }if(newPos.z > maxPos.z){
 
-        newPos.z = minPos.z;
+    //     newPos.z = minPos.z;
 
-    }else if(newPos.z< minPos.z){
+    // }else if(newPos.z< minPos.z){
 
-        newPos.z = maxPos.z;
+    //     newPos.z = maxPos.z;
 
-    }
+    // }
 
     position = newPos;
 }
@@ -50,10 +50,10 @@ void Boid :: render(){
 }
 
 float Boid::getAngle(){
-    return std::atan2(velocity.y, velocity.x) ; // heading angle in x-y plane
+    return std::atan2(velocity.y, velocity.x);
 }
 
 float Boid :: getPitch(){
-    return -std::atan2(velocity.z, std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y)) ; // pitch angle
+    return glm::degrees(std::atan2(-velocity.z, glm::length(glm::vec2(velocity.x, velocity.y))));
 
 }

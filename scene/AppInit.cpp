@@ -221,7 +221,6 @@ void App::initAllObject()
         m_birds[i]->addSkinnedMesh("assets/models/lowpoly_bird.fbx");
 
         glm::mat4 birdMMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
-        birdMMatrix           = glm::rotate(birdMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
         m_birds[i]->m_MMatrix = birdMMatrix;
     }
 
@@ -231,7 +230,6 @@ void App::initAllObject()
         m_fishes[i]->addSkinnedMesh("assets/models/lowpoly_fish.fbx");
 
         glm::mat4 fishMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
-        fishMMatrix           = glm::rotate(fishMMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
         m_fishes[i]->m_MMatrix = fishMMatrix;
     }
 

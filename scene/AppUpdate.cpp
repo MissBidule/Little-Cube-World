@@ -109,19 +109,36 @@ void App::loop()
     birdFlock.displayParam();
 
     for (int i = 0; i < BIRDS_NB; i++){
-      
-        glm::mat4 currentBoid_MMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
-        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, birdFlock.myBoids[i].getAngle(), glm::vec3(0.f,0.f,1.f));
-        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, birdFlock.myBoids[i].getPitch(), glm::vec3(1.f,0.f,0.f));
-        m_birds[i]->m_MMatrix = currentBoid_MMatrix;
+
+        glm::vec3 forward = glm::normalize(birdFlock.myBoids[i].getVelocity());
+        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
+        glm::vec3 right = glm::cross(forward, up);
+        up = glm::cross(right, forward);
+        glm::mat4 rotation = glm::mat4(glm::vec4(right, 0.0f),
+                                        glm::vec4(forward, 0.0f),
+                                        glm::vec4(up, 0.0f),
+                                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
+        glm::mat4 modelMatrix = translation * rotation;
+        m_birds[i]->m_MMatrix = modelMatrix;
      }      
 
      for (int i = 0; i < FISHES_NB; i++){
       
-        glm::mat4 currentBoid_MMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
-        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, fishFlock.myBoids[i].getAngle(), glm::vec3(0.f,0.f,1.f));
-        currentBoid_MMatrix = glm::rotate(currentBoid_MMatrix, fishFlock.myBoids[i].getPitch(), glm::vec3(1.f,0.f,0.f));
-        m_fishes[i]->m_MMatrix = currentBoid_MMatrix;
+        glm::vec3 forward = glm::normalize(fishFlock.myBoids[i].getVelocity());
+        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
+        glm::vec3 right = glm::cross(forward, up);
+        up = glm::cross(right, forward);
+        glm::mat4 rotation = glm::mat4(glm::vec4(right, 0.0f),
+                                        glm::vec4(forward, 0.0f),
+                                        glm::vec4(up, 0.0f),
+                                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), fishFlock.myBoids[i].getPos());
+        glm::mat4 modelMatrix = translation * rotation;
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+
+        m_fishes[i]->m_MMatrix = modelMatrix;
+
      }      
 
     if(!timeIsPaused){
