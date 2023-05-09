@@ -19,8 +19,6 @@ private:
     std::vector<std::unique_ptr<SkinnedMesh>> m_meshes;
 
 public:
-    bool autoplay = true;
-
     SkinnedObjectManager(const std::string& vsPath, const std::string& fsPath, p6::Context& ctx);
 
     void                   addSkinnedMesh(const std::string& objectPath);
