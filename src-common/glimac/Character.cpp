@@ -80,20 +80,20 @@ void Character::rotateUp(float degrees)
 
     if (angle > 270 && degrees > 0)
     {
-        m_POV.zoom(-0.03);
+        m_POV.zoom(degrees * -0.01);
     }
     else if (angle > 270 && degrees < 0)
     {
-        m_POV.zoom(0.03);
+        m_POV.zoom(degrees * -0.01);
     }
 
     if (angle > 180 && angle < 270 && degrees > 0)
     {
-        m_POV.zoom(0.03);
+        m_POV.zoom(degrees * -0.01);
     }
     else if (angle > 180 && angle < 270 && degrees < 0)
     {
-        m_POV.zoom(-0.03);
+        m_POV.zoom(degrees * -0.01);
     }
 }
 
@@ -117,14 +117,14 @@ void Character::initVaoVbo()
 }
 
 void Character::updatePosition()
-{/*
-    glm::mat4 LightMMatrix = glm::translate(glm::mat4(1), getPosition());
-    LightMMatrix           = glm::rotate(LightMMatrix, glm::radians(-m_angleMovement), glm::vec3(0, 1, 0));
-    LightMMatrix           = glm::translate(LightMMatrix, glm::vec3(-0.45f, -0.75f, -0.5f));
-    LightMMatrix           = glm::scale(LightMMatrix, glm::vec3(0.01, 0.01, 0.01));
-    m_light->setPosition(glm::vec3(LightMMatrix * glm::vec4(0, 0, 0, 1)));
+{ /*
+     glm::mat4 LightMMatrix = glm::translate(glm::mat4(1), getPosition());
+     LightMMatrix           = glm::rotate(LightMMatrix, glm::radians(-m_angleMovement), glm::vec3(0, 1, 0));
+     LightMMatrix           = glm::translate(LightMMatrix, glm::vec3(-0.45f, -0.75f, -0.5f));
+     LightMMatrix           = glm::scale(LightMMatrix, glm::vec3(0.01, 0.01, 0.01));
+     m_light->setPosition(glm::vec3(LightMMatrix * glm::vec4(0, 0, 0, 1)));
 
-    m_light->m_color = glm::vec3(m_lightColor.x * m_switch, m_lightColor.y * m_switch, m_lightColor.z * m_switch);*/
+     m_light->m_color = glm::vec3(m_lightColor.x * m_switch, m_lightColor.y * m_switch, m_lightColor.z * m_switch);*/
 
     glm::mat4 CharMMatrix = glm::translate(glm::mat4(1), getPosition());
     CharMMatrix           = glm::translate(CharMMatrix, glm::vec3(0, -1.5, 0));
