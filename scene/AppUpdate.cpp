@@ -136,6 +136,8 @@ void App::loop()
         glm::mat4 translation = glm::translate(glm::mat4(1.0f), fishFlock.myBoids[i].getPos());
         glm::mat4 modelMatrix = translation * rotation;
         modelMatrix = glm::rotate(modelMatrix, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+        modelMatrix           = glm::scale(modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+
 
         m_fishes[i]->m_MMatrix = modelMatrix;
 

@@ -117,8 +117,8 @@ private:
     SkinnedObjectManager*              m_fish          = nullptr;
     TexObjectManager*                  m_limit         = nullptr;
 
-    Flock fishFlock= Flock (glm::vec3(20,-1,-8), glm::vec3(2,-2,-12),FISHES_NB, "Fishes");
-    Flock birdFlock= Flock (glm::vec3(20,6,5), glm::vec3(-3,3,-20),BIRDS_NB, "Birds");
+    Flock fishFlock= Flock (glm::vec3(20,-1,-9), glm::vec3(2,-2,-11),FISHES_NB, "Fishes");
+    Flock birdFlock= Flock (glm::vec3(10,6,5), glm::vec3(-3,3,-15),BIRDS_NB, "Birds");
 
 
 };

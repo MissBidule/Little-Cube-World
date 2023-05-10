@@ -106,10 +106,6 @@ void Flock :: simulate(){
             currentBoid.setPos(currentBoid.getPos()+currentBoid.getVelocity()) ;
         }
 
-        if(getPercentage(0.5f)){
-            cohesionCoeff = -cohesionCoeff;
-            std::cout<<"inversion lululullululu";
-        }
     }
 }
 

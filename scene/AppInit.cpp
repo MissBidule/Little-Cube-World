@@ -230,6 +230,7 @@ void App::initAllObject()
         m_fishes[i]->addSkinnedMesh("assets/models/lowpoly_fish.fbx");
 
         glm::mat4 fishMMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        
         m_fishes[i]->m_MMatrix = fishMMatrix;
     }
 
