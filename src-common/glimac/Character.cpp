@@ -117,16 +117,19 @@ void Character::initVaoVbo()
 }
 
 void Character::updatePosition()
-{ /*
-     glm::mat4 LightMMatrix = glm::translate(glm::mat4(1), getPosition());
-     LightMMatrix           = glm::rotate(LightMMatrix, glm::radians(-m_angleMovement), glm::vec3(0, 1, 0));
-     LightMMatrix           = glm::translate(LightMMatrix, glm::vec3(-0.45f, -0.75f, -0.5f));
-     LightMMatrix           = glm::scale(LightMMatrix, glm::vec3(0.01, 0.01, 0.01));
-     m_light->setPosition(glm::vec3(LightMMatrix * glm::vec4(0, 0, 0, 1)));
+{
+    // THIS LINES CAN BE TEMPORARY COMMENTED TO PREVENT LAG
+    glm::mat4 LightMMatrix = glm::translate(glm::mat4(1), getPosition());
+    LightMMatrix           = glm::rotate(LightMMatrix, glm::radians(-m_angleMovement), glm::vec3(0, 1, 0));
+    LightMMatrix           = glm::translate(LightMMatrix, glm::vec3(-0.45f, -0.75f, -0.5f));
+    LightMMatrix           = glm::scale(LightMMatrix, glm::vec3(0.01, 0.01, 0.01));
+    m_light->setPosition(glm::vec3(LightMMatrix * glm::vec4(0, 0, 0, 1)));
 
-     m_light->m_color = glm::vec3(m_lightColor.x * m_switch, m_lightColor.y * m_switch, m_lightColor.z * m_switch);*/
+    m_light->m_color = glm::vec3(m_lightColor.x * m_switch, m_lightColor.y * m_switch, m_lightColor.z * m_switch);
+    // UP TO HERE
 
-    glm::mat4 CharMMatrix = glm::translate(glm::mat4(1), getPosition());
+    glm::mat4 CharMMatrix = glm::mat4(1);
+    CharMMatrix           = glm::translate(CharMMatrix, getPosition());
     CharMMatrix           = glm::translate(CharMMatrix, glm::vec3(0, -1.5, 0));
     CharMMatrix           = glm::rotate(CharMMatrix, glm::radians(180.f - m_angleMovement), glm::vec3(0, 1, 0));
     CharMMatrix           = glm::scale(CharMMatrix, glm::vec3(0.01, 0.01, 0.01));
@@ -183,4 +186,9 @@ bool Character::checkPosition()
         return false;
 
     return true;
+}
+
+int Character::getMaxCharacter()
+{
+    return m_characterMesh.size() - 1;
 }

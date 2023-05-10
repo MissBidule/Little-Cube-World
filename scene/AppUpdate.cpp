@@ -236,7 +236,9 @@ void App::lightPass()
 
     ImGui::Begin("Scene settings");
     ImGui::Checkbox("Pause Time", &timeIsPaused);
-    ImGui::SliderFloat("time coefficient", &timeCoefficient, .01f, 2.f);
+    ImGui::SliderFloat("Time coefficient", &timeCoefficient, .01f, 2.f);
+    ImGui::SliderInt("Chose character", &m_characterChosen, 0, m_Character.getMaxCharacter());
+    ImGui::Checkbox("Auto LOD", &m_autoLOD);
     ImGui::End();
 
     if (!timeIsPaused)
@@ -257,6 +259,7 @@ void App::lightPass()
 
     // turns the light on during the night
     m_Character.m_switch = m_skyTime <= 0.5;
+    m_Character.setCharacter(m_characterChosen);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -326,7 +329,7 @@ int App::LODtoShow(const ObjectManager* obj)
     double    distance = glm::distance2(position, glm::vec3(0));
 
     // when distance is > LODdistance use 2nd LOD
-    if (distance > LODdistance && obj->getLODmax() > 1)
+    if ((distance > LODdistance || !m_autoLOD) && obj->getLODmax() > 1)
     {
         return 1;
     }

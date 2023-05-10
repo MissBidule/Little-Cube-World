@@ -29,6 +29,7 @@ public:
     void                   setLight(LightManager& Light);
     void                   setCharacter(unsigned int chosenMesh);
     void                   setPosition(glm::vec3 position);
+    int                    getMaxCharacter();
     glm::vec3              getPosition();
     glm::mat4              getMMatrix();
     std::vector<glm::mat4> getBoneTransforms();
