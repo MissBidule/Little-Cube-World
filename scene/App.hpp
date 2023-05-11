@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include "boids/Flock.hpp"
+#include "boids/Boid.hpp"
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/LightManager.hpp"
 #include "glimac/ObjectManager.hpp"

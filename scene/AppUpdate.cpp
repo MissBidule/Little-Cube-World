@@ -105,13 +105,8 @@ void App::loop()
 
     for (int i = 0; i < BIRDS_NB; i++)
     {
-        glm::vec3 forward     = glm::normalize(birdFlock.myBoids[i].getVelocity());
-        glm::vec3 up          = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
-        glm::vec3 right       = glm::cross(forward, up);
-        up                    = glm::cross(right, forward);
-        glm::mat4 rotation    = glm::mat4(glm::vec4(right, 0.0f), glm::vec4(forward, 0.0f), glm::vec4(up, 0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        glm::mat4 translation = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
-        glm::mat4 modelMatrix = translation * rotation;
+        glm::mat4 modelMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
+        //modelMatrix = glm::rotate(modelMatrix, birdFlock.myBoids[i].getYaw(),glm::vec3(0,0,1));
         m_birds[i]->m_MMatrix = modelMatrix;
     }
 

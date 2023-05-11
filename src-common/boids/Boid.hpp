@@ -42,5 +42,7 @@ public:
 
     float getAngle();
 
+    float getYaw();
+
 };
 
