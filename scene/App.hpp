@@ -5,6 +5,7 @@
 #include <glimac/common.hpp>
 #include <iostream>
 #include <vector>
+#include "boids/Flock.hpp"
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/LightManager.hpp"
 #include "glimac/ObjectManager.hpp"
@@ -24,7 +25,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/vector_angle.hpp"
 #include "p6/p6.h"
-#include "boids/Flock.hpp"
 
 class App {
 public:
@@ -58,6 +58,7 @@ private:
     int const LODdistance = 300;
 
     bool timeIsPaused = false;
+    bool m_autoLOD    = true;
 
     bool Z = false;
     bool Q = false;
@@ -72,9 +73,10 @@ private:
     std::vector<ShadowManager>  m_ShadowProgList;
     Character                   m_Character;
     glm::mat4                   m_ProjMatrix;
-    float                       m_skyTime = 1;
-    bool                        m_night   = true;
-    float timeCoefficient = 1.f;
+    float                       m_skyTime         = 1;
+    bool                        m_night           = true;
+    int                         m_characterChosen = 0;
+    float                       timeCoefficient   = 1.f;
 
     // Objects of the scene
     SimpleObjectManager*               m_sun    = nullptr;
@@ -98,7 +100,7 @@ private:
     const int                          BUSH_NB = 9;
     std::vector<SkinnedObjectManager*> m_bushes;
     const int                          FISHES_NB = 30;
-    const int                          BIRDS_NB = 40;
+    const int                          BIRDS_NB  = 40;
     std::vector<SkinnedObjectManager*> m_fishes;
     std::vector<SkinnedObjectManager*> m_birds;
     SkinnedObjectManager*              m_bridge        = nullptr;
@@ -113,8 +115,6 @@ private:
     SkinnedObjectManager*              m_catHead       = nullptr;
     SkinnedObjectManager*              m_fire          = nullptr;
     SkinnedObjectManager*              m_firewood      = nullptr;
-    SkinnedObjectManager*              m_bird          = nullptr;
-    SkinnedObjectManager*              m_fish          = nullptr;
     TexObjectManager*                  m_limit         = nullptr;
 
     Flock fishFlock= Flock (glm::vec3(20,-1,-9), glm::vec3(2,-2,-11),FISHES_NB, "Fishes");

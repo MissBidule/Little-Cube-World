@@ -96,43 +96,32 @@ void App::loop()
     m_Character.m_isMoving = Z || Q || S || D;
     m_Character.updatePosition();
 
-    // LA. Création et actualisation des particules de particule
-    m_FireParticles.refreshParticles(glm::vec3(14.f, 0.625f, -2.f), m_Character.getPosition(), m_ctx.delta_time());
-
-    m_ChimneyParticles.refreshParticles(glm::vec3(21.f, 6.5f, -22.f), m_Character.getPosition(), m_ctx.delta_time());
-
     // Boids
     fishFlock.simulate();
     fishFlock.displayParam();
-    
+
     birdFlock.simulate();
     birdFlock.displayParam();
 
-    for (int i = 0; i < BIRDS_NB; i++){
-
-        glm::vec3 forward = glm::normalize(birdFlock.myBoids[i].getVelocity());
-        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
-        glm::vec3 right = glm::cross(forward, up);
-        up = glm::cross(right, forward);
-        glm::mat4 rotation = glm::mat4(glm::vec4(right, 0.0f),
-                                        glm::vec4(forward, 0.0f),
-                                        glm::vec4(up, 0.0f),
-                                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    for (int i = 0; i < BIRDS_NB; i++)
+    {
+        glm::vec3 forward     = glm::normalize(birdFlock.myBoids[i].getVelocity());
+        glm::vec3 up          = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
+        glm::vec3 right       = glm::cross(forward, up);
+        up                    = glm::cross(right, forward);
+        glm::mat4 rotation    = glm::mat4(glm::vec4(right, 0.0f), glm::vec4(forward, 0.0f), glm::vec4(up, 0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         glm::mat4 translation = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
         glm::mat4 modelMatrix = translation * rotation;
         m_birds[i]->m_MMatrix = modelMatrix;
-     }      
+    }
 
-     for (int i = 0; i < FISHES_NB; i++){
-      
-        glm::vec3 forward = glm::normalize(fishFlock.myBoids[i].getVelocity());
-        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
-        glm::vec3 right = glm::cross(forward, up);
-        up = glm::cross(right, forward);
-        glm::mat4 rotation = glm::mat4(glm::vec4(right, 0.0f),
-                                        glm::vec4(forward, 0.0f),
-                                        glm::vec4(up, 0.0f),
-                                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    for (int i = 0; i < FISHES_NB; i++)
+    {
+        glm::vec3 forward     = glm::normalize(fishFlock.myBoids[i].getVelocity());
+        glm::vec3 up          = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
+        glm::vec3 right       = glm::cross(forward, up);
+        up                    = glm::cross(right, forward);
+        glm::mat4 rotation    = glm::mat4(glm::vec4(right, 0.0f), glm::vec4(forward, 0.0f), glm::vec4(up, 0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         glm::mat4 translation = glm::translate(glm::mat4(1.0f), fishFlock.myBoids[i].getPos());
         glm::mat4 modelMatrix = translation * rotation;
         modelMatrix = glm::rotate(modelMatrix, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
@@ -140,10 +129,15 @@ void App::loop()
 
 
         m_fishes[i]->m_MMatrix = modelMatrix;
+    }
 
-     }      
+    if (!timeIsPaused)
+    {
+        // LA. Création et actualisation des particules de particule
+        m_FireParticles.refreshParticles(glm::vec3(14.f, 0.625f, -2.f), m_Character.getPosition(), m_ctx.delta_time());
 
-    if(!timeIsPaused){
+        m_ChimneyParticles.refreshParticles(glm::vec3(21.f, 6.5f, -22.f), m_Character.getPosition(), m_ctx.delta_time());
+
         // POSITION OF LIGHT IF IT IS UPDATED//
         m_LightList[0].rotateUp(m_ctx.delta_time() * 0.05f * 180.f * timeCoefficient);
 
@@ -160,6 +154,11 @@ void App::loop()
         moon_MMatrix           = glm::scale(moon_MMatrix, glm::vec3(5, 5, 5));
 
         m_moon->m_MMatrix = moon_MMatrix;
+    }
+
+    for (auto& obj : m_ObjList)
+    {
+        obj->autoplay = !timeIsPaused;
     }
 }
 
@@ -188,9 +187,9 @@ void App::shadowPass()
 
             m_ShadowProgList[i].use();
 
-            //BOIDS
+            // BOIDS
 
-             for (auto& currentBoid : m_birds)
+            for (auto& currentBoid : m_birds)
             {
                 if (currentBoid->ignoreShadowRender)
                     continue;
@@ -223,8 +222,6 @@ void App::shadowPass()
                 obj->shadowRender(LOD);
             }
 
-            
-
             m_ShadowProgList[i].SendOBJtransform(m_Character.getMMatrix(), m_Character.getBoneTransforms());
             m_Character.shadowRender();
 
@@ -241,12 +238,13 @@ void App::lightPass()
 
     ImGui::Begin("Scene settings");
     ImGui::Checkbox("Pause Time", &timeIsPaused);
-    ImGui::SliderFloat("time coefficient", &timeCoefficient, .01f, 2.f);
+    ImGui::SliderFloat("Time coefficient", &timeCoefficient, .01f, 2.f);
+    ImGui::SliderInt("Chose character", &m_characterChosen, 0, m_Character.getMaxCharacter());
+    ImGui::Checkbox("Auto LOD", &m_autoLOD);
     ImGui::End();
 
-
-    if(!timeIsPaused)
-        m_skyTime += (m_night ? -m_ctx.delta_time() * 0.05 : m_ctx.delta_time() * 0.05)*timeCoefficient;
+    if (!timeIsPaused)
+        m_skyTime += (m_night ? -m_ctx.delta_time() * 0.05 : m_ctx.delta_time() * 0.05) * timeCoefficient;
 
     if (m_skyTime > 1)
     {
@@ -263,6 +261,7 @@ void App::lightPass()
 
     // turns the light on during the night
     m_Character.m_switch = m_skyTime <= 0.5;
+    m_Character.setCharacter(m_characterChosen);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -288,8 +287,6 @@ void App::lightPass()
         currentBoid->render(m_LightList, LOD);
     }
 
-
-    
     // AUTOMATIC//
     for (auto& obj : m_ObjList)
     {
@@ -302,7 +299,6 @@ void App::lightPass()
         obj->render(m_LightList, LOD);
     }
 
-     
     m_Character.use();
 
     m_Character.uniformRender(m_LightList, m_ProjMatrix);
@@ -335,7 +331,7 @@ int App::LODtoShow(const ObjectManager* obj)
     double    distance = glm::distance2(position, glm::vec3(0));
 
     // when distance is > LODdistance use 2nd LOD
-    if (distance > LODdistance && obj->getLODmax() > 1)
+    if ((distance > LODdistance || !m_autoLOD) && obj->getLODmax() > 1)
     {
         return 1;
     }
