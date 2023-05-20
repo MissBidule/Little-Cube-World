@@ -4,6 +4,8 @@
 #include <cmath>
 #include "Tools.hpp"
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "glimac/SkinnedObjectManager.hpp"
 
 
@@ -43,6 +45,8 @@ public:
     float getAngle();
 
     float getYaw();
+
+    glm::mat4 getRotationMatrix() const;
 
 };
 

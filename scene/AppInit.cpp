@@ -221,6 +221,7 @@ void App::initAllObject()
         m_birds[i]->addSkinnedMesh("assets/models/lowpoly_bird.fbx");
 
         glm::mat4 birdMMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
+
         m_birds[i]->m_MMatrix = birdMMatrix;
     }
 

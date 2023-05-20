@@ -105,25 +105,22 @@ void App::loop()
 
     for (int i = 0; i < BIRDS_NB; i++)
     {
-        glm::mat4 modelMatrix = glm::translate(glm::mat4(1), birdFlock.myBoids[i].getPos());
-        //modelMatrix = glm::rotate(modelMatrix, birdFlock.myBoids[i].getYaw(),glm::vec3(0,0,1));
-        m_birds[i]->m_MMatrix = modelMatrix;
+        // glm::mat4 MVMatrix = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
+        // MVMatrix *= birdFlock.myBoids[i].getRotationMatrix();
+
+        // m_birds[i]->m_MMatrix = MVMatrix;
     }
 
     for (int i = 0; i < FISHES_NB; i++)
     {
-        glm::vec3 forward     = glm::normalize(fishFlock.myBoids[i].getVelocity());
-        glm::vec3 up          = glm::vec3(0.0f, 0.0f, 1.0f); // or whatever axis is "up" for your object
-        glm::vec3 right       = glm::cross(forward, up);
-        up                    = glm::cross(right, forward);
-        glm::mat4 rotation    = glm::mat4(glm::vec4(right, 0.0f), glm::vec4(forward, 0.0f), glm::vec4(up, 0.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        glm::mat4 translation = glm::translate(glm::mat4(1.0f), fishFlock.myBoids[i].getPos());
-        glm::mat4 modelMatrix = translation * rotation;
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
-        modelMatrix           = glm::scale(modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+        // glm::mat4 modelMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
+        // modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+        // modelMatrix = glm::rotate(modelMatrix, fishFlock.myBoids[i].getAngle(), glm::vec3(0.f, 0.f, 1.f));
+        // //modelMatrix = glm::rotate(modelMatrix, fishFlock.myBoids[i].getPitch(), glm::vec3(1.f, 0.f, 0.f));
+        // modelMatrix = glm::rotate(modelMatrix, fishFlock.myBoids[i].getYaw(), glm::vec3(0.f, 1.f, 0.f));
+        // modelMatrix           = glm::scale(modelMatrix, glm::vec3(0.2, 0.2, 0.2));
 
-
-        m_fishes[i]->m_MMatrix = modelMatrix;
+        // m_fishes[i]->m_MMatrix = modelMatrix;
     }
 
     if (!timeIsPaused)
