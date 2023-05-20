@@ -2,16 +2,14 @@
 #include <cmath>
 #include "Tools.hpp"
 
-
-Boid :: Boid(glm::vec3 pos, glm::vec3 maxPos,glm::vec3 minPos) : position(pos),maxPos(maxPos), minPos(minPos)  {
-
-    velocity = glm::vec3(getRandomNumber(0, 0.01f)-0.005f,getRandomNumber(0, 0.01f)-0.005f,getRandomNumber(0, 0.01f)-0.005f);
-
+Boid ::Boid(glm::vec3 pos, glm::vec3 maxPos, glm::vec3 minPos)
+    : position(pos), maxPos(maxPos), minPos(minPos)
+{
+    velocity = glm::vec3(getRandomNumber(0, 0.01f) - 0.005f, getRandomNumber(0, 0.01f) - 0.005f, getRandomNumber(0, 0.01f) - 0.005f);
 }
 
 void Boid::setPos(glm::vec3 newPos)
 {
-
     // if(newPos.x > maxPos.x ){
 
     //     newPos.x = minPos.x;
@@ -42,12 +40,12 @@ void Boid::setPos(glm::vec3 newPos)
     position = newPos;
 }
 
-void Boid :: initVaoVbo(){
-    
+void Boid ::initVaoVbo()
+{
 }
 
-void Boid :: render(){
-    
+void Boid ::render()
+{
 }
 
 float Boid::getAngle(){
@@ -61,11 +59,10 @@ float Boid :: getPitch(){
 
 }
 
-float Boid :: getYaw(){
-
+float Boid ::getYaw()
+{
     glm::vec3 normalVelocity = glm::normalize(velocity);
-    return std::atan2(normalVelocity.y,normalVelocity.x);
-
+    return std::atan2(normalVelocity.y, normalVelocity.x);
 }
 
 glm::mat4 Boid::getRotationMatrix() const
