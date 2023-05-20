@@ -67,7 +67,7 @@ float Boid ::getYaw()
 
 glm::mat4 Boid::getRotationMatrix() const
 {
-    glm::vec3 originalVec = glm::vec3(0,1,0);
+    glm::vec3 originalVec = glm::vec3(0,-1.f,0);
     glm::vec3 targetVec   = glm::normalize(velocity);
 
     glm::vec3 axis  = glm::cross(originalVec, targetVec);

@@ -105,22 +105,18 @@ void App::loop()
 
     for (int i = 0; i < BIRDS_NB; i++)
     {
-        // glm::mat4 MVMatrix = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
-        // MVMatrix *= birdFlock.myBoids[i].getRotationMatrix();
+        glm::mat4 MVMatrix = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
+        MVMatrix *= birdFlock.myBoids[i].getRotationMatrix();
 
-        // m_birds[i]->m_MMatrix = MVMatrix;
+        m_birds[i]->m_MMatrix = MVMatrix;
     }
 
     for (int i = 0; i < FISHES_NB; i++)
     {
-        // glm::mat4 modelMatrix = glm::translate(glm::mat4(1), fishFlock.myBoids[i].getPos());
-        // modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
-        // modelMatrix = glm::rotate(modelMatrix, fishFlock.myBoids[i].getAngle(), glm::vec3(0.f, 0.f, 1.f));
-        // //modelMatrix = glm::rotate(modelMatrix, fishFlock.myBoids[i].getPitch(), glm::vec3(1.f, 0.f, 0.f));
-        // modelMatrix = glm::rotate(modelMatrix, fishFlock.myBoids[i].getYaw(), glm::vec3(0.f, 1.f, 0.f));
-        // modelMatrix           = glm::scale(modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+        glm::mat4 MVMatrix = glm::translate(glm::mat4(1.0f), fishFlock.myBoids[i].getPos());
+        MVMatrix *= fishFlock.myBoids[i].getRotationMatrix();
 
-        // m_fishes[i]->m_MMatrix = modelMatrix;
+        m_fishes[i]->m_MMatrix = MVMatrix;
     }
 
     if (!timeIsPaused)
