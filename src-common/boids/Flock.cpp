@@ -69,7 +69,7 @@ glm::vec3 Flock :: alignment(Boid& boid){
     return (velocityAverage/static_cast<float>(myBoids.size()))/8.0f;
 }
 
-glm::vec3 Flock :: boundaries(Boid& boid){
+glm::vec3 Flock :: boundaries(Boid& boid) {
 
     glm::vec3 v;
     if(boid.getPos().x < minPos.x){
@@ -109,7 +109,7 @@ void Flock :: simulate(){
     }
 }
 
-void Flock::displayParam(){
+void Flock::displayParam() {
     ImGui::Begin(("Flock settings "+name).c_str());
     ImGui::Text("maxSpeed");
     ImGui::SliderFloat("Max speed", &speedLimit, .001f, 10.f);
@@ -126,16 +126,9 @@ void Flock::displayParam(){
     ImGui::End();
 }
 
-void Flock :: initVaoVbo(){
+void Flock :: initVaoVbo() {
     
     for(Boid current : myBoids){
         current.initVaoVbo();
     }   
-}
-
-void Flock:: render(){
-
-    for(Boid current : myBoids){
-        current.render();
-    }
 }

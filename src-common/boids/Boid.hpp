@@ -38,14 +38,6 @@ public:
 
     void initVaoVbo();
 
-    void render();
-
-    float getPitch();
-
-    float getAngle();
-
-    float getYaw();
-
     glm::mat4 getRotationMatrix() const;
 
 };

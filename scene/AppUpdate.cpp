@@ -105,18 +105,22 @@ void App::loop()
 
     for (int i = 0; i < BIRDS_NB; i++)
     {
-        glm::mat4 MVMatrix = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
-        MVMatrix *= birdFlock.myBoids[i].getRotationMatrix();
+        glm::mat4 movMatrix = glm::translate(glm::mat4(1.0f), birdFlock.myBoids[i].getPos());
+        movMatrix *= birdFlock.myBoids[i].getRotationMatrix();
 
-        m_birds[i]->m_MMatrix = MVMatrix;
+        m_birds[i]->m_MMatrix = movMatrix;
     }
 
     for (int i = 0; i < FISHES_NB; i++)
     {
-        glm::mat4 MVMatrix = glm::translate(glm::mat4(1.0f), fishFlock.myBoids[i].getPos());
-        MVMatrix *= fishFlock.myBoids[i].getRotationMatrix();
 
-        m_fishes[i]->m_MMatrix = MVMatrix;
+        glm::mat4 movMatrix = glm::translate(glm::mat4(1.0f), fishFlock.myBoids[i].getPos());
+        movMatrix *= fishFlock.myBoids[i].getRotationMatrix();
+
+        m_fishes[i]->m_MMatrix = movMatrix;
+        movMatrix           = glm::scale(movMatrix, glm::vec3(0.2, 0.2, 0.2));
+
+        m_fishes[i]->m_MMatrix = movMatrix;
     }
 
     if (!timeIsPaused)

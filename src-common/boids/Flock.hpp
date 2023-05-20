@@ -21,7 +21,6 @@ class Flock{
         void limitVelocity (Boid& boid);
         void displayParam();
         void initVaoVbo();
-        void render();
         std::vector<Boid> myBoids;
 
 
