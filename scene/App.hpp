@@ -1,7 +1,7 @@
 #include <cstddef>
 #include <glimac/ParticleManager.hpp>
 #include <glimac/SimpleObjectManager.hpp>
-#include <glimac/character.hpp>
+#include <glimac/Character.hpp>
 #include <glimac/common.hpp>
 #include <iostream>
 #include <vector>
